@@ -43,13 +43,20 @@ Main = function () {
 		shapes.push(cube);
 		scene.add(cube);
 */
-/*		var sphere = new THREE.Mesh( new Sphere(2,0.05), new THREE.MeshPhongMaterial({map: THREE.ImageUtils.loadTexture('images/water.jpg')}));
+/*		var sphere = new THREE.Mesh( new Sphere(2,0.01), repeatTexture('images/water.jpg',2,2));
 		shapes.push(sphere);
 		scene.add(sphere);
 */				
-		var cylinder = new THREE.Mesh( new Cylinder( 2, 1, 0.05), new THREE.MeshPhongMaterial({map: THREE.ImageUtils.loadTexture('images/wall.jpg')}));
+		var cylinder = new THREE.Mesh( new Cylinder( 2, 1, 0.01), repeatTexture('images/wall.jpg',2,2) );
 		shapes.push(cylinder);
-		scene.add(cylinder);	
+		scene.add( cylinder );      
+	}
+	
+	function repeatTexture(path,x,y){
+		var texture = THREE.ImageUtils.loadTexture( path );
+		texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+		texture.repeat.set( x, y );											
+		return new THREE.MeshPhongMaterial( { map: texture } );
 	}
 	
 	function render(){

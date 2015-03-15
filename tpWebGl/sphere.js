@@ -31,7 +31,7 @@ Sphere = function ( radius, delta ) {
 				z  = radius*Math.cos(j);
 	
 				var pos = new THREE.Vector3(x,y,z); 
-				var texture = new THREE.Vector2((Math.sin(i)+1)/2,(Math.sin(2*j)+1)/2);
+				var texture = new THREE.Vector2(i/(2*Math.PI),j/(Math.PI));
 				var norm = new THREE.Vector3(x/radius,y/radius,z/radius); 
 
 				scope.vertices.push(pos);

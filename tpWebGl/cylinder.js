@@ -50,8 +50,8 @@ Cylinder = function ( height, radius, delta) {
 			scope.vertices.push(posBottom);
 				
 			var div = 2;
-			var txtureTop = new THREE.Vector2((Math.sin(i)+1)/div,1); 
-			var txtureBottom = new THREE.Vector2((Math.sin(i)+1)/div, 0);				
+			var txtureTop = new THREE.Vector2(i/(Math.PI),1); 
+			var txtureBottom = new THREE.Vector2(i/(Math.PI), 0);				
 
 			textures.push(txtureTop);
 			textures.push(txtureBottom);
