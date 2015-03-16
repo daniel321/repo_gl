@@ -130,8 +130,8 @@ Main = function (lock) {
 		camera.position.y += (movDir.y*velFw) + (latDir.y*velLat);
 		camera.position.z += (movDir.z*velFw) + (latDir.z*velLat);
 
-		var lookDown = (camera.rotation.x >= -(Math.PI/3) && mouseMoved[1] > 0);
-		var lookUp   = (camera.rotation.x <=  (Math.PI/3) && mouseMoved[1] < 0);
+		var lookDown = (camera.rotation.x >= -(Math.PI/2) && mouseMoved[1] > 0);
+		var lookUp   = (camera.rotation.x <=  (Math.PI/2) && mouseMoved[1] < 0);
 
 		if(lookDown || lookUp) 
 			camera.rotation.x -= mouseMoved[1]; 

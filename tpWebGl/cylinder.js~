@@ -71,20 +71,20 @@ Cylinder = function ( height, radius, delta) {
 			x  = radius * Math.cos(i);
 			y  = radius * Math.sin(i);
 				
-			if(i < 2*Math.PI-delta){				// connect the act with the next			
-				addTriangle(0, cont, cont+2, 0);  		// top triangle
+			if(i < 2*Math.PI-delta){						// connect the act with the next			
+				addTriangle(0, cont, cont+2, 0);  			// top triangle
 
 				addTriangle(cont, cont+1, cont+2, 1);  		// center square
 				addTriangle(cont+1, cont+3, cont+2, 1);  
 
 				addTriangle(1, cont+3, cont+1, 0);  		// bot triangle			
-			}else{							// connect the last with the first	
-				addTriangle(0, cont, 2, 0);  			// top triangle
+			}else{											// connect the last with the first	
+				addTriangle(0, cont, 2, 0);  				// top triangle
 
-				addTriangle(cont, cont+1, 2, 1);  		// center square
+				addTriangle(cont, cont+1, 2, 1);  			// center square
 				addTriangle(cont+1, 3, 2, 1);  
 				
-				addTriangle(1, 3, cont+1, 0);  			// top triangle
+				addTriangle(1, 3, cont+1, 0);  				// top triangle
 			}		
 			cont +=2;
 		}
