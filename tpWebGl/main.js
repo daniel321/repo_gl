@@ -6,11 +6,11 @@ Main = function (lock) {
 	var WIDTH,HEIGHT;
 	var lights,shapes;	
 
-	var locked = false, mouseMoved = [0,0];
-
+	var locked = false;
+	var controlsObj;
+		
 	var velLat = 0, velFw = 0, vel = 0.1;
-	var velRotX = 0.02,velRotY = 0.02;
-	var keyboard = 0;
+	var keyboard = 0, controls = 0;
 	var timer,REFRESH_TIME = 500;
 
 
@@ -20,7 +20,9 @@ Main = function (lock) {
 		initScene();
 		initLights();			
 		initShapes();
-		setUpListeners();				
+		setUpListeners();	
+		
+		setCameraPosition(0,0,2);
 		render();
 	}
 
@@ -74,6 +76,10 @@ Main = function (lock) {
 		var flooor = new THREE.Mesh(new Floor(200,200), repeatTexture('images/floor.bmp',20,20));
 		shapes.push(flooor);
 		scene.add(flooor);
+		
+		var arm = new Arm(scene,[-2,0,1],2.5,0.4,repeatTexture('images/wall.jpg',2,2));
+		shapes.push(arm);
+		shapes.push(arm);
 	}
 	
 	function repeatTexture(path,x,y){
@@ -83,6 +89,13 @@ Main = function (lock) {
 		return new THREE.MeshPhongMaterial( { map: texture } );
 	}
 
+	function setCameraPosition(x,y,z){
+		controlsObj = controls.getObject();
+		controlsObj.position.x = x;
+		controlsObj.position.y = y;
+		controlsObj.position.z = z;
+	}
+	
 	// ------------------------------- RENDER / ANIMATION -----------------------------------------------
 
 	function render(){
@@ -119,29 +132,25 @@ Main = function (lock) {
 		shapes[3].position.y = -2;
 	}
 
-	function updateCamera(){			
-		var movDir = new THREE.Vector3( 0, 0, -1 );		
-		movDir.applyQuaternion(camera.quaternion).normalize();
-
+	function updateCamera(){	
+		var controlsObj = controls.getObject();
+	
+		var movDir = controls.getDirection();
 		var latDir = new THREE.Vector3();			
-		latDir.crossVectors( movDir, camera.up );
+		latDir.crossVectors( movDir, controlsObj.up );
 
-		camera.position.x += (movDir.x*velFw) + (latDir.x*velLat);
-		camera.position.y += (movDir.y*velFw) + (latDir.y*velLat);
-		camera.position.z += (movDir.z*velFw) + (latDir.z*velLat);
-
-		var lookDown = (camera.rotation.x >= -(Math.PI/3) && mouseMoved[1] > 0);
-		var lookUp   = (camera.rotation.x <=  (Math.PI/3) && mouseMoved[1] < 0);
-
-		if(lookDown || lookUp) 
-			camera.rotation.x -= mouseMoved[1]; 
-
-		camera.rotation.y -= mouseMoved[0]; 
+		controlsObj.position.x += (movDir.x*velFw) + (latDir.x*velLat);
+		controlsObj.position.y += (movDir.y*velFw) + (latDir.y*velLat);
+		controlsObj.position.z += (movDir.z*velFw) + (latDir.z*velLat);
+		
 	}
 
 	// ------------------------------- LISTENERS -----------------------------------------------
 
 	function setUpListeners(){
+		controls = new THREE.PointerLockControls(camera);
+		scene.add( controls.getObject() );
+					
 		window.addEventListener( 'resize', onWindowResize, false );
 
 		window.addEventListener('pointerlockchange', pointerlockchange, false);
@@ -153,19 +162,13 @@ Main = function (lock) {
 		locked = !locked;
 
 		if (locked){
-    			window.addEventListener( 'mousemove', onMouseMove, false );
-			timer = setInterval(function () { myTimer() }, REFRESH_TIME);
+			controls.enabled = true;
 			keyboard = new THREEx.KeyboardState();
-  		}else{ 
-    			window.removeEventListener( 'mousemove', onMouseMove, false );
-			window.clearInterval(timer);
+  		}else{ 		
+			controls.enabled = false;
 			keyboard.destroy();
 			keyboard = 0;
 		}
-	}
-
-	function myTimer() {
-	    mouseMoved = [0,0];
 	}
 
 	function listenKeyboard(){
@@ -196,28 +199,5 @@ Main = function (lock) {
 		camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
 		camera.setViewOffset( WIDTH, HEIGHT, 1, 0, WIDTH, HEIGHT );
-	}
-
-	function onMouseMove(e) {
-  		mouseMoved[0] = e.movementX       ||
-                  		e.mozMovementX    ||
-                  		e.webkitMovementX ||
-                  		0;
-
-      		mouseMoved[1] = e.movementY       ||
-                  		e.mozMovementY    ||
-                  		e.webkitMovementY ||
-                  		0;
-
-		
-		if(mouseMoved[0] > 0)
-			mouseMoved[0] = velRotX;
-		else if(mouseMoved[0] < 0)
-			mouseMoved[0] = -velRotX;
-
-		if(mouseMoved[1] > 0)
-			mouseMoved[1] = velRotY;
-		if(mouseMoved[1] < 0)
-			mouseMoved[1] = -velRotY;
 	}
 };
