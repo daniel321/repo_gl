@@ -8,7 +8,12 @@ Main = function (lock) {
 
 	var locked = false;
 	var controlsObj;
-		
+	
+	var rotX1 = 0,rotY1 = 0,rotZ1 = 0;
+	var rotX2 = 0,rotY2 = 0,rotZ2 = 0;
+	var rotX3 = 0,rotY3 = 0,rotZ3 = 0;
+	var dAng = 0.01;
+	
 	var velLat = 0, velFw = 0, vel = 0.1;
 	var keyboard = 0, controls = 0;
 	var timer,REFRESH_TIME = 500;
@@ -79,7 +84,6 @@ Main = function (lock) {
 		
 		var arm = new Arm(scene,[-2,0,1],2.5,0.4,repeatTexture('images/wall.jpg',2,2));
 		shapes.push(arm);
-		shapes.push(arm);
 	}
 	
 	function repeatTexture(path,x,y){
@@ -111,6 +115,7 @@ Main = function (lock) {
 		updateCamera();
 	}
 
+	var cont = 0;
 	function animateShapes(){
 		shapes[0].position.z = -1;
 		shapes[0].rotation.x += 0.01;	
@@ -130,6 +135,18 @@ Main = function (lock) {
 		shapes[2].rotation.z += 0.01;
 
 		shapes[3].position.y = -2;
+
+		shapes[4].joint1.rotation.x += rotX1;
+		shapes[4].joint1.rotation.y += rotY1;
+		shapes[4].joint1.rotation.z += rotZ1;
+
+		shapes[4].joint2.rotation.x += rotX2;
+		shapes[4].joint2.rotation.y += rotY2;
+		shapes[4].joint2.rotation.z += rotZ2;
+
+		shapes[4].joint3.rotation.x += rotX3;
+		shapes[4].joint3.rotation.y += rotY3;
+		shapes[4].joint3.rotation.z += rotZ3;
 	}
 
 	function updateCamera(){	
@@ -173,18 +190,46 @@ Main = function (lock) {
 
 	function listenKeyboard(){
 		if (keyboard != 0){
+
+			// ------------------ move ......------------------ 
 			if( keyboard.pressed("A") || keyboard.pressed("a") )   
 				velLat = -vel;			
 			else if( keyboard.pressed("D") || keyboard.pressed("D") )   
 				velLat = vel;			
-
 			else if( keyboard.pressed("W") || keyboard.pressed("w") )   
 				velFw = vel;			
 			else if( keyboard.pressed("S") || keyboard.pressed("s") )   
 				velFw = -vel;		
-
 			else
 				velFw = velLat = 0;	
+
+			// ------------------ rotate arm ------------------ 
+			if( keyboard.pressed("1") )   
+				rotX1 += dAng;
+			else if( keyboard.pressed("2"))   
+				rotY1 += dAng;
+			else if( keyboard.pressed("3"))   
+				rotZ1 += dAng;
+			else
+				rotX1 = rotY1 = rotZ1 = 0;
+
+			if( keyboard.pressed("4") )   
+				rotX2 += dAng;
+			else if( keyboard.pressed("5"))   
+				rotY2 += dAng;
+			else if( keyboard.pressed("6"))   
+				rotZ2 += dAng;
+			else
+				rotX2 = rotY2 = rotZ2 = 0;
+
+			if( keyboard.pressed("7") )   
+				rotX3 += dAng;
+			else if( keyboard.pressed("8"))   
+				rotY3 += dAng;
+			else if( keyboard.pressed("9"))   
+				rotZ3 += dAng;
+			else
+				rotX3 = rotY3 = rotZ3 = 0;
 		}
 	}
 
