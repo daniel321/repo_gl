@@ -8,6 +8,8 @@
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="webgl-utils.js"></script>
 
+<script type="text/javascript" src="FreeCamera.js"></script>
+
 <script type="text/javascript" src="Background.js"></script>
 <script type="text/javascript" src="floor.js"></script>
 <script type="text/javascript" src="box.js"></script>
@@ -174,7 +176,6 @@
         shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
     }
 
-    var CameraMatrix = mat4.create();
     var mvMatrix = mat4.create();
     var mvMatrixStack = [];
     var pMatrix = mat4.create();
@@ -188,6 +189,8 @@
     var bck = null;
 	var floor = null;
 	var crane = null;
+	
+	var camera = null;
 	
     function mvPushMatrix() {
         var copy = mat4.create();
@@ -204,7 +207,7 @@
 
     function setViewProjectionMatrix() {
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, CameraMatrix);        
+        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, camera.getMatrix());        
     }
 
 
@@ -240,16 +243,13 @@
         lighting = true;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
         var lightPosition = [0.0,0.0, 0.0];
-        mat4.multiplyVec3(CameraMatrix, lightPosition);
+        mat4.multiplyVec3(camera.getMatrix(), lightPosition);
         gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
 		
         /////////////////////////////////////////////////////
 		// Definimos la ubicación de la camara
 		// Pensamos por el momento sunamente la posición de la cámara, la cual siempre mira al sun.
-		var matriz_camara = mat4.create();
-		mat4.identity(CameraMatrix);
-		mat4.translate(CameraMatrix, [0, 1, -30]);
-		mat4.rotate(CameraMatrix, 0.3 ,[1, 0, 0]);
+		var matriz_camara = camera.getMatrix();
 		
         setViewProjectionMatrix();
 		
@@ -258,36 +258,60 @@
 	    all.draw(identity);
     }
 	
-	function handleKeys(event){
-		if( currentlyPressedKeys["s".charCodeAt(0)] || currentlyPressedKeys["S".charCodeAt(0)]){
-			crane.moveCrane(-0.1);
+	function handleKeys(event){ 		
+		if( currentlyPressedKeys["1".charCodeAt(0)]){
+			camera.Pitch([0,0.01,0]);
 		}
-
+	
+	
+		if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
+			camera.Down(0.1);
+		}
+		if( currentlyPressedKeys["e".charCodeAt(0)] || currentlyPressedKeys["E".charCodeAt(0)]){
+			camera.Up(0.1);
+		}
+		
+		if( currentlyPressedKeys["s".charCodeAt(0)] || currentlyPressedKeys["S".charCodeAt(0)]){
+			camera.Forward(0.1);
+		}
 		if( currentlyPressedKeys["w".charCodeAt(0)] || currentlyPressedKeys["W".charCodeAt(0)]){
+			camera.Backwards(0.1);
+		}
+	
+		if( currentlyPressedKeys["a".charCodeAt(0)] || currentlyPressedKeys["A".charCodeAt(0)]){
+			camera.Left(0.1);
+		}		
+		if( currentlyPressedKeys["d".charCodeAt(0)] || currentlyPressedKeys["D".charCodeAt(0)]){
+			camera.Right(0.1);
+		}
+	
+
+		
+		if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
+			crane.moveCrane(-0.1);
+		}	
+		if( currentlyPressedKeys["k".charCodeAt(0)] || currentlyPressedKeys["K".charCodeAt(0)]){
 			crane.moveCrane(0.1);
 		}
 		
-		if( currentlyPressedKeys["e".charCodeAt(0)] || currentlyPressedKeys["E".charCodeAt(0)]){
+		if( currentlyPressedKeys["j".charCodeAt(0)] || currentlyPressedKeys["J".charCodeAt(0)]){
+			crane.moveMover(-0.1);
+		}		
+		if( currentlyPressedKeys["l".charCodeAt(0)] || currentlyPressedKeys["L".charCodeAt(0)]){
+			crane.moveMover(0.1);
+		}	
+		
+		if( currentlyPressedKeys["u".charCodeAt(0)] || currentlyPressedKeys["U".charCodeAt(0)]){
+			crane.moveCargo(0.1);
+		}				
+		if( currentlyPressedKeys["o".charCodeAt(0)] || currentlyPressedKeys["O".charCodeAt(0)]){
 			crane.moveCargo(-0.1);
 		}		
 		
-		if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
-			crane.moveCargo(0.1);
-		}
-		
-		if( currentlyPressedKeys["a".charCodeAt(0)] || currentlyPressedKeys["A".charCodeAt(0)]){
-			crane.moveMover(-0.1);
-		}		
-		
-		if( currentlyPressedKeys["d".charCodeAt(0)] || currentlyPressedKeys["D".charCodeAt(0)]){
-			crane.moveMover(0.1);
-		}	
-
-		if( currentlyPressedKeys["z".charCodeAt(0)] || currentlyPressedKeys["Z".charCodeAt(0)]){
+		if( currentlyPressedKeys["9".charCodeAt(0)]){
 			crane.releaseCargo();
 		}		
-
-		if( currentlyPressedKeys["x".charCodeAt(0)] || currentlyPressedKeys["X".charCodeAt(0)]){
+		if( currentlyPressedKeys["0".charCodeAt(0)] ){
 			crane.attachCargo();
 		}			
 	}
@@ -295,7 +319,6 @@
     function tick() {
         requestAnimFrame(tick);
 		
-	    //crane.rotate(0,0.01,0);
 		bckShape.rotate(0,0.001,0);
 		
 		handleKeys();
@@ -356,6 +379,8 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
+		camera = new FreeCamera([0, 0, 30],[0,0,0],[0,1,0]);
+		
         tick();
     }
 

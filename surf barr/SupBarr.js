@@ -124,7 +124,7 @@
 				var normal = this.normal;
 	
 				var up = vec3.create();
-				vec3.cross(up,vec3.create(tg),vec3.create(normal));
+				vec3.cross(vec3.create(tg),vec3.create(normal),up);
 
 				
 				for (var x=0; x < pointsPerShape; x+=3){			
@@ -132,7 +132,7 @@
 					var rotate = mat4.create();
 					mat4.identity(rotate);
 				
-					mat4.lookAt(up, center, centerNext,rotate);
+					mat4.lookAt(up, centerNext, center,rotate);
 					//mat4.rotate(rotate, angRot[0], [1, 0, 0]);
 					//mat4.rotate(rotate, angRot[1], [0, 1, 0]);
 					//mat4.rotate(rotate, angRot[2], [0, 0, 1]);
