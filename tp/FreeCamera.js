@@ -30,6 +30,10 @@ FreeCamera = function(source,target,up){
 		var axisDir = this.binorm;
 		var axisPoint = this.source;
 		
+		if(this.source[2] < this.target[2]){
+			amount = -amount;
+		}
+		
 		if( (this.yaw + amount < Math.PI/2) && (this.yaw + amount > -Math.PI/2)){
 			this.target = this.rotateArroundAxis(this.target,axisDir,axisPoint,amount);	
 			this.yaw += amount;		

@@ -191,6 +191,11 @@
 	var crane = null;
 	
 	var camera = null;
+	var locked = false;
+		
+	var pitch = 0;
+	var yaw = 0;
+	var rotAmount = 0.005;
 	
     function mvPushMatrix() {
         var copy = mat4.create();
@@ -259,19 +264,6 @@
     }
 	
 	function handleKeys(event){ 		
-		if( currentlyPressedKeys["1".charCodeAt(0)]){
-			camera.Pitch(0.01);
-		}
-		if( currentlyPressedKeys["2".charCodeAt(0)]){
-			camera.Pitch(-0.01);
-		}	
-
-		if( currentlyPressedKeys["3".charCodeAt(0)]){
-			camera.Yaw(0.01);
-		}
-		if( currentlyPressedKeys["4".charCodeAt(0)]){
-			camera.Yaw(-0.01);
-		}
 		
 		if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
 			camera.Down(0.1);
@@ -324,13 +316,42 @@
 			crane.attachCargo();
 		}			
 	}
+
+	function handleMouse(){
+		if(locked){
+			camera.Pitch(pitch);
+			camera.Yaw(yaw);
+		}
+		pitch = 0;
+		yaw = 0;
+	}
+	
+	function myMoveFunction(event) {
+		//console.log( "ev :" + event.clientX + " " +  event.clientY);
+		//console.log( "mouse :" +mouseX + " " +  mouseY);
+		
+		if(locked){
+			var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+			var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+		
+			if(movementX)
+				pitch = -movementX*rotAmount;
+				
+			if(movementY)	
+				yaw = movementY*rotAmount;
+				
+			//console.log(movementX);
+		}
+		//console.log(locked);
+	}
 	
     function tick() {
         requestAnimFrame(tick);
-		
+
 		bckShape.rotate(0,0.001,0);
 		
 		handleKeys();
+		handleMouse();
         drawScene();
     }
 
@@ -341,12 +362,36 @@
 	function handleKeyUp(event) {
 		currentlyPressedKeys[event.keyCode] = false;
 	}
+
+	function pointerlockchange() {
+		locked = !locked;
+		//console.log(locked);
+	}
+
+
+	function lockPointer() {
+		var lock = document.getElementById("pointer-lock-element");
+		lock.requestPointerLock = lock.requestPointerLock    ||
+							      lock.mozRequestPointerLock ||
+							      lock.webkitRequestPointerLock;
+		lock.requestPointerLock();
+	}	
+	
+	function setUpListeners(){				
+		//window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mousemove', myMoveFunction, false );
+
+		window.addEventListener('pointerlockchange', pointerlockchange, false);
+		window.addEventListener('mozpointerlockchange', pointerlockchange, false);
+		window.addEventListener('webkitpointerlockchange', pointerlockchange, false);
+	}
 	
     function webGLStart() {
         var canvas = document.getElementById("tp");
         initGL(canvas);
         initShaders();
 		
+		setUpListeners();		
 		all = new ShapeGroup();
 	
 		//--------------------bck---------------------------
@@ -388,7 +433,9 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
+		//--------------------camera-----------------------
 		camera = new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]);
+		//-------------------------------------------------
 		
         tick();
     }
@@ -403,10 +450,11 @@
     <center>
             <h1>Sistemas Gráficos - 66.71</h1>
             <h2>tp</h2>
-            <canvas id="tp" style="border: none;" width="1280" height="720">
-				Your browser does not support the HTML5 canvas element.
-            </canvas>
-            
+				<canvas id="tp" style="border: none;" width="1280" height="720">
+					Your browser does not support the HTML5 canvas element.
+				</canvas>
+				<button onclick="lockPointer();" style="width:100%" >Lock it!</button>
+				<div id="pointer-lock-element"></div>
         </center>
     <br/>
 
