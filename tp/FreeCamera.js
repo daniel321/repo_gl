@@ -12,7 +12,7 @@ FreeCamera = function(source,target,up){
 	this.getMatrix = function(){
 		this.matrix  = mat4.create();
 		mat4.identity(this.matrix);
-		mat4.lookAt(this.source, this.target, this.up,this.matrix);
+		mat4.lookAt(this.matrix, this.source, this.target, this.up);
 		return this.matrix;
     }
 		

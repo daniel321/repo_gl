@@ -143,7 +143,7 @@ Main = function (lock) {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		// Se configura la matriz de proyección
-        mat4.perspective(30, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+        mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
         /////////////////////////////////////////////////////
         // Configuración de la luz
@@ -152,7 +152,7 @@ Main = function (lock) {
         lighting = true;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
         var lightPosition = [0.0,0.0, 0.0];
-        mat4.multiplyVec3(camera.getMatrix(), lightPosition);
+        vec3.transformMat4(lightPosition, lightPosition, camera.getMatrix());
         gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
 		
         /////////////////////////////////////////////////////

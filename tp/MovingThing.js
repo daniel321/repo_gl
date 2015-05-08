@@ -56,7 +56,7 @@ MovingThing = function(objectUniform){
 	this.releaseCargo = function(parentMatrix){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
-		mat4.multiply(parentMatrix, this.getMatrix(), matrix);
+		mat4.multiply(matrix, parentMatrix, this.getMatrix());
 		
 		this.cargoMover.releaseCargo(matrix);
 	}	
@@ -64,7 +64,7 @@ MovingThing = function(objectUniform){
 	this.attachCargo = function(parentMatrix){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
-		mat4.multiply(parentMatrix, this.getMatrix(), matrix);
+        mat4.multiply(matrix, parentMatrix, this.getMatrix());
 		
 		this.cargoMover.attachCargo(matrix);
 	}	

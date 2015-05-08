@@ -116,7 +116,7 @@ CargoMover = function(objectUniform){
 	this.releaseCargo = function(parentMatrix){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
-		mat4.multiply(parentMatrix, this.getMatrix(), matrix);
+		mat4.multiply(matrix, parentMatrix, this.getMatrix());
 		
 		if(this.cargo != null){
 			this.cargo.acumulateMatrix(matrix);
@@ -145,10 +145,10 @@ CargoMover = function(objectUniform){
 	this.getCargoNearby = function(parentMatrix){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
-		mat4.multiply(parentMatrix, this.getMatrix(), matrix);
+		mat4.multiply(matrix, parentMatrix, this.getMatrix());
 		mat4.multiply(matrix, this.cargoSupportRightShape.getMatrix(), matrix);
 		var pos = [0,0,0];
-		mat4.multiplyVec3(matrix, pos);
+        vec3.transformMat4(pos, pos, matrix);
 		
 //		console.log("pos cable: " + pos);
 		
@@ -159,7 +159,7 @@ CargoMover = function(objectUniform){
 			mat4.identity(mat);
 			mat4.multiply(mat, cargo.getMatrix(), mat);
 			var posCargo = [0,0,0];
-			mat4.multiplyVec3(mat, posCargo);	
+            vec3.transformMat4(posCargo, posCargo, mat);
 			
 //			console.log("pos cargo: " + posCargo);
 

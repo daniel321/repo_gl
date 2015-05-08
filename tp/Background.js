@@ -142,8 +142,9 @@
 
             gl.uniformMatrix4fv(shaderProgram.ModelMatrixUniform, false, modelMatrix);
             var normalMatrix = mat3.create();
-            mat4.toInverseMat3(modelMatrix, normalMatrix);
-            mat3.transpose(normalMatrix);
+            //TODO necesita transponerse??
+            mat3.normalFromMat4(normalMatrix, modelMatrix);            
+//            mat3.transpose(normalMatrix, normalMatrix);
             gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
