@@ -2,7 +2,10 @@ FreeCamera = function(source,target,up){
 	this.up = up;
 	this.source = source;
 	this.target = target;
-	this.rotation = [0,0,0];
+	this.binorm = [ target[1]*up[2]-target[2]*up[1] , -target[0]*up[2]+target[2]*up[0], target[0]*up[1]-target[1]*up[0] ];
+	
+	this.pitch = 0;	
+	this.yaw = 0;
 	
 	this.matrix  = null;
 	
@@ -13,15 +16,25 @@ FreeCamera = function(source,target,up){
 		return this.matrix;
     }
 		
-	this.Pitch = function(amount){	
-		//var axisDir = this.getDir(this.target,this.source);
-		//var axisPoint = this.source;
-
+	this.Pitch = function(amount){			
 		var axisDir = this.up;
-		var axisPoint = [0,0,0];
+		var axisPoint = this.source;
 
 		this.target = this.rotateArroundAxis(this.target,axisDir,axisPoint,amount);	
+		this.pitch += amount;
+		
+		// this.binorm = this.cross(this.target,this.up);
 	}	
+	
+	this.Yaw = function(amount){	
+		var axisDir = this.binorm;
+		var axisPoint = this.source;
+		
+		if( (this.yaw + amount < Math.PI/2) && (this.yaw + amount > -Math.PI/2)){
+			this.target = this.rotateArroundAxis(this.target,axisDir,axisPoint,amount);	
+			this.yaw += amount;		
+		}
+	}		
 	
 	this.rotateArroundAxis = function(point,axisDir,axisPoint,ang){
 		var cos = Math.cos(ang);

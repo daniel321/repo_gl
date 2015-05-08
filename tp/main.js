@@ -1,96 +1,5 @@
-
-<html>
-
-<head>
-<title>tp</title>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-
-<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
-<script type="text/javascript" src="webgl-utils.js"></script>
-
-<script type="text/javascript" src="FreeCamera.js"></script>
-
-<script type="text/javascript" src="Background.js"></script>
-<script type="text/javascript" src="floor.js"></script>
-<script type="text/javascript" src="box.js"></script>
-<script type="text/javascript" src="Frame.js"></script>
-<script type="text/javascript" src="MovingThing.js"></script>
-<script type="text/javascript" src="Cargo.js"></script>
-<script type="text/javascript" src="Crane.js"></script>
-<script type="text/javascript" src="CargoMover.js"></script>
-<script type="text/javascript" src="TexturedSphere.js"></script>
-
-<script type="text/javascript" src="ShapeGroup.js"></script>
-<script type="text/javascript" src="Shape.js"></script>
-
-<script id="shader-fs" type="x-shader/x-fragment">
-    precision mediump float;
-
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-
-    uniform sampler2D uSampler;
-
-    void main(void) {
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
-    }
-</script>
-
-<script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec3 aVertexPosition;
-    attribute vec3 aVertexNormal;
-    attribute vec2 aTextureCoord;
-
-    uniform mat4 uViewMatrix;
-    uniform mat4 uModelMatrix;
-    uniform mat4 uPMatrix;
-    uniform mat3 uNMatrix;
-
-    uniform vec3 uAmbientColor;
-
-    uniform vec3 uLightPosition;
-    uniform vec3 uDirectionalColor;
-
-    uniform bool uUseLighting;
-
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-
-    void main(void) {
-	
-		// Transformamos al vértice al espacio de la cámara
-		vec4 pos_camera_view = uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
-		
-		// Transformamos al vértice al espacio de la proyección
-        gl_Position = uPMatrix * pos_camera_view;
-		
-		// Coordenada de textura sin modifiaciones
-        vTextureCoord = aTextureCoord;
-							
-		////////////////////////////////////////////
-		// Calculos de la iluminación
-		vec3 light_dir =  uLightPosition - vec3( pos_camera_view );
-		normalize(light_dir);
-        if (!uUseLighting) 
-		{
-            vLightWeighting = vec3(1.0, 1.0, 1.0);
-        }
-		else 
-		{
-            vec3 transformedNormal = normalize(uNMatrix * aVertexNormal);
-            float directionalLightWeighting = max(dot(transformedNormal, light_dir), 0.0);
-            vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-        }
-		////////////////////////////////////////////
-    }
-</script>
-
-
-<script type="text/javascript">
-
+Main = function (lock) {
     var gl;
-
     function initGL(canvas) {
         try {
             gl = canvas.getContext("experimental-webgl");
@@ -226,19 +135,19 @@
 	
     function drawScene() {
 	
-		// Se configura el vierport dentro de área ¨canvas¨. en este caso se utiliza toda 
-		// el área disponible
+		// Se configura el vierport dentro de Ã¡rea Â¨canvasÂ¨. en este caso se utiliza toda 
+		// el Ã¡rea disponible
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 		
 		// Se habilita el color de borrado para la pantalla (Color Buffer) y otros buffers
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		// Se configura la matriz de proyección
+		// Se configura la matriz de proyecciÃ³n
         mat4.perspective(30, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
         /////////////////////////////////////////////////////
-        // Configuración de la luz
-        // Se inicializan las variables asociadas con la Iluminación
+        // ConfiguraciÃ³n de la luz
+        // Se inicializan las variables asociadas con la IluminaciÃ³n
         var lighting;
         lighting = true;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
@@ -247,8 +156,8 @@
         gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
 		
         /////////////////////////////////////////////////////
-		// Definimos la ubicación de la camara
-		// Pensamos por el momento sunamente la posición de la cámara, la cual siempre mira al sun.
+		// Definimos la ubicaciÃ³n de la camara
+		// Pensamos por el momento sunamente la posiciÃ³n de la cÃ¡mara, la cual siempre mira al sun.
 		var matriz_camara = camera.getMatrix();
 		
         setViewProjectionMatrix();
@@ -392,24 +301,4 @@
 		
         tick();
     }
-
-</script>
-
-
-</head>
-
-
-<body onload="webGLStart();">
-    <center>
-            <h1>Sistemas Gráficos - 66.71</h1>
-            <h2>tp</h2>
-            <canvas id="tp" style="border: none;" width="1280" height="720">
-				Your browser does not support the HTML5 canvas element.
-            </canvas>
-            
-        </center>
-    <br/>
-
- </body>
-
-</html>
+};
