@@ -146,7 +146,7 @@ CargoMover = function(objectUniform){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
 		mat4.multiply(matrix, parentMatrix, this.getMatrix());
-		mat4.multiply(matrix, this.cargoSupportRightShape.getMatrix(), matrix);
+		mat4.multiply(matrix, matrix, this.cargoSupportRightShape.getMatrix());
 		var pos = [0,0,0];
         vec3.transformMat4(pos, pos, matrix);
 		
@@ -157,7 +157,7 @@ CargoMover = function(objectUniform){
 		while (cargo != null){
 			var mat = mat4.create();
 			mat4.identity(mat);
-			mat4.multiply(mat, cargo.getMatrix(), mat);
+			mat4.multiply(mat, mat, cargo.getMatrix());
 			var posCargo = [0,0,0];
             vec3.transformMat4(posCargo, posCargo, mat);
 			
