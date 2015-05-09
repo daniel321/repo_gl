@@ -54,24 +54,23 @@ MovingThing = function(objectUniform){
     }
 	
 	this.releaseCargo = function(parentMatrix){
-		var matrix = mat4.create();
-		mat4.identity(matrix);
-		mat4.multiply(matrix, parentMatrix, this.getMatrix());
-		
+		var matrix = this.acumulateParentMatrix(parentMatrix);	
 		this.cargoMover.releaseCargo(matrix);
 	}	
 	
 	this.attachCargo = function(parentMatrix){
-		var matrix = mat4.create();
-		mat4.identity(matrix);
-        mat4.multiply(matrix, parentMatrix, this.getMatrix());
-		
+		var matrix = this.acumulateParentMatrix(parentMatrix);
 		this.cargoMover.attachCargo(matrix);
 	}	
 	
 	this.moveCargo = function(amount){
 		this.cargoMover.moveCargo(amount);
 	}
+	
+	this.setCabinCamera = function(camera,parentMatrix){
+		var matrix = this.acumulateParentMatrix(parentMatrix);
+		this.cargoMover.setCabinCamera(camera,matrix);
+	}	
 	
 	this.moveMover = function(amount){
 		this.cargoMover.moveMover(amount);
@@ -107,6 +106,14 @@ MovingThing = function(objectUniform){
 
 	this.acumulate = function(){
 		this.all.acumulate();
+	}
+	
+	this.acumulateParentMatrix = function(parentMatrix){
+		var matrix = mat4.create();
+		mat4.identity(matrix);
+		mat4.multiply(matrix, parentMatrix, this.getMatrix());
+		
+		return matrix;
 	}
 	
 	this.acumulateMatrix = function(matrix){

@@ -8,7 +8,12 @@
 <script type="text/javascript" src="gl-matrix-2.2.0.js"></script>
 <script type="text/javascript" src="webgl-utils.js"></script>
 
+<script type="text/javascript" src="vectorUtils.js"></script>
+<script type="text/javascript" src="CameraManager.js"></script>
 <script type="text/javascript" src="FreeCamera.js"></script>
+<script type="text/javascript" src="WalkingCamera.js"></script>
+<script type="text/javascript" src="FirstPersonCamera.js"></script>
+<script type="text/javascript" src="OrbitalCamera.js"></script>
 
 <script type="text/javascript" src="Background.js"></script>
 <script type="text/javascript" src="floor.js"></script>
@@ -190,7 +195,7 @@
 	var floor = null;
 	var crane = null;
 	
-	var camera = null;
+	var cameras = null;
 	var locked = false;
 		
 	var pitch = 0;
@@ -212,7 +217,7 @@
 
     function setViewProjectionMatrix() {
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, camera.getMatrix());        
+        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix());        
     }
 
 
@@ -245,16 +250,15 @@
         // Configuración de la luz
         // Se inicializan las variables asociadas con la Iluminación
         var lighting;
-        lighting = true;
+        lighting = false;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
-        var lightPosition = [0.0,0.0, 0.0];
-        vec3.transformMat4(lightPosition, lightPosition, camera.getMatrix());
+        vec3.transformMat4(lightPosition, lightPosition, cameras.getMatrix());
         gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
 		
         /////////////////////////////////////////////////////
 		// Definimos la ubicación de la camara
 		// Pensamos por el momento sunamente la posición de la cámara, la cual siempre mira al sun.
-		var matriz_camara = camera.getMatrix();
+		var matriz_camara = cameras.getMatrix();
 		
         setViewProjectionMatrix();
 		
@@ -262,31 +266,58 @@
 		mat4.identity(identity);
 	    all.draw(identity);
     }
+
+	var lightPosition = [-40.0,40.0,40.0];
+    function tick() {
+        requestAnimFrame(tick);
+
+		bckShape.rotate(0,0.001,0);
+		lightPosition = [20.0*Math.cos(0.001),0.0,20.0*Math.sin(0.001)]
+		
+		handleKeys();
+		handleMouse();
+        drawScene();
+    }	
 	
 	function handleKeys(event){ 		
+		if( currentlyPressedKeys["|".charCodeAt(0)] ){
+			cameras.cycleCamera();
+		}	
+		if( currentlyPressedKeys["1".charCodeAt(0)] ){
+			cameras.ToCamera(0);
+		}	
+		if( currentlyPressedKeys["2".charCodeAt(0)] ){
+			cameras.ToCamera(1);
+		}	
+		if( currentlyPressedKeys["3".charCodeAt(0)] ){
+			cameras.ToCamera(2);
+		}	
+		if( currentlyPressedKeys["4".charCodeAt(0)] ){
+			cameras.ToCamera(3);
+		}	
+		
 		
 		if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
-			camera.Down(0.1);
+			cameras.Down(0.1);
 		}
 		if( currentlyPressedKeys["e".charCodeAt(0)] || currentlyPressedKeys["E".charCodeAt(0)]){
-			camera.Up(0.1);
+			cameras.Up(0.1);
 		}
 		
 		if( currentlyPressedKeys["s".charCodeAt(0)] || currentlyPressedKeys["S".charCodeAt(0)]){
-			camera.Forward(0.1);
+			cameras.Forward(0.1);
 		}
 		if( currentlyPressedKeys["w".charCodeAt(0)] || currentlyPressedKeys["W".charCodeAt(0)]){
-			camera.Backwards(0.1);
+			cameras.Backwards(0.1);
 		}
 	
 		if( currentlyPressedKeys["a".charCodeAt(0)] || currentlyPressedKeys["A".charCodeAt(0)]){
-			camera.Left(0.1);
+			cameras.Left(0.1);
 		}		
 		if( currentlyPressedKeys["d".charCodeAt(0)] || currentlyPressedKeys["D".charCodeAt(0)]){
-			camera.Right(0.1);
+			cameras.Right(0.1);
 		}
 	
-
 		
 		if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
 			crane.moveCrane(-0.1);
@@ -319,8 +350,8 @@
 
 	function handleMouse(){
 		if(locked){
-			camera.Pitch(pitch);
-			camera.Yaw(yaw);
+			cameras.Pitch(pitch);
+			cameras.Yaw(yaw);
 		}
 		pitch = 0;
 		yaw = 0;
@@ -344,16 +375,6 @@
 		}
 		//console.log(locked);
 	}
-	
-    function tick() {
-        requestAnimFrame(tick);
-
-		bckShape.rotate(0,0.001,0);
-		
-		handleKeys();
-		handleMouse();
-        drawScene();
-    }
 
 	function handleKeyDown(event){
 		currentlyPressedKeys[event.keyCode] = true;
@@ -399,7 +420,7 @@
         bck.initTexture("sky.jpg");	
 		
 		bckShape = new Shape(bck,sourceUniform);
-		bckShape.scale(40.0, 15.0, 40.0);
+		bckShape.scale(60.0, 30.0, 60.0);
 
 		all.add(bckShape);
 		//--------------------------------------------------
@@ -409,7 +430,7 @@
         floor.initTexture("floor.bmp");	
 		
 		floorShape = new Shape(floor,sourceUniform);
-		floorShape.translate(0, -5 , 0);
+		floorShape.translate(0, -5 , 10);
 		
 		all.add(floorShape);
 		//--------------------------------------------------
@@ -425,7 +446,7 @@
 	
 		all.initBuffers();
 	
-		crane.translate(0, -2 , 0);
+		crane.translate(0, -2 , 10);
 	
 		document.onkeydown = handleKeyDown;
 		document.onkeyup = handleKeyUp;
@@ -433,8 +454,16 @@
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
-		//--------------------camera-----------------------
-		camera = new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]);
+		//--------------------cameras-----------------------
+
+		cameras = new CameraManager();
+		cameras.add(new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]));
+		cameras.add(new WalkingCamera([0, 0, 30],[0,0,1],[0,1,0]));
+		cameras.add(new OrbitalCamera([0, 0, 30],[0,0,10],[0,1,0]));
+		
+		var cabinCamera = new FirstPersonCamera([0, 0, 0],[1,0,0],[0,1,0]);
+		crane.setCabinCamera(cabinCamera);
+		cameras.add(cabinCamera);
 		//-------------------------------------------------
 		
         tick();

@@ -15,6 +15,7 @@ Crane = function(objectUniform,dist){
 	this.boxSupportLeftShape  = null;
 	this.boxSupportRightShape = null;
 	
+	this.camera = null;
 	this.all = null;
 	
 	this.initBuffers = function(){
@@ -59,6 +60,10 @@ Crane = function(objectUniform,dist){
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentAmount += amount;	
 			this.movingThing.translate(0,0,amount);
+			
+			if(this.camera != null)
+				this.camera.move(amount,[0,0,1]);
+				
 		}
 	}
 	
@@ -76,6 +81,11 @@ Crane = function(objectUniform,dist){
 	
 	this.moveMover = function(amount){
 		this.movingThing.moveMover(amount);
+	}	
+	
+	this.setCabinCamera = function(camera){
+		this.camera = camera;
+		this.movingThing.setCabinCamera(camera,this.getMatrix());
 	}		
 	
 	this.initTexture = function(texturePath){

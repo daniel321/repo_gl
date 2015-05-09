@@ -5,6 +5,8 @@ CargoMover = function(objectUniform){
 	
 	this.texturePath = null;
 	this.CargoTexturePath = null;
+
+	this.camera = null;
 	
 	this.cargo = null;
 	this.box   = null;
@@ -16,6 +18,7 @@ CargoMover = function(objectUniform){
 	
 	this.cargoSupportLeft = null;
 	this.cargoSupportRight = null;
+	this.oldCargo = null;
 
 	this.boxShape = null;
 	this.cargoSupportLeftShape = null;
@@ -25,11 +28,11 @@ CargoMover = function(objectUniform){
 	this.wireLeftBackShape = null;
 	this.wireRightFrontShape = null;
 	this.wireRightBackShape = null;
+	this.wires = null;	
 	
-	this.wires = null;
 	this.all = null;
-	
-	this.oldCargo = null;
+
+	this.errAdmitido = [0.3,0.75,0.5];
 	
 	this.initBuffers = function(){
 		this.box = new Box(0.8,0.8,0.6);
@@ -105,29 +108,32 @@ CargoMover = function(objectUniform){
 		
 		this.oldCargo.initBuffers();
 		
-		this.oldCargo.get(0).translate(4.0,-3.5,2);
-		this.oldCargo.get(1).translate(4.0,-3.5,5);	
-		this.oldCargo.get(2).translate(5.0,-3.5,2);	
-		this.oldCargo.get(3).translate(5.0,-3.5,5);
-		this.oldCargo.get(4).translate(6.0,-3.5,2);	
-		this.oldCargo.get(5).translate(6.0,-3.5,5);		
+		this.oldCargo.get(0).translate(4.0,-4,12);
+		this.oldCargo.get(1).translate(4.0,-4,15);	
+		this.oldCargo.get(2).translate(5.0,-4,12);	
+		this.oldCargo.get(3).translate(5.0,-4,15);
+		this.oldCargo.get(4).translate(6.0,-4,12);	
+		this.oldCargo.get(5).translate(6.0,-4,15);		
 	}
 	
 	this.releaseCargo = function(parentMatrix){
-		var matrix = mat4.create();
-		mat4.identity(matrix);
-		mat4.multiply(matrix, parentMatrix, this.getMatrix());
+		var matrix = this.acumulateParentMatrix(parentMatrix);
 		
 		if(this.cargo != null){
 			this.cargo.acumulateMatrix(matrix);
 			this.oldCargo.add(this.cargo);
-			this.cargo = null;
 			this.all.remove(4);
+			this.cargo = null;
 		}
 	}	
 	
 	this.attachCargo = function(parentMatrix){	
-		var i = this.getCargoNearby(parentMatrix);	
+		var matrix = this.acumulateParentMatrix(parentMatrix);
+		mat4.multiply(matrix, matrix, this.cargoSupportRightShape.getMatrix());
+		var pos = [0,0,0];
+        vec3.transformMat4(pos, pos, matrix);
+	
+		var i = this.getCargoNearby(pos);	
 		
 		if((i != -1) && (this.cargo == null)){	
 			this.cargo = this.oldCargo.get(i);
@@ -140,18 +146,7 @@ CargoMover = function(objectUniform){
 		}
 	}	
 	
-	 // TODO calcular la distancia entre la grúa y todos los elementos de this.oldCargo
-	 // y retornar el índice de la carga que este cerca o -1 si no hay
-	this.getCargoNearby = function(parentMatrix){
-		var matrix = mat4.create();
-		mat4.identity(matrix);
-		mat4.multiply(matrix, parentMatrix, this.getMatrix());
-		mat4.multiply(matrix, matrix, this.cargoSupportRightShape.getMatrix());
-		var pos = [0,0,0];
-        vec3.transformMat4(pos, pos, matrix);
-		
-//		console.log("pos cable: " + pos);
-		
+	this.getCargoNearby = function(pos){			
 		var i=0;
 		var cargo = this.oldCargo.get(i);
 		while (cargo != null){
@@ -159,11 +154,9 @@ CargoMover = function(objectUniform){
 			mat4.identity(mat);
 			mat4.multiply(mat, mat, cargo.getMatrix());
 			var posCargo = [0,0,0];
-            vec3.transformMat4(posCargo, posCargo, mat);
-			
-//			console.log("pos cargo: " + posCargo);
+			vec3.transformMat4(posCargo, posCargo, mat);
 
-			if(this.coincidenPosiciones(pos,posCargo,[0.3,0.5,0.5])){
+			if(this.coincidenPosiciones(pos,posCargo)){
 				return i;
 			}
 			
@@ -171,13 +164,13 @@ CargoMover = function(objectUniform){
 			cargo = this.oldCargo.get(i);
 		}
 		
-		return -1; // ahora solo retorna el primer elemento, este cerca o lejos
+		return -1; 
 	}
-	
+
 	this.coincidenPosiciones = function(pos,posCargo,errAdmitido){
 		var diff = [Math.abs(pos[0]-posCargo[0]),Math.abs(pos[1]-posCargo[1]),Math.abs(pos[2]-posCargo[2])]
 		
-		if( (diff[0] < errAdmitido[0]) && (diff[1] < errAdmitido[1]) && (diff[2] < errAdmitido[2]) )
+		if( (diff[0] < this.errAdmitido[0]) && (diff[1] < this.errAdmitido[1]) && (diff[2] < this.errAdmitido[2]) )
 			return true;
 		return false;
 	}
@@ -192,6 +185,9 @@ CargoMover = function(objectUniform){
 
 			this.cargoSupportRightShape.translate(amount,0,0);
 			this.cargoSupportLeftShape.translate(amount,0,0);
+
+			if(this.camera != null)
+				this.camera.move(amount,[1,0,0]);
 			
 			if(this.cargo != null)
 				this.cargo.translate(amount,0,0);
@@ -212,6 +208,14 @@ CargoMover = function(objectUniform){
 			this.cargoSupportLeftShape.translate(0,amount,0);	
 		}
 	}
+
+	this.setCabinCamera = function(camera,parentMatrix){
+		var matrix = this.acumulateParentMatrix(parentMatrix);
+		mat4.multiply(matrix, matrix, this.boxShape.getMatrix());
+		
+		this.camera = camera;
+		this.camera.applyMatrix(matrix);
+	}	
 	
 	this.initTexture = function(texturePath){
 		this.texturePath = texturePath;
@@ -247,6 +251,14 @@ CargoMover = function(objectUniform){
 	
 	this.acumulate = function(){
 		this.all.acumulate();
+	}
+
+	this.acumulateParentMatrix = function(parentMatrix){
+		var matrix = mat4.create();
+		mat4.identity(matrix);
+		mat4.multiply(matrix, parentMatrix, this.getMatrix());
+		
+		return matrix;
 	}
 	
 	this.acumulateMatrix = function(matrix){
