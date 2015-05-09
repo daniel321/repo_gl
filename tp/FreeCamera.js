@@ -99,7 +99,7 @@ FreeCamera = function(source,target,up){
 	
 	this.cross = function(a,b){
 		var res = vec3.create();
-		vec3.cross(a, b,res);
+		vec3.cross(res, a, b);
 		
 		return [res[0],res[1],res[2]];
 	}
