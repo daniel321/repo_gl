@@ -17,10 +17,10 @@ MovingThing = function(objectUniform){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.box = new Box(1,1,1.4);
+		this.box = new Box(1,1,1.6);
 		this.boxRailFront = new Box(12,0.2,0.2);
 		this.boxRailBack = new Box(12,0.2,0.2);
-		this.boxRailEnd = new Box(0.2,0.2,0.6);
+		this.boxRailEnd = new Box(0.2,0.2,1.0);
 		this.cargoMover = new CargoMover(this.uniform);
 		
 		this.box.initTexture(this.texturePath);
@@ -44,10 +44,10 @@ MovingThing = function(objectUniform){
 		this.all.add(this.cargoMover);			
 		this.all.initBuffers();
 		
-		this.boxShape.translate(-2.3,2.4,0.3);
+		this.boxShape.translate(-2.505,2.4,0.3);
 		
-		this.boxRailFrontShape.translate(4,2.4,0.7);
-		this.boxRailBackShape.translate(4,2.4,-0.1);
+		this.boxRailFrontShape.translate(4,2.4,0.9);
+		this.boxRailBackShape.translate(4,2.4,-0.3);
 		this.boxRailEndShape.translate(9.9 ,2.4,0.3);		
 		
 		this.cargoMover.translate(6,2.4,0.3);
