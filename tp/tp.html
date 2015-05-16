@@ -27,7 +27,6 @@
 <script type="text/javascript" src="./shapes/Background.js"></script>
 <script type="text/javascript" src="./shapes/TexturedSphere.js"></script>
 <script type="text/javascript" src="./shapes/plane.js"></script>
-<script type="text/javascript" src="./shapes/floor.js"></script>
 <script type="text/javascript" src="./shapes/fan.js"></script>
 <script type="text/javascript" src="./shapes/cylinder.js"></script>
 <script type="text/javascript" src="./shapes/box.js"></script>
@@ -208,6 +207,9 @@
 	var crane = null;
 	var ship = null;
 	var island = null;
+	
+	var water = null;
+	var waterShape = null;
 	
 	var cameras = null;
 	var locked = false;
@@ -439,15 +441,26 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		floor = new Floor(20, 20);
-        floor.initTexture("./textures/floor.bmp");	
+		floor = new Box(20, 0.5, 20);
+        floor.initTexture("./textures/floor.jpg");	
 		
 		floorShape = new Shape(floor,sourceUniform);
-		floorShape.translate(-8, -4.8 , 10);
+		floorShape.translate(-8, -5.1 , 10);
 		
 		all.add(floorShape);
 		//--------------------------------------------------
 
+		//--------------------floor---------------------------
+		water = new Plane(200, 200);
+        water.initTexture("./textures/water.jpg");	
+		
+		waterShape = new Shape(water,sourceUniform);
+		waterShape.translate(-100, -5.5 , 100);
+		waterShape.rotate(-Math.PI/2, 0 , 0);	
+		
+		all.add(waterShape);
+		//--------------------------------------------------		
+		
 		
 		//-----------------crane------------------------------
 		crane = new Crane(objectUniform,9);
