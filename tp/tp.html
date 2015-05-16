@@ -281,6 +281,7 @@
 	    all.draw(identity);
     }
 
+	
 	var lightPosition = [-40.0,40.0,40.0];
     function tick() {
         requestAnimFrame(tick);
@@ -455,12 +456,24 @@
 		
 		all.add(crane);
 		//--------------------------------------------------
-	
+
+
+		//----------------------Island----------------------		
 		island = new Island(objectUniform);
 		island.initTexture("./textures/floor.bmp");
 		
-		all.add(island);	
-		//--------------------ship-----------------------
+		var island2 = new Shape(island,objectUniform);
+		var island3 = new Shape(island,objectUniform);
+		
+		var islands = new ShapeGroup();
+		islands.add(island);
+		islands.add(island2);
+		islands.add(island3);
+		
+		all.add(islands);		
+		//--------------------------------------------------
+		
+		//--------------------ship--------------------------
 		ship = new Ship(objectUniform);
 		ship.initTexture("./textures/crate.jpg");
 		
@@ -472,7 +485,13 @@
 		ship.translate(6,-10,10);
 		ship.scale(2,6,6);
 		crane.translate(0, -2 , 10);
-	
+
+		islands.translate(-20,13,-18);
+		islands.scale(2.5,5,2.5);		
+		
+		island2.translate(10,0,0);
+		island3.translate(5,1,0);
+		
 		document.onkeydown = handleKeyDown;
 		document.onkeyup = handleKeyUp;
 				
@@ -487,7 +506,6 @@
 		crane.setCabinCamera(cabinCamera);
 		cameras.add(cabinCamera);
 		//-------------------------------------------------
-
 		
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);

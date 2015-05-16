@@ -142,6 +142,10 @@
 
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
+			
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
             gl.uniform1i(shaderProgram.samplerUniform, 0);
 
             gl.uniformMatrix4fv(shaderProgram.ModelMatrixUniform, false, modelMatrix);
