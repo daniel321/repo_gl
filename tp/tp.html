@@ -5,39 +5,40 @@
 <title>tp</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-<script type="text/javascript" src="gl-matrix-2.2.0.js"></script>
-<script type="text/javascript" src="webgl-utils.js"></script>
+<script type="text/javascript" src="./utils/gl-matrix-2.2.0.js"></script>
+<script type="text/javascript" src="./utils/webgl-utils.js"></script>
+<script type="text/javascript" src="./utils/vectorUtils.js"></script>
 
-<script type="text/javascript" src="ship.js"></script>
-<script type="text/javascript" src="fan.js"></script>
-<script type="text/javascript" src="BezierCuadCurve.js"></script>
-<script type="text/javascript" src="BSplineCuadCurve.js"></script>
-<script type="text/javascript" src="SupBarr.js"></script>
+<script type="text/javascript" src="./shapes/curves/BezierCuadCurve.js"></script>
+<script type="text/javascript" src="./shapes/curves/BSplineCuadCurve.js"></script>
 
-<script type="text/javascript" src="vectorUtils.js"></script>
-<script type="text/javascript" src="CameraManager.js"></script>
-<script type="text/javascript" src="FreeCamera.js"></script>
-<script type="text/javascript" src="WalkingCamera.js"></script>
-<script type="text/javascript" src="FirstPersonCamera.js"></script>
-<script type="text/javascript" src="OrbitalCamera.js"></script>
+<script type="text/javascript" src="./shapes/surfaces/SupBarr.js"></script>
+<script type="text/javascript" src="./shapes/surfaces/island.js"></script>
+<script type="text/javascript" src="./shapes/surfaces/ship.js"></script>
 
-<script type="text/javascript" src="Background.js"></script>
-<script type="text/javascript" src="floor.js"></script>
-<script type="text/javascript" src="cylinder.js"></script>
-<script type="text/javascript" src="box.js"></script>
+<script type="text/javascript" src="./cameras/CameraManager.js"></script>
+<script type="text/javascript" src="./cameras/FreeCamera.js"></script>
+<script type="text/javascript" src="./cameras/WalkingCamera.js"></script>
+<script type="text/javascript" src="./cameras/FirstPersonCamera.js"></script>
+<script type="text/javascript" src="./cameras/OrbitalCamera.js"></script>
 
-<script type="text/javascript" src="Frame.js"></script>
-<script type="text/javascript" src="MovingThing.js"></script>
-<script type="text/javascript" src="Cargo.js"></script>
-<script type="text/javascript" src="Crane.js"></script>
-<script type="text/javascript" src="CargoMover.js"></script>
-<script type="text/javascript" src="Cabin.js"></script>
-<script type="text/javascript" src="plane.js"></script>
-<script type="text/javascript" src="planeWindow.js"></script>
-<script type="text/javascript" src="TexturedSphere.js"></script>
+<script type="text/javascript" src="./shapes/ShapeGroup.js"></script>
+<script type="text/javascript" src="./shapes/Shape.js"></script>
+<script type="text/javascript" src="./shapes/Background.js"></script>
+<script type="text/javascript" src="./shapes/TexturedSphere.js"></script>
+<script type="text/javascript" src="./shapes/plane.js"></script>
+<script type="text/javascript" src="./shapes/floor.js"></script>
+<script type="text/javascript" src="./shapes/fan.js"></script>
+<script type="text/javascript" src="./shapes/cylinder.js"></script>
+<script type="text/javascript" src="./shapes/box.js"></script>
 
-<script type="text/javascript" src="ShapeGroup.js"></script>
-<script type="text/javascript" src="Shape.js"></script>
+<script type="text/javascript" src="./shapes/crane/Frame.js"></script>
+<script type="text/javascript" src="./shapes/crane/MovingThing.js"></script>
+<script type="text/javascript" src="./shapes/crane/Crane.js"></script>
+<script type="text/javascript" src="./shapes/crane/CargoMover.js"></script>
+<script type="text/javascript" src="./shapes/crane/planeWindow.js"></script>
+<script type="text/javascript" src="./shapes/crane/Cabin.js"></script>
+<script type="text/javascript" src="./shapes/crane/Cargo.js"></script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
@@ -206,6 +207,7 @@
 	var floor = null;
 	var crane = null;
 	var ship = null;
+	var island = null;
 	
 	var cameras = null;
 	var locked = false;
@@ -427,7 +429,7 @@
 	
 		//--------------------bck---------------------------
 		bck = new Background(64, 64);
-        bck.initTexture("sky.jpg");	
+        bck.initTexture("./textures/sky.jpg");	
 		
 		bckShape = new Shape(bck,sourceUniform);
 		bckShape.scale(60.0, 30.0, 60.0);
@@ -437,7 +439,7 @@
 
 		//--------------------floor---------------------------
 		floor = new Floor(20, 20);
-        floor.initTexture("floor.bmp");	
+        floor.initTexture("./textures/floor.bmp");	
 		
 		floorShape = new Shape(floor,sourceUniform);
 		floorShape.translate(-8, -4.8 , 10);
@@ -448,15 +450,19 @@
 		
 		//-----------------crane------------------------------
 		crane = new Crane(objectUniform,9);
-	    crane.initTexture("crane.jpg");
-		crane.initTextureCargo("cargo.jpg");
+	    crane.initTexture("./textures/crane.jpg");
+		crane.initTextureCargo("./textures/cargo.jpg");
 		
 		all.add(crane);
 		//--------------------------------------------------
 	
+		island = new Island(objectUniform);
+		island.initTexture("./textures/floor.bmp");
+		
+		all.add(island);	
 		//--------------------ship-----------------------
 		ship = new Ship(objectUniform);
-		ship.initTexture("crate.jpg");
+		ship.initTexture("./textures/crate.jpg");
 		
 		all.add(ship);
 		//--------------------------------------------------

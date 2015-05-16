@@ -22,7 +22,7 @@ Ship = function(objectUniform){
 		
 		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,1], 10);
 		this.curve.initBuffers();
-	    this.curve.initTexture("red.jpg");		
+	    this.curve.initTexture("./textures/red.jpg");		
 
 		this.generateTop();
 		this.top.initBuffers();
