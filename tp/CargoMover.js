@@ -114,13 +114,13 @@ CargoMover = function(objectUniform){
 		
 		this.oldCargo.initBuffers();
         
-        var floorPos = -4.5;
-		this.oldCargo.get(0).translate(4.0,floorPos,12);
-		this.oldCargo.get(1).translate(4.0,floorPos,15);	
-		this.oldCargo.get(2).translate(5.0,floorPos,12);	
-		this.oldCargo.get(3).translate(5.0,floorPos,15);
-		this.oldCargo.get(4).translate(6.0,floorPos,12);	
-		this.oldCargo.get(5).translate(6.0,floorPos,15);
+        var floorPos = -5;
+		this.oldCargo.get(0).translate(5.0,floorPos,12);
+		this.oldCargo.get(1).translate(5.0,floorPos,15);	
+		this.oldCargo.get(2).translate(6.0,floorPos,12);	
+		this.oldCargo.get(3).translate(6.0,floorPos,15);
+		this.oldCargo.get(4).translate(7.0,floorPos,12);	
+		this.oldCargo.get(5).translate(7.0,floorPos,15);
 	}
 	
 	this.releaseCargo = function(parentMatrix){
@@ -184,7 +184,7 @@ CargoMover = function(objectUniform){
 	
 	this.moveMover = function(amount){
 		var noSePasaPositivamente = (this.movmentAmount + amount <= 3);
-		var noSePasaNegativamente = (this.movmentAmount + amount >=  -6 );
+		var noSePasaNegativamente = (this.movmentAmount + amount >=  -3 );
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentAmount += amount;	

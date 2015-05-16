@@ -1,8 +1,12 @@
-	
-	Box = function ( width, height, depth){
-		this.width = width;
-		this.height = height;
-		this.depth = depth;
+  SupBarr = function (shape, path, scales){
+
+        this.shape = shape.getPoints();
+        this.normals = shape.getNormals();
+
+	this.scales = scales;
+
+        this.path = path;
+  	this.normal = [0,1,0];
 		
         this.position_buffer = null;
         this.normal_buffer = null;
@@ -38,92 +42,19 @@
             this.texture.image.src = texture_file;
         }
 		
-	this.setVertices = function(width, height, depth){	
-	
-		this.position_buffer = [ -width/2,  height/2, depth/2,
-								 width/2,  height/2, depth/2,
-								-width/2, -height/2, depth/2,
-								 width/2, -height/2, depth/2,
-								 
-								 -width/2,  height/2, -depth/2,
-								  width/2,  height/2, -depth/2,
-								 -width/2, -height/2, -depth/2,
-								  width/2, -height/2, -depth/2,
-
-								 -width/2,  height/2,  depth/2,
-								  width/2,  height/2,  depth/2,
-								 -width/2,  height/2, -depth/2,
-								  width/2,  height/2, -depth/2,
-								  
-								  -width/2, -height/2, depth/2,
-								   width/2, -height/2, depth/2,
-								 -width/2, -height/2, -depth/2,
-								  width/2, -height/2, -depth/2 ];
-		
-		this.normal_buffer = [ -1.0,  1.0, 1.0,
-								1.0,  1.0, 1.0,
-							   -1.0, -1.0, 1.0,
-								1.0, -1.0, 1.0,
-
-							   -1.0,  1.0, -1.0,
-								1.0,  1.0, -1.0,
-							   -1.0, -1.0, -1.0,
-								1.0, -1.0, -1.0,	
-								
-								-1.0,  1.0, 1.0,
-								 1.0,  1.0, 1.0,
-								-1.0,  1.0, -1.0,
-								 1.0,  1.0, -1.0,
-								 
-								 -1.0, -1.0, 1.0,
-								  1.0, -1.0, 1.0,
-								 -1.0, -1.0, -1.0,
-								  1.0, -1.0, -1.0,
-								];
-		
-		this.texture_coord_buffer = [ 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
-									 
-									 1,0,
-									 0,0,
-									 1,1,
-									 0,1,
-									 
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
-
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1 ];
-									 
-		this.index_buffer = [ 0, 1, 2,
-							 1, 2, 3,
-							 
-							 1, 5, 3,
-							 5, 3, 7,
-							 
-							 5, 4, 7,
-							 4, 7, 6,
-							 
-							 4, 0, 6,
-							 0, 6, 2,
-							 
-							 8,  9, 10,
-							 9, 10, 11,
-							 
-							 12,13,14,
-							 13,14,15 ];						
-		}
-		
-		
+        // Se generan los vertices para la esfera, calculando los datos para una esfera de radio 1
+        // Y también la información de las normales y coordenadas de textura para cada vertice de la esfera
+        // La esfera se renderizara utilizando triangulos, para ello se arma un buffer de índices 
+        // a todos los triángulos de la esfera
         this.initBuffers = function(){
-			this.setVertices(this.width, this.height, this.depth);
 
+            this.position_buffer = [];
+            this.normal_buffer = [];
+            this.texture_coord_buffer = [];
+            this.index_buffer = [];
+
+			this.calculateShape();
+			
             // Creación e Inicialización de los buffers a nivel de OpenGL
             this.webgl_normal_buffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_normal_buffer);
@@ -149,7 +80,54 @@
             this.webgl_index_buffer.itemSize = 1;
             this.webgl_index_buffer.numItems = this.index_buffer.length;
         }
+		
+		this.calculateShape = function(){		
+			var numShapes = this.path.length;
+			var pointsPerShape = this.shape.length; 
+			
+			var cont = 0;
+			for (var y=0; y < numShapes ; y+=3){			
+				var center = [ this.path[y] , this.path[y+1] , this.path[y+2] ];
+				var centerNext = [ this.path[y+3] , this.path[y+4] , this.path[y+5] ];		
+				var scale = [this.scales[y], this.scales[y+1] , this.scales[y+2] ];
 
+				
+				for (var x=0; x < pointsPerShape; x+=3){			
+		
+					var transform = mat4.create();
+					mat4.identity(transform);
+					mat4.translate(transform, transform, center);
+					mat4.scale(transform, transform, scale);
+
+					// ---------- puntos ----------
+					var point = [this.shape[x],this.shape[x+1],this.shape[x+2]];
+					vec3.transformMat4(point,point,transform);
+
+					this.position_buffer.push(point[0]);
+					this.position_buffer.push(point[1]);
+					this.position_buffer.push(point[2]);
+			
+					// ---------- indices ----------
+					var act = ((pointsPerShape/3)*(y/3))+(x/3);
+					if(y > 0){
+						this.index_buffer.push(act);
+						this.index_buffer.push(act - (pointsPerShape/3));
+					}
+					
+					// ---------- normales ----------				
+					var normals = [this.normals[y] , this.normals[y+1] , this.normals[y+2]];				
+
+					this.normal_buffer.push(normals[0]); 
+					this.normal_buffer.push(normals[1]); 
+					this.normal_buffer.push(normals[2]); 
+	
+					// ---------- texturas ----------	
+					this.texture_coord_buffer.push((1.0*x)/pointsPerShape);
+					this.texture_coord_buffer.push((1.0*y)/numShapes);	
+				}			
+			}
+		}		
+		
         this.draw = function(modelMatrix){
 
             // Se configuran los buffers que alimentarán el pipeline
@@ -175,8 +153,8 @@
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
-            //gl.drawElements(gl.LINE_LOOP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
-            gl.drawElements(gl.TRIANGLES, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(gl.TRIANGLE_STRIP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
+	    //gl.drawElements(gl.LINES, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
         
     };

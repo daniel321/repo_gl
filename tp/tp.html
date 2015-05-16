@@ -8,6 +8,12 @@
 <script type="text/javascript" src="gl-matrix-2.2.0.js"></script>
 <script type="text/javascript" src="webgl-utils.js"></script>
 
+<script type="text/javascript" src="ship.js"></script>
+<script type="text/javascript" src="fan.js"></script>
+<script type="text/javascript" src="BezierCuadCurve.js"></script>
+<script type="text/javascript" src="BSplineCuadCurve.js"></script>
+<script type="text/javascript" src="SupBarr.js"></script>
+
 <script type="text/javascript" src="vectorUtils.js"></script>
 <script type="text/javascript" src="CameraManager.js"></script>
 <script type="text/javascript" src="FreeCamera.js"></script>
@@ -197,6 +203,7 @@
     var bck = null;
 	var floor = null;
 	var crane = null;
+	var ship = null;
 	
 	var cameras = null;
 	var locked = false;
@@ -372,8 +379,7 @@
 				pitch = -movementX*rotAmount;
 				
 			if(movementY)	
-				yaw = movementY*rotAmount;
-				
+				yaw = movementY*rotAmount;		
 			//console.log(movementX);
 		}
 		//console.log(locked);
@@ -402,7 +408,6 @@
 	}	
 	
 	function setUpListeners(){				
-		//window.addEventListener( 'resize', onWindowResize, false );
 		document.addEventListener( 'mousemove', myMoveFunction, false );
 
 		window.addEventListener('pointerlockchange', pointerlockchange, false);
@@ -429,34 +434,40 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		floor = new Floor(40, 40);
+		floor = new Floor(20, 20);
         floor.initTexture("floor.bmp");	
 		
 		floorShape = new Shape(floor,sourceUniform);
-		floorShape.translate(0, -5 , 10);
+		floorShape.translate(-8, -4.5 , 10);
 		
 		all.add(floorShape);
 		//--------------------------------------------------
 
 		
 		//-----------------crane------------------------------
-		crane = new Crane(objectUniform,6);
+		crane = new Crane(objectUniform,9);
 	    crane.initTexture("crane.jpg");
 		crane.initTextureCargo("cargo.jpg");
 		
 		all.add(crane);
 		//--------------------------------------------------
 	
+		//--------------------ship-----------------------
+		ship = new Ship(objectUniform);
+		ship.initTexture("crate.jpg");
+		
+		all.add(ship);
+		//--------------------------------------------------
+	
 		all.initBuffers();
 	
+		ship.translate(6,-10,10);
+		ship.scale(2,6,6);
 		crane.translate(0, -2 , 10);
 	
 		document.onkeydown = handleKeyDown;
 		document.onkeyup = handleKeyUp;
-	
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-
+				
 		//--------------------cameras-----------------------
 
 		cameras = new CameraManager();
@@ -468,7 +479,10 @@
 		crane.setCabinCamera(cabinCamera);
 		cameras.add(cabinCamera);
 		//-------------------------------------------------
+
 		
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.enable(gl.DEPTH_TEST);
         tick();
     }
 

@@ -1,13 +1,13 @@
 	
-	Box = function ( width, height, depth){
-		this.width = width;
-		this.height = height;
-		this.depth = depth;
-		
-        this.position_buffer = null;
-        this.normal_buffer = null;
-        this.texture_coord_buffer = null;
-        this.index_buffer = null;
+	Fan = function ( points, center, matrix){
+		this.points = points;
+		this.center = center;
+		this.matrix = matrix;
+	
+        this.position_buffer = [];
+        this.normal_buffer = [];
+        this.texture_coord_buffer = [];
+        this.index_buffer = [];
 
         this.webgl_position_buffer = null;
         this.webgl_normal_buffer = null;
@@ -38,91 +38,46 @@
             this.texture.image.src = texture_file;
         }
 		
-	this.setVertices = function(width, height, depth){	
+	this.setVertices = function(){				
+		var center = this.center;
+		vec3.transformMat4(center,center,matrix);
+		this.position_buffer.push(this.center[0]);
+		this.position_buffer.push(this.center[1]);
+		this.position_buffer.push(this.center[2]);
+		
+		this.texture_coord_buffer.push(0.5);
+		this.texture_coord_buffer.push(0.5);
 	
-		this.position_buffer = [ -width/2,  height/2, depth/2,
-								 width/2,  height/2, depth/2,
-								-width/2, -height/2, depth/2,
-								 width/2, -height/2, depth/2,
-								 
-								 -width/2,  height/2, -depth/2,
-								  width/2,  height/2, -depth/2,
-								 -width/2, -height/2, -depth/2,
-								  width/2, -height/2, -depth/2,
-
-								 -width/2,  height/2,  depth/2,
-								  width/2,  height/2,  depth/2,
-								 -width/2,  height/2, -depth/2,
-								  width/2,  height/2, -depth/2,
-								  
-								  -width/2, -height/2, depth/2,
-								   width/2, -height/2, depth/2,
-								 -width/2, -height/2, -depth/2,
-								  width/2, -height/2, -depth/2 ];
+		this.normal_buffer.push(0);				// TODO mejorar texturas y normales
+		this.normal_buffer.push(1);
+		this.normal_buffer.push(0);
 		
-		this.normal_buffer = [ -1.0,  1.0, 1.0,
-								1.0,  1.0, 1.0,
-							   -1.0, -1.0, 1.0,
-								1.0, -1.0, 1.0,
-
-							   -1.0,  1.0, -1.0,
-								1.0,  1.0, -1.0,
-							   -1.0, -1.0, -1.0,
-								1.0, -1.0, -1.0,	
-								
-								-1.0,  1.0, 1.0,
-								 1.0,  1.0, 1.0,
-								-1.0,  1.0, -1.0,
-								 1.0,  1.0, -1.0,
-								 
-								 -1.0, -1.0, 1.0,
-								  1.0, -1.0, 1.0,
-								 -1.0, -1.0, -1.0,
-								  1.0, -1.0, -1.0,
-								];
+		var cont = 0;
+		this.index_buffer.push(cont++);
 		
-		this.texture_coord_buffer = [ 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
-									 
-									 1,0,
-									 0,0,
-									 1,1,
-									 0,1,
-									 
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
-
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1 ];
-									 
-		this.index_buffer = [ 0, 1, 2,
-							 1, 2, 3,
-							 
-							 1, 5, 3,
-							 5, 3, 7,
-							 
-							 5, 4, 7,
-							 4, 7, 6,
-							 
-							 4, 0, 6,
-							 0, 6, 2,
-							 
-							 8,  9, 10,
-							 9, 10, 11,
-							 
-							 12,13,14,
-							 13,14,15 ];						
+		var numPoints = this.points.length;		
+		for (var y=0; y < numPoints ; y+=3){
+			var point = [this.points[y],this.points[y+1],this.points[y+2]];
+			vec3.transformMat4(point,point,matrix);
+			
+			this.position_buffer.push(point[0]);
+			this.position_buffer.push(point[1]);
+			this.position_buffer.push(point[2]);
+						
+			this.index_buffer.push(cont++);
+			
+			this.texture_coord_buffer.push(point[0]);	
+			this.texture_coord_buffer.push(point[2]);	
+			
+			this.normal_buffer.push(0);
+			this.normal_buffer.push(1);
+			this.normal_buffer.push(0);
 		}
-		
+									 
+	}
 		
         this.initBuffers = function(){
-			this.setVertices(this.width, this.height, this.depth);
+			this.setVertices();
 
             // Creación e Inicialización de los buffers a nivel de OpenGL
             this.webgl_normal_buffer = gl.createBuffer();
@@ -176,7 +131,7 @@
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
             //gl.drawElements(gl.LINE_LOOP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
-            gl.drawElements(gl.TRIANGLES, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
+            gl.drawElements(gl.TRIANGLE_FAN, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
         }
         
     };

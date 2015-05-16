@@ -20,7 +20,7 @@ Shape = function(shape,uniforms){
         this.initBuffers = function(){
 			this.shape.initBuffers(); 
         }	
-
+		
 		this.add = function(subshape){
 			this.subShapes.push(subshape);
 		}
