@@ -23,9 +23,13 @@ OrbitalCamera = function(source,target,up){
 
 		this.source = this.utils.rotateArroundAxis(this.source,axisDir,axisPoint,amount);	
 		this.pitch += amount;
-		
-		this.binorm = [ target[1]*up[2]-target[2]*up[1] , -target[0]*up[2]+target[2]*up[0], target[0]*up[1]-target[1]*up[0] ];		
+		this.updateBinormal();
 	}	
+	
+	this.updateBinormal = function(){
+		var tgt = this.utils.getDir(this.target,this.source);
+		this.binorm = [ tgt[1]*up[2]-tgt[2]*up[1] , -tgt[0]*up[2]+tgt[2]*up[0], tgt[0]*up[1]-tgt[1]*up[0] ];	
+	}
 	
 	this.Yaw = function(amount){	
 		var axisDir = this.utils.normalize(this.binorm);
@@ -33,6 +37,8 @@ OrbitalCamera = function(source,target,up){
 		
 		this.source = this.utils.rotateArroundAxis(this.source,axisDir,axisPoint,amount);	
 		this.yaw += amount;	
+		
+		this.updateBinormal();
 	}		
 	
 	this.Up = function(amount){
