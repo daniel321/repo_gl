@@ -2,7 +2,9 @@ Frame = function(objectUniform,height){
 
 	this.uniform = objectUniform;
 	this.texturePath = null;
-
+	this.WheelTexturePath = null;
+	this.WheelTopTexturePath = null;
+	
 	this.wheelRight = null;
 	this.wheelLeft = null;
 	
@@ -41,8 +43,13 @@ Frame = function(objectUniform,height){
 		this.boxHorizMidd.initTexture(this.texturePath);
 		this.boxHorizDown.initTexture(this.texturePath);
 		
-		this.wheelRight.initTexture(this.texturePath);
-		this.wheelLeft.initTexture(this.texturePath);
+		this.wheelRight.initBuffers();
+		this.wheelRight.initTexture(this.WheelTexturePath);
+		this.wheelRight.initBot_TopTexture(this.WheelTopTexturePath);
+		
+		this.wheelLeft.initBuffers();
+		this.wheelLeft.initTexture(this.WheelTexturePath);
+		this.wheelLeft.initBot_TopTexture(this.WheelTopTexturePath);
 		
 		this.boxVertRightShape = new Shape(this.boxVertRight,this.uniform);
 		this.boxVertLeftShape  = new Shape(this.boxVertLeft,this.uniform);
@@ -81,6 +88,11 @@ Frame = function(objectUniform,height){
 	this.initTexture = function(texturePath){
 		this.texturePath = texturePath;
 	}
+	
+	this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath){
+		this.WheelTexturePath = WheelTexturePath;
+		this.WheelTopTexturePath = WheelTopTexturePath;
+	}		
 	
 	this.translate = function(dX,dY,dZ){
 		this.all.translate(dX,dY,dZ);

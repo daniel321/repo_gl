@@ -61,8 +61,8 @@ CargoMover = function(objectUniform){
 		this.wireRightFront.initTexture(this.CabinTexturePath);
 		this.wireRightBack.initTexture(this.CabinTexturePath);
 		
-		this.cargoSupportLeft.initTexture(this.CabinTexturePath);		
-		this.cargoSupportRight.initTexture(this.CabinTexturePath);		
+		this.cargoSupportLeft.initTexture(this.texturePath);		
+		this.cargoSupportRight.initTexture(this.texturePath);		
 		this.cargo.initTexture(this.CargoTexturePath);		
 		
 		this.cabinShape = new Shape(this.cabin,this.uniform);

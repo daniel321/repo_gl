@@ -66,8 +66,8 @@
 						
 			this.index_buffer.push(cont++);
 			
-			this.texture_coord_buffer.push(point[0]);	
-			this.texture_coord_buffer.push(point[2]);	
+			this.texture_coord_buffer.push(point[0]/Math.sqrt(point[0]*point[0]+point[1]*point[1]));	
+			this.texture_coord_buffer.push(point[2]/Math.sqrt(point[0]*point[0]+point[1]*point[1]));	
 			
 			this.normal_buffer.push(0);
 			this.normal_buffer.push(1);

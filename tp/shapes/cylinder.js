@@ -3,6 +3,9 @@
 		this.height = height;
 		this.delta = delta;
 		
+		this.topShape = null;
+		this.botShape = null;
+		
         this.position_buffer = [];
         this.normal_buffer = [];
         this.texture_coord_buffer = [];
@@ -18,7 +21,8 @@
         this.webgl_index_buffer = null;
         
         this.texture = null;
-
+        this.textureTopBot = null;
+		
         this.initTexture = function(texture_file){
             
             var aux_texture = gl.createTexture();
@@ -41,21 +45,47 @@
             this.texture.image.src = texture_file;
         }
 
-	this.generateVertex = function(radius,height,delta){
-		var centerTop = [ 0, 0, height/2 ]; 
-		var centerBottom = [ 0, 0, -height/2 ];
-
-		this.text.push([0.5,0.5]);
-		this.text.push([0.5,0.5]);
-		
-		this.pos.push(centerTop);
-		this.pos.push(centerBottom);
-		
-		this.norm.push([0,0,1]);
-		this.norm.push([0,0,-1]);
+	this.initBot_Top = function(){
+		var points = [];
 		
 		var i,x,y;
-		for(i=0;(i<=2*Math.PI + delta);i+=delta) {
+		for(i=0;(i< 2*Math.PI + delta);i+=delta) {
+			x  = radius * Math.cos(i);
+			y  = radius * Math.sin(i);
+			
+			points.push(x);
+			points.push(y);
+			points.push(0);
+
+		}
+		
+		var matrix = mat4.create();
+		mat4.identity(matrix);
+		
+		var top = new Fan(points, [0,0,0], matrix);
+		var bot = new Fan(points, [0,0,0], matrix);
+		
+		top.initBuffers();
+		bot.initBuffers();
+
+		top.initTexture(this.textureTopBot);
+		bot.initTexture(this.textureTopBot);
+		
+		this.topShape = new Shape(top,null);
+		this.botShape = new Shape(bot,null);
+
+		this.botShape.translate(0,0,height/2);
+		this.topShape.translate(0,0,-height/2);		
+		this.topShape.rotate(Math.PI,0,0);
+	}	
+		
+	this.initBot_TopTexture = function(texture){
+		this.textureTopBot = texture;
+	}	
+		
+	this.generateVertex = function(radius,height,delta){	
+		var i,x,y,cont=0;
+		for(i=0;(i< 2*Math.PI + delta);i+=delta) {
 			x  = radius * Math.cos(i);
 			y  = radius * Math.sin(i);
 	
@@ -63,50 +93,23 @@
 			var posBottom = [ x, y, -height/2 ]; 
 
 			this.pos.push(posTop);
-			this.pos.push(posBottom);					
-			this.pos.push(posTop);
-			this.pos.push(posBottom);		
+			this.pos.push(posBottom);							
 
 			this.norm.push([x,y,1]);			
-			this.norm.push([x,y,-1]);			
-			this.norm.push([x,y,1]);			
-			this.norm.push([x,y,-1]);			
+			this.norm.push([x,y,-1]);						
 			
-			this.text.push([x,0]);
-			this.text.push([x,1]);			
-			this.text.push([x,0]);			
-			this.text.push([x,1]);			
-		}
-	}
-  
-	this.generateIndex = function(radius,delta){
-  		var i,cont = 2;
+			var a = Math.PI;
+			this.text.push([i/a,0]);
+			this.text.push([i/a,1]);
 
-		for(i=0;(i<=2*Math.PI);i+=delta) {
-			x  = radius * Math.cos(i);
-			y  = radius * Math.sin(i);
-							
-			this.index_buffer.push(0);					//                    0
-			this.index_buffer.push(0); 					//                   /  \	
-			this.index_buffer.push(cont); 				//	    cont cont+2  ---- cont+4 cont+6 
-			this.index_buffer.push(cont+4);				//			        |    |
-													//	            	|    |
-			this.index_buffer.push(cont+2);				//	            	|    |
-			this.index_buffer.push(cont+6);				//		            |    |
-			this.index_buffer.push(cont+1);				//	                |    |
-			this.index_buffer.push(cont+5);				//                  |    |           
-													//	                |    |
-			this.index_buffer.push(cont+3);				//     cont+1 cont+3 ---- cont+5 cont+7
-			this.index_buffer.push(cont+7);				//			         \  / 
-			this.index_buffer.push(1);					//		               1
-					
-			cont +=4;
+			this.index_buffer.push(cont++); 				
+			this.index_buffer.push(cont++);				
 		}
 	}
 	
         this.initBuffers = function(){
 			this.generateVertex(this.radius,this.height,this.delta);
-			this.generateIndex(this.radius,this.delta);
+			this.initBot_Top();
 		  
 			  // Replicamos los colores de cada cara 3 veces.
 			this.texture_coord_buffer = [];
@@ -183,6 +186,9 @@
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
             //gl.drawElements(gl.LINE_LOOP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
             gl.drawElements(gl.TRIANGLE_STRIP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
+			
+			this.topShape.draw(modelMatrix);
+			this.botShape.draw(modelMatrix);			
         }
         
     };

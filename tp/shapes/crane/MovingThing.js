@@ -3,6 +3,7 @@ MovingThing = function(objectUniform){
 	this.texturePath = null;
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
+	this.SupportTexturePath = null;
 	
 	this.box = null;
 	this.boxRailFront = null;
@@ -24,7 +25,7 @@ MovingThing = function(objectUniform){
 		this.boxRailEnd = new Box(0.2,0.2,1.0);
 		this.cargoMover = new CargoMover(this.uniform);
 		
-		this.box.initTexture(this.texturePath);
+		this.box.initTexture(this.SupportTexturePath);
 		this.boxRailFront.initTexture(this.texturePath);
 		this.boxRailBack.initTexture(this.texturePath);
 		this.boxRailEnd.initTexture(this.texturePath);
@@ -89,6 +90,10 @@ MovingThing = function(objectUniform){
 	
 	this.initTextureCabin = function(CabinTexturePath){
 		this.CabinTexturePath = CabinTexturePath;
+	}	
+
+	this.initTextureSupport = function(SupportTexturePath){
+		this.SupportTexturePath = SupportTexturePath;
 	}	
 	
 	this.translate = function(dX,dY,dZ){

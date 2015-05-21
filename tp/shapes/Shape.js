@@ -87,7 +87,8 @@ Shape = function(shape,uniforms){
 			mat4.multiply(compositeMatrix, compositeMatrix, this.rotateMatrix);
 			mat4.multiply(compositeMatrix, compositeMatrix, this.escalateMatrix);
 			
-			this.uniforms();
+			if( this.uniforms != null)
+				this.uniforms();
 			this.shape.draw(compositeMatrix);
         }
         

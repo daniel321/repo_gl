@@ -4,8 +4,12 @@ Crane = function(objectUniform,dist){
 	
 	this.uniform = objectUniform;
 	this.texturePath = null;
+	this.WheelTexturePath = null;
+	this.WheelTopTexturePath = null;
+
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
+	this.SupportTexturePath = null;
 	
 	this.frameFront      = null;
 	this.frameBack       = null;
@@ -34,6 +38,10 @@ Crane = function(objectUniform,dist){
 		this.movingThing.initTexture(this.texturePath);
 		this.movingThing.initTextureCargo(this.CargoTexturePath);
 		this.movingThing.initTextureCabin(this.CabinTexturePath);
+		this.movingThing.initTextureSupport(this.SupportTexturePath);
+		
+		this.frameFront.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
+		this.frameBack.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
 		
 		this.boxSupportLeftShape = new Shape(this.boxSupportLeft,this.uniform);
 		this.boxSupportRightShape = new Shape(this.boxSupportRight,this.uniform);
@@ -101,6 +109,15 @@ Crane = function(objectUniform,dist){
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
 	}
+
+	this.initTextureSupport = function(SupportTexturePath){
+		this.SupportTexturePath = SupportTexturePath;
+	}	
+
+	this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath){
+		this.WheelTexturePath = WheelTexturePath;
+		this.WheelTopTexturePath = WheelTopTexturePath;
+	}	
 	
 	this.translate = function(dX,dY,dZ){
 		this.all.translate(dX,dY,dZ);
