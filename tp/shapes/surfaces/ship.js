@@ -53,6 +53,7 @@ Ship = function(objectUniform){
 		this.topShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
 		this.topShape.translate(0,1,0);
         this.bridgeShape.translate(0.0, 0.2, -0.8);
+        this.bridgeShape.scale(1, 1, 2);		
 	}
 	
 	this.initControlPoints = function(){	 
