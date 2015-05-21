@@ -15,6 +15,7 @@
 <script type="text/javascript" src="./shapes/surfaces/SupBarr.js"></script>
 <script type="text/javascript" src="./shapes/surfaces/island.js"></script>
 <script type="text/javascript" src="./shapes/surfaces/ship.js"></script>
+<script type="text/javascript" src="./shapes/surfaces/commandBridge.js"></script>
 
 <script type="text/javascript" src="./cameras/CameraManager.js"></script>
 <script type="text/javascript" src="./cameras/FreeCamera.js"></script>
@@ -64,6 +65,9 @@
     uniform mat3 uNMatrix;
 
     uniform vec3 uAmbientColor;
+    
+    uniform float utick;
+    uniform bool isWater;
 
     uniform vec3 uLightPosition;
     uniform vec3 uDirectionalColor;
@@ -74,9 +78,16 @@
     varying vec3 vLightWeighting;
 
     void main(void) {
+    
+        vec3 aux_pos = aVertexPosition;
+        
+        //Verifico si es water, para "moverlo"
+        if (isWater) {
+            aux_pos.y = aux_pos.y * cos(-0.25 * 3.14 * aux_pos.x * utick) * cos(-0.75 * 3.14 * aux_pos.z * utick);
+        }
 	
 		// Transformamos al vértice al espacio de la cámara
-		vec4 pos_camera_view = uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+		vec4 pos_camera_view = uViewMatrix * uModelMatrix * vec4(aux_pos, 1.0);
 		
 		// Transformamos al vértice al espacio de la proyección
         gl_Position = uPMatrix * pos_camera_view;
@@ -190,6 +201,8 @@
         shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
         shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
         shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
+        shaderProgram.utick = gl.getUniformLocation(shaderProgram, "utick");
+        shaderProgram.isWater = gl.getUniformLocation(shaderProgram, "isWater");
     }
 
     var mvMatrix = mat4.create();
@@ -210,6 +223,7 @@
 	
 	var water = null;
 	var waterShape = null;
+    var shader_utick = 0.0;
 	
 	var cameras = null;
 	var locked = false;
@@ -270,7 +284,9 @@
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
         vec3.transformMat4(lightPosition, lightPosition, cameras.getMatrix());
         gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
-		
+        
+        gl.uniform1f(shaderProgram.utick, shader_utick);
+        
         /////////////////////////////////////////////////////
 		// Definimos la ubicación de la camara
 		// Pensamos por el momento sunamente la posición de la cámara, la cual siempre mira al sun.
@@ -290,7 +306,8 @@
 
 		bckShape.rotate(0,0.001,0);
 		lightPosition = [20.0*Math.cos(0.001),0.0,20.0*Math.sin(0.001)]
-		
+		shader_utick += 0.001;
+        
 		handleKeys();
 		handleMouse();
         drawScene();
@@ -335,7 +352,7 @@
 			cameras.Right(0.1);
 		}
 	
-		
+        	
 		if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
 			crane.moveCrane(-0.1);
 		}	
@@ -451,7 +468,7 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		water = new Plane(200, 200);
+		water = new Plane(200, 200, true);
         water.initTexture("./textures/water.jpg");	
 		
 		waterShape = new Shape(water,sourceUniform);
@@ -466,6 +483,7 @@
 		crane = new Crane(objectUniform,9);
 	    crane.initTexture("./textures/crane.jpg");
 		crane.initTextureCargo("./textures/cargo.jpg");
+//        crane.initTextureCargo("./textures/container_difusemap.jpg");
 		
 		all.add(crane);
 		//--------------------------------------------------
@@ -512,7 +530,7 @@
 
 		cameras = new CameraManager();
 		cameras.add(new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]));
-		cameras.add(new WalkingCamera([0, 0, 30],[0,0,1],[0,1,0]));
+		cameras.add(new WalkingCamera([0, -2.5, 25],[0,0,1],[0,1,0]));
 		cameras.add(new OrbitalCamera([0, 0, 30],[0,0,10],[0,1,0]));
 		
 		var cabinCamera = new FirstPersonCamera([0, 0, 0],[0.2,-1,0],[0,1,0]);

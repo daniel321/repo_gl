@@ -81,26 +81,28 @@
 								  1.0, -1.0, -1.0,
 								];
 		
-		this.texture_coord_buffer = [ 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
+        if (this.texture_coord_buffer == null) {
+		      this.texture_coord_buffer = [ 0,0,
+                                            1,0,
+									        0,1,
+									        1,1,
 									 
-									 1,0,
-									 0,0,
-									 1,1,
-									 0,1,
+									        1,0,
+									        0,0,
+									        1,1,
+									        0,1,
 									 
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1,
+									        0,0,
+									        1,0,
+									        0,1,
+									        1,1,
 
-									 0,0,
-									 1,0,
-									 0,1,
-									 1,1 ];
-									 
+									        0,0,
+									        1,0,
+									        0,1,
+									        1,1 ];
+        }
+            
 		this.index_buffer = [ 0, 1, 2,
 							 1, 2, 3,
 							 
@@ -119,7 +121,10 @@
 							 12,13,14,
 							 13,14,15 ];						
 		}
-		
+    
+        this.setCoordTexture = function(coord){
+            this.texture_coord_buffer = coord;
+        }
 		
         this.initBuffers = function(){
 			this.setVertices(this.width, this.height, this.depth);
@@ -172,6 +177,9 @@
             mat3.transpose(normalMatrix, normalMatrix);
             gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 
+            var isWater = false;
+            gl.uniform1i(shaderProgram.isWater, isWater);
+            
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);

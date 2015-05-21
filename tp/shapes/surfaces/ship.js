@@ -7,10 +7,12 @@ Ship = function(objectUniform){
 	
 	this.surfShape = null;
 	this.topShape = null;
+    this.bridgeShape = null;
 	
 	this.surf = null;
 	this.curve = null;
 	this.top = null;
+    this.bridge = null;
 	
 	this.uniform = objectUniform;
 	this.texturePath = null;
@@ -36,13 +38,20 @@ Ship = function(objectUniform){
 		
 		this.surfShape = new Shape(this.surf,this.uniform);
 	
+        this.bridge = new CommandBridge(this.uniform);
+        this.bridge.initBuffers();
+        
+        this.bridgeShape = new Shape(this.bridge, this.uniform);
+        
 		this.all = new ShapeGroup();
 		this.all.add(this.surfShape);	
-		this.all.add(this.topShape);			
+		this.all.add(this.topShape);
+        this.all.add(this.bridgeShape);
 		
 		this.surfShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
 		this.topShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
 		this.topShape.translate(0,0.8,0);
+        this.bridgeShape.translate(0.0, 0.0, -0.8);
 	}
 	
 	this.initControlPoints = function(){	 

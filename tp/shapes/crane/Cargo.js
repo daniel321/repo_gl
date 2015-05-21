@@ -1,6 +1,8 @@
 Cargo = function(objectUniform){
 	this.uniform = objectUniform;
 	this.texturePath = null;
+    
+    this.coordTexture = null;
 
 	this.box = null;
 	this.boxShape = null;
@@ -8,7 +10,9 @@ Cargo = function(objectUniform){
 	this.all = null;
 	
 	this.initBuffers = function(){
+//        this.initCoordTexture();
 		this.box = new Box(0.75,0.75,2.5);
+//        this.box.setCoordTexture(this.coordTexture);
 		this.box.initTexture(this.texturePath);	
 		this.boxShape = new Shape(this.box,this.uniform);
 
@@ -16,6 +20,31 @@ Cargo = function(objectUniform){
 		
 		this.all.add(this.boxShape);
 		this.all.initBuffers();		
+    }
+    
+    this.initCoordTexture = function(){
+        var width = 512;
+        var height = 512;
+        
+		this.coordTexture = [0/width,   193/height,
+                             195/width, 193/height,
+							 0/width,   0/height,
+							 195/width, 0/height,
+							
+							 195/width, 193/height,
+                             0/width,   193/height,
+							 195/width, 0/height,
+							 0/width,   0/height,
+                                
+                             512/width, 359/height,
+                             425/width, 337/height,
+							 5/width,   359/height,
+							 1/width,   337/height,
+
+							 512/width, 512/height,
+                             1/width,   202/height,
+							 5/width,   512/height,
+							 425/width, 202/height ];
     }
 	
 	this.initTexture = function(texturePath){

@@ -1,4 +1,4 @@
-Plane = function (width, height){
+Plane = function (width, height, isWater){
     this.width = width;
     this.height = height;
 
@@ -13,6 +13,7 @@ Plane = function (width, height){
     this.webgl_index_buffer = null;
 
     this.texture = null;
+    this.isWater = isWater;
 
     this.initTexture = function(texture_file){
 
@@ -110,6 +111,8 @@ Plane = function (width, height){
         mat3.transpose(normalMatrix, normalMatrix);
         gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 
+        gl.uniform1i(shaderProgram.isWater, this.isWater);
+        
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);

@@ -69,6 +69,8 @@ Frame = function(objectUniform,height){
 
 		this.wheelLeftShape.translate(-1.4,-2.5,0);
 		this.wheelRightShape.translate(1.4,-2.5,0);
+        this.wheelLeftShape.rotate(0.0,-Math.PI/2,0.0);
+		this.wheelRightShape.rotate(0.0,-Math.PI/2,0.0);
 		
 		this.boxHorizUpShape.translate(0,2.4,0);
 		this.boxHorizMiddShape.translate(0,1.25,0);

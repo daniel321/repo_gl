@@ -144,6 +144,9 @@
             mat3.transpose(normalMatrix, normalMatrix);
             gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 
+            var isWater = false;
+            gl.uniform1i(shaderProgram.isWater, isWater);
+            
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
