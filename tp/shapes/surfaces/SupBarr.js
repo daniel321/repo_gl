@@ -84,7 +84,9 @@
 		this.calculateShape = function(){		
 			var numShapes = this.path.length;
 			var pointsPerShape = this.shape.length; 
-			
+		
+			var centerLast = [ this.path[numShapes-3] , this.path[numShapes-2] , this.path[numShapes-1] ];	
+		
 			var cont = 0;
 			for (var y=0; y < numShapes ; y+=3){			
 				var center = [ this.path[y] , this.path[y+1] , this.path[y+2] ];
@@ -122,8 +124,8 @@
 					this.normal_buffer.push(normals[2]); 
 	
 					// ---------- texturas ----------	
-					this.texture_coord_buffer.push((1.0*x)/pointsPerShape);
-					this.texture_coord_buffer.push((1.0*y)/numShapes);	
+					this.texture_coord_buffer.push(point[0]);
+					this.texture_coord_buffer.push(point[1]);	
 				}			
 			}
 		}		

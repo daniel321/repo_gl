@@ -5,11 +5,12 @@ CargoMover = function(objectUniform){
 	
 	this.texturePath = null;
 	this.CargoTexturePath = null;
-
+	this.CabinTexturePath = null;
+	
 	this.camera = null;
 	
 	this.cargo = null;
-	this.box   = null;
+	this.cabin   = null;
 
 	this.wireLeftFront = null;
 	this.wireLeftBack = null;
@@ -20,7 +21,7 @@ CargoMover = function(objectUniform){
 	this.cargoSupportRight = null;
 	this.oldCargo = null;
 
-	this.boxShape = null;
+	this.cabinShape = null;
 	this.cargoSupportLeftShape = null;
 	this.cargoSupportRightShape = null;	
 
@@ -41,7 +42,7 @@ CargoMover = function(objectUniform){
         var depth = 1.0;
         var angle = (20 * Math.PI)/180;
         
-		this.box = new Cabin(this.uniform, width, height, depth, angle);
+		this.cabin = new Cabin(this.uniform, width, height, depth, angle);
 
 		var h = 2.0;
 		this.wireLeftFront  = new Box(0.01,h,0.01);
@@ -53,18 +54,18 @@ CargoMover = function(objectUniform){
 		this.cargoSupportRight = new Box(0.8,0.05,0.05);	
 		this.cargo = new Cargo(this.uniform);	
 		
-		this.box.initTexture(this.texturePath);		
+		this.cabin.initTexture(this.CabinTexturePath);		
 		
-		this.wireLeftFront.initTexture(this.texturePath);
-		this.wireLeftBack.initTexture(this.texturePath);
-		this.wireRightFront.initTexture(this.texturePath);
-		this.wireRightBack.initTexture(this.texturePath);
+		this.wireLeftFront.initTexture(this.CabinTexturePath);
+		this.wireLeftBack.initTexture(this.CabinTexturePath);
+		this.wireRightFront.initTexture(this.CabinTexturePath);
+		this.wireRightBack.initTexture(this.CabinTexturePath);
 		
-		this.cargoSupportLeft.initTexture(this.texturePath);		
-		this.cargoSupportRight.initTexture(this.texturePath);		
+		this.cargoSupportLeft.initTexture(this.CabinTexturePath);		
+		this.cargoSupportRight.initTexture(this.CabinTexturePath);		
 		this.cargo.initTexture(this.CargoTexturePath);		
 		
-		this.boxShape = new Shape(this.box,this.uniform);
+		this.cabinShape = new Shape(this.cabin,this.uniform);
 		this.cargoSupportLeftShape = new Shape(this.cargoSupportLeft,this.uniform);
 		this.cargoSupportRightShape = new Shape(this.cargoSupportRight,this.uniform);
 		
@@ -85,14 +86,14 @@ CargoMover = function(objectUniform){
 		
 		this.all = new ShapeGroup();
 		
-		this.all.add(this.boxShape);
+		this.all.add(this.cabinShape);
 		this.all.add(this.wires);
 		this.all.add(this.cargoSupportLeftShape);	
 		this.all.add(this.cargoSupportRightShape);	
 		this.all.add(this.cargo);			
 
 		this.all.initBuffers();
-		this.boxShape.translate(-0.65,-0.8,-0.495);
+		this.cabinShape.translate(-0.65,-0.8,-0.495);
         
         this.wireLeftFrontShape.translate(-0.3,0,0.25);
 		this.wireLeftBackShape.translate(-0.3,0,-0.25);
@@ -105,7 +106,7 @@ CargoMover = function(objectUniform){
     }
 
 	this.createOldCargo = function(){
-		for (var i=0 ; i<=5 ; i++){
+		for (var i=0 ; i<=11 ; i++){
 			var cargo_i = new Cargo(this.uniform);
 			cargo_i.initTexture(this.CargoTexturePath);
 		
@@ -114,13 +115,20 @@ CargoMover = function(objectUniform){
 		
 		this.oldCargo.initBuffers();
         
-        var floorPos = -4.7;
-		this.oldCargo.get(0).translate(5.0,floorPos,12);
-		this.oldCargo.get(1).translate(5.0,floorPos,15);	
-		this.oldCargo.get(2).translate(6.0,floorPos,12);	
-		this.oldCargo.get(3).translate(6.0,floorPos,15);
-		this.oldCargo.get(4).translate(7.0,floorPos,12);	
-		this.oldCargo.get(5).translate(7.0,floorPos,15);
+        var floorPos = -3.6;
+		this.oldCargo.get(0).translate(6.0,floorPos,12);
+		this.oldCargo.get(1).translate(6.0,floorPos,15);	
+		this.oldCargo.get(2).translate(7.0,floorPos,12);	
+		this.oldCargo.get(3).translate(7.0,floorPos,15);
+		this.oldCargo.get(4).translate(8.0,floorPos,12);	
+		this.oldCargo.get(5).translate(8.0,floorPos,15);
+
+		this.oldCargo.get(6).translate(9.0,floorPos,12);
+		this.oldCargo.get(7).translate(9.0,floorPos,15);	
+		this.oldCargo.get(8).translate(10.0,floorPos,12);	
+		this.oldCargo.get(9).translate(10.0,floorPos,15);
+		this.oldCargo.get(10).translate(11.0,floorPos,12);	
+		this.oldCargo.get(11).translate(11.0,floorPos,15);		
 	}
 	
 	this.releaseCargo = function(parentMatrix){
@@ -183,12 +191,12 @@ CargoMover = function(objectUniform){
 	}
 	
 	this.moveMover = function(amount){
-		var noSePasaPositivamente = (this.movmentAmount + amount <= 3);
-		var noSePasaNegativamente = (this.movmentAmount + amount >=  -6.2 );
+		var noSePasaPositivamente = (this.movmentAmount + amount <= 5);
+		var noSePasaNegativamente = (this.movmentAmount + amount >=  -1 );
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentAmount += amount;	
-			this.boxShape.translate(amount,0,0);		
+			this.cabinShape.translate(amount,0,0);		
 
 			this.cargoSupportRightShape.translate(amount,0,0);
 			this.cargoSupportLeftShape.translate(amount,0,0);
@@ -203,7 +211,8 @@ CargoMover = function(objectUniform){
 	
 	this.moveCargo = function(amount){
 		var noSePasaPositivamente = (this.movmentCargoAmount + amount <= 2.0);
-		var noSePasaNegativamente = (this.movmentCargoAmount + amount >=  -2.0 );
+		var noSePasaNegativamente = (this.movmentCargoAmount + amount >=  -2.9 );
+		
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentCargoAmount += amount;	
@@ -218,7 +227,7 @@ CargoMover = function(objectUniform){
 
 	this.setCabinCamera = function(camera,parentMatrix){
 		var matrix = this.acumulateParentMatrix(parentMatrix);
-		mat4.multiply(matrix, matrix, this.boxShape.getMatrix());
+		mat4.multiply(matrix, matrix, this.cabinShape.getMatrix());
         mat4.translate(matrix, matrix, [0.5, 0.5, 0.5]);
 		
 		this.camera = camera;
@@ -232,6 +241,10 @@ CargoMover = function(objectUniform){
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
 	}	
+
+	this.initTextureCabin = function(CabinTexturePath){
+		this.CabinTexturePath = CabinTexturePath;
+	}
 	
 	this.translate = function(dX,dY,dZ){
 		this.all.translate(dX,dY,dZ);

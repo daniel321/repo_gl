@@ -49,10 +49,12 @@ Plane = function (width, height, isWater){
                               -1.0, -1.0, 1.0,
                               1.0, -1.0, 1.0 ];
 
-        this.texture_coord_buffer = [0,0,
-                                     1,0,
-                                     0,1,
-                                     1,1];
+							  
+		var x = 1;					  
+        this.texture_coord_buffer = [        0,        0,
+                                       width/x,        0,
+									         0, height/x,
+									   width/x, height/x,];
 
         for (var i = 0; i < 4; i++) {
             this.index_buffer.push(i);

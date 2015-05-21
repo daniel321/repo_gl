@@ -40,6 +40,7 @@
 		
 	this.setVertices = function(width, height, depth){	
 	
+		// front,back,up,down,left,right
 		this.position_buffer = [ -width/2,  height/2, depth/2,
 								 width/2,  height/2, depth/2,
 								-width/2, -height/2, depth/2,
@@ -58,7 +59,17 @@
 								  -width/2, -height/2, depth/2,
 								   width/2, -height/2, depth/2,
 								 -width/2, -height/2, -depth/2,
-								  width/2, -height/2, -depth/2 ];
+								  width/2, -height/2, -depth/2,
+
+								 -width/2,  height/2,  depth/2,
+								 -width/2,  height/2, -depth/2,
+								 -width/2, -height/2,  depth/2,
+								 -width/2, -height/2, -depth/2, 
+								  
+								 width/2,  height/2,  depth/2,
+								 width/2,  height/2, -depth/2,
+								 width/2, -height/2,  depth/2,
+								 width/2, -height/2, -depth/2 ];
 		
 		this.normal_buffer = [ -1.0,  1.0, 1.0,
 								1.0,  1.0, 1.0,
@@ -79,41 +90,65 @@
 								  1.0, -1.0, 1.0,
 								 -1.0, -1.0, -1.0,
 								  1.0, -1.0, -1.0,
+								  
+								-1.0,  1.0, 1.0,
+								 1.0,  1.0, 1.0,
+								-1.0,  1.0, -1.0,
+								 1.0,  1.0, -1.0,
+								 
+								 -1.0, -1.0, 1.0,
+								  1.0, -1.0, 1.0,
+								 -1.0, -1.0, -1.0,
+								  1.0, -1.0, -1.0								  
 								];
 		
         if (this.texture_coord_buffer == null) {
-		      this.texture_coord_buffer = [ 0,0,
-                                            1,0,
-									        0,1,
-									        1,1,
-									 
-									        1,0,
-									        0,0,
-									        1,1,
-									        0,1,
-									 
-									        0,0,
-									        1,0,
-									        0,1,
-									        1,1,
+			var x = 1;
+		    
+			// front,back,up,down,left,right
+			
+			this.texture_coord_buffer =   [         0,        0,
+                                              width/x,        0,
+									                0, height/x,
+									          width/x, height/x,
 
-									        0,0,
-									        1,0,
-									        0,1,
-									        1,1 ];
+													0,        0,
+                                              width/x,        0,
+									                0, height/x,
+									          width/x, height/x,											  
+
+													0,        0,
+                                              width/x,        0,
+									                0,  depth/x,
+									          width/x,  depth/x,
+											  
+													0,        0,
+                                              width/x,        0,
+									                0,  depth/x,
+									          width/x,  depth/x,
+
+													0,        0,
+                                              depth/x,        0,
+									                0,  height/x,
+									          depth/x,  height/x,											  
+											  
+													0,        0,
+                                              depth/x,        0,
+									                0,  height/x,
+									          depth/x,  height/x  ];
         }
             
 		this.index_buffer = [ 0, 1, 2,
 							 1, 2, 3,
 							 
-							 1, 5, 3,
-							 5, 3, 7,
+							 20, 21, 22,
+							 21, 22, 23,
 							 
 							 5, 4, 7,
 							 4, 7, 6,
 							 
-							 4, 0, 6,
-							 0, 6, 2,
+							 17, 16, 19,
+							 16, 19, 18,
 							 
 							 8,  9, 10,
 							 9, 10, 11,

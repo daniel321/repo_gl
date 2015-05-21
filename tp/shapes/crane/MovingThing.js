@@ -2,6 +2,7 @@ MovingThing = function(objectUniform){
 	this.uniform = objectUniform;
 	this.texturePath = null;
 	this.CargoTexturePath = null;
+	this.CabinTexturePath = null;
 	
 	this.box = null;
 	this.boxRailFront = null;
@@ -18,8 +19,8 @@ MovingThing = function(objectUniform){
 	
 	this.initBuffers = function(){
 		this.box = new Box(1,1,1.6);
-		this.boxRailFront = new Box(12,0.2,0.2);
-		this.boxRailBack = new Box(12,0.2,0.2);
+		this.boxRailFront = new Box(14,0.2,0.2);
+		this.boxRailBack = new Box(14,0.2,0.2);
 		this.boxRailEnd = new Box(0.2,0.2,1.0);
 		this.cargoMover = new CargoMover(this.uniform);
 		
@@ -28,7 +29,9 @@ MovingThing = function(objectUniform){
 		this.boxRailBack.initTexture(this.texturePath);
 		this.boxRailEnd.initTexture(this.texturePath);
 		this.cargoMover.initTexture(this.texturePath);	
+
 		this.cargoMover.initTextureCargo(this.CargoTexturePath);	
+		this.cargoMover.initTextureCabin(this.CabinTexturePath);
 		
 		this.boxShape = new Shape(this.box,this.uniform);
 		this.boxRailFrontShape = new Shape(this.boxRailFront,this.uniform);
@@ -46,9 +49,9 @@ MovingThing = function(objectUniform){
 		
 		this.boxShape.translate(-2.505,2.4,0.3);
 		
-		this.boxRailFrontShape.translate(4,2.4,0.9);
-		this.boxRailBackShape.translate(4,2.4,-0.3);
-		this.boxRailEndShape.translate(9.9 ,2.4,0.3);		
+		this.boxRailFrontShape.translate(5,2.4,0.9);
+		this.boxRailBackShape.translate(5,2.4,-0.3);
+		this.boxRailEndShape.translate(11.9 ,2.4,0.3);		
 		
 		this.cargoMover.translate(6,2.4,0.3);
     }
@@ -82,6 +85,10 @@ MovingThing = function(objectUniform){
 	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
+	}	
+	
+	this.initTextureCabin = function(CabinTexturePath){
+		this.CabinTexturePath = CabinTexturePath;
 	}	
 	
 	this.translate = function(dX,dY,dZ){

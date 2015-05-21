@@ -26,8 +26,8 @@ Frame = function(objectUniform,height){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.boxVertRight = new Box(0.2,5,0.2);
-		this.boxVertLeft = new Box(0.2,5,0.2);
+		this.boxVertRight = new Box(0.2,7,0.2);
+		this.boxVertLeft = new Box(0.2,7,0.2);
 		this.boxHorizUp = new Box(2.6,0.2,0.2);
 		this.boxHorizMidd = new Box(3.4,0.15,0.15);
 		this.boxHorizDown = new Box(2.6,0.2,0.2);
@@ -67,15 +67,15 @@ Frame = function(objectUniform,height){
 		this.boxVertRightShape.translate(1.4,0,0);
 		this.boxVertLeftShape.translate(-1.4,0,0);
 
-		this.wheelLeftShape.translate(-1.4,-2.5,0);
-		this.wheelRightShape.translate(1.4,-2.5,0);
+		this.wheelLeftShape.translate(-1.4,-3.5,0);
+		this.wheelRightShape.translate(1.4,-3.5,0);
         this.wheelLeftShape.rotate(0.0,-Math.PI/2,0.0);
 		this.wheelRightShape.rotate(0.0,-Math.PI/2,0.0);
 		
-		this.boxHorizUpShape.translate(0,2.4,0);
-		this.boxHorizMiddShape.translate(0,1.25,0);
+		this.boxHorizUpShape.translate(0,3.4,0);
+		this.boxHorizMiddShape.translate(0,2.25,0);
 		this.boxHorizMiddShape.rotate(0,0,-Math.PI/4.5);
-		this.boxHorizDownShape.translate(0,0,0);		
+		this.boxHorizDownShape.translate(0,1,0);		
     }
 	
 	this.initTexture = function(texturePath){

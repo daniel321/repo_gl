@@ -5,6 +5,7 @@ Crane = function(objectUniform,dist){
 	this.uniform = objectUniform;
 	this.texturePath = null;
 	this.CargoTexturePath = null;
+	this.CabinTexturePath = null;
 	
 	this.frameFront      = null;
 	this.frameBack       = null;
@@ -32,6 +33,7 @@ Crane = function(objectUniform,dist){
 		
 		this.movingThing.initTexture(this.texturePath);
 		this.movingThing.initTextureCargo(this.CargoTexturePath);
+		this.movingThing.initTextureCabin(this.CabinTexturePath);
 		
 		this.boxSupportLeftShape = new Shape(this.boxSupportLeft,this.uniform);
 		this.boxSupportRightShape = new Shape(this.boxSupportRight,this.uniform);
@@ -47,14 +49,14 @@ Crane = function(objectUniform,dist){
 		this.all.initBuffers();
 		
 		this.frameBack.translate(0,0,this.dist);
-		this.boxSupportLeftShape.translate(-1.2,2.5,this.dist/2);
-		this.boxSupportRightShape.translate(1.2,2.5,this.dist/2);
-
-		this.movingThing.translate(0,0,this.dist/2);
+		this.boxSupportLeftShape.translate(-1.2,3.5,this.dist/2);
+		this.boxSupportRightShape.translate(1.2,3.5,this.dist/2);
+	
+		this.movingThing.translate(0,1,this.dist/2);
 	}
 	
 	this.moveCrane = function(amount){
-		var noSePasaPositivamente = (this.movmentAmount + amount <= (this.dist * 0.5)-1);
+		var noSePasaPositivamente = (this.movmentAmount + amount <= (this.dist * 0.5)-2);
 		var noSePasaNegativamente = (this.movmentAmount + amount >=  -(this.dist * 0.5)+0.3 );
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
@@ -92,6 +94,10 @@ Crane = function(objectUniform,dist){
 		this.texturePath = texturePath;
 	}
 
+	this.initTextureCabin = function(CabinTexturePath){
+		this.CabinTexturePath = CabinTexturePath;
+	}	
+	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
 	}

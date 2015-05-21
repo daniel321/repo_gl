@@ -10,9 +10,9 @@ Cargo = function(objectUniform){
 	this.all = null;
 	
 	this.initBuffers = function(){
-//        this.initCoordTexture();
+        this.initCoordTexture();
 		this.box = new Box(0.75,0.75,2.5);
-//        this.box.setCoordTexture(this.coordTexture);
+        this.box.setCoordTexture(this.coordTexture);
 		this.box.initTexture(this.texturePath);	
 		this.boxShape = new Shape(this.box,this.uniform);
 
@@ -23,28 +23,41 @@ Cargo = function(objectUniform){
     }
     
     this.initCoordTexture = function(){
-        var width = 512;
-        var height = 512;
+        var width = 0.75;
+        var height = 0.75;
+		var depth = 2.5;
         
-		this.coordTexture = [0/width,   193/height,
-                             195/width, 193/height,
-							 0/width,   0/height,
-							 195/width, 0/height,
-							
-							 195/width, 193/height,
-                             0/width,   193/height,
-							 195/width, 0/height,
-							 0/width,   0/height,
-                                
-                             512/width, 359/height,
-                             425/width, 337/height,
-							 5/width,   359/height,
-							 1/width,   337/height,
+			// front,back,up,down,left,right
+			
+			this.coordTexture =           [   0, 0.62,
+                                              0.38, 0.62,
+									          0,    1,
+									          0.38,    1,
 
-							 512/width, 512/height,
-                             1/width,   202/height,
-							 5/width,   512/height,
-							 425/width, 202/height ];
+												 0, 0.62,
+                                              0.38, 0.62,
+									          0,    1,
+									          0.38,    1,											  
+
+											  0,      0.34,
+                                              0,      0.61,
+									          0.83,  0.34,
+									          0.83,  0.61,
+											  
+											  0,      0.34,
+                                              0,      0.61,
+									          0.83,  0.34,
+									          0.83,  0.61,
+
+											  1,  0.3,
+                                            0.1,  0.3,
+									          1,    0,
+									        0.1,    0,
+											
+										    0.1,  0.3,
+                                              1,  0.3,
+									        0.1,    0,
+									          1,    0 ];
     }
 	
 	this.initTexture = function(texturePath){

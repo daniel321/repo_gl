@@ -41,6 +41,7 @@ CommandBridge = function (objectUniform){
         
 		var repW = 3.0;
         var repH = 2.0;
+        var repD = 1.0;
 		
 		this.coordTextureInf = [ 0.0,  repH,
 								 repW, repH,
@@ -52,18 +53,29 @@ CommandBridge = function (objectUniform){
                                  0.0,  0.0,
                                  repW, 0.0,
                                 
-                                 0.0,  0.0,
-								 repW, 0.0,
+                                 0.0,  repH,
+								 repW, repH,
 								 0.0,  0.0,
 								 repW, 0.0,
 
+								 0.0,  repH,
+								 repW, repH,
 								 0.0,  0.0,
 								 repW, 0.0,
+
+								 0.0,  repH,
+								 repD, repH,
 								 0.0,  0.0,
-								 repW, 0.0 ];
+								 repD, 0.0,
+
+								 0.0,  repH,
+								 repD, repH,
+								 0.0,  0.0,
+								 repD, 0.0 ];
         
         repW = 3.0;
         repH = 1.0;
+		repD = 1.0;
         
         this.coordTextureSup = [ 0.0,  repH,
 								 repW, repH,
@@ -75,15 +87,26 @@ CommandBridge = function (objectUniform){
                                  0.0,  0.0,
                                  repW, 0.0,
                                 
-                                 0.0,  0.0,
-								 repW, 0.0,
+                                 0.0,  repH,
+								 repW, repH,
 								 0.0,  0.0,
 								 repW, 0.0,
 
+								 0.0,  repH,
+								 repW, repH,
 								 0.0,  0.0,
 								 repW, 0.0,
+
+								 0.0,  repH,
+								 repD, repH,
 								 0.0,  0.0,
-								 repW, 0.0 ];
+								 repD, 0.0,
+
+								 0.0,  repH,
+								 repD, repH,
+								 0.0,  0.0,
+								 repD, 0.0];
+								 
 	}	
 
 	this.translate = function(dX,dY,dZ){

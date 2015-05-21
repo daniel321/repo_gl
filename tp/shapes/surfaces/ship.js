@@ -16,6 +16,7 @@ Ship = function(objectUniform){
 	
 	this.uniform = objectUniform;
 	this.texturePath = null;
+	this.textureTopPath = null;
 
 	this.all = null;
 	
@@ -28,7 +29,7 @@ Ship = function(objectUniform){
 
 		this.generateTop();
 		this.top.initBuffers();
-	    this.top.initTexture(this.texturePath);
+	    this.top.initTexture(this.textureTopPath);
 	
 		this.topShape = new Shape(this.top,this.uniform);
 	
@@ -50,15 +51,15 @@ Ship = function(objectUniform){
 		
 		this.surfShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
 		this.topShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
-		this.topShape.translate(0,0.8,0);
-        this.bridgeShape.translate(0.0, 0.0, -0.8);
+		this.topShape.translate(0,1,0);
+        this.bridgeShape.translate(0.0, 0.2, -0.8);
 	}
 	
 	this.initControlPoints = function(){	 
 		var delta = 1;
 		var m = 6;
 
-		for(var i=0; i<m ; i+= delta){
+		for(var i=0; i<=m ; i+= delta){
 			this.controlPointsPath.push(0,0,i*0.2);
 			var h = i/m;
 			var escalaY = 1+Math.sqrt(h);			
@@ -93,6 +94,10 @@ Ship = function(objectUniform){
 	
 	this.initTexture = function(texturePath){
 		this.texturePath = texturePath;
+	}
+
+	this.initTextureTop = function(texturePath){
+		this.textureTopPath = texturePath;
 	}
 
 	this.translate = function(dX,dY,dZ){

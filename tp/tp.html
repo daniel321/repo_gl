@@ -83,7 +83,7 @@
         
         //Verifico si es water, para "moverlo"
         if (isWater) {
-            aux_pos.y = aux_pos.y * cos(-0.25 * 3.14 * aux_pos.x * utick) * cos(-0.75 * 3.14 * aux_pos.z * utick);
+            aux_pos.z = aux_pos.z + 0.25*cos( 3.14/50.0 * aux_pos.x + 10.0*utick) * cos(3.14/50.0 * aux_pos.z + 20.0*utick);
         }
 	
 		// Transformamos al vértice al espacio de la cámara
@@ -458,11 +458,11 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		floor = new Box(20, 0.5, 30);
+		floor = new Box(25, 1, 25);
         floor.initTexture("./textures/floor.jpg");	
 		
 		floorShape = new Shape(floor,sourceUniform);
-		floorShape.translate(-8, -5.1 , 10);
+		floorShape.translate(-10.5, -5.3 , 8);
 		
 		all.add(floorShape);
 		//--------------------------------------------------
@@ -482,8 +482,8 @@
 		//-----------------crane------------------------------
 		crane = new Crane(objectUniform,9);
 	    crane.initTexture("./textures/crane.jpg");
-		crane.initTextureCargo("./textures/cargo.jpg");
-//        crane.initTextureCargo("./textures/container_difusemap.jpg");
+		crane.initTextureCargo("./textures/container_difusemap.jpg");
+		crane.initTextureCabin("./textures/cabin.jpg");
 		
 		all.add(crane);
 		//--------------------------------------------------
@@ -506,16 +506,17 @@
 		
 		//--------------------ship--------------------------
 		ship = new Ship(objectUniform);
-		ship.initTexture("./textures/crate.jpg");
+		ship.initTexture("./textures/ship.png");
+		ship.initTextureTop("./textures/crate.jpg");
 		
 		all.add(ship);
 		//--------------------------------------------------
 	
 		all.initBuffers();
 	
-		ship.translate(6,-10,10);
-		ship.scale(2,6,6);
-		crane.translate(0, -2 , 10);
+		ship.translate(8,-10,10);
+		ship.scale(3,6,6);
+		crane.translate(0, -1 , 10);
 
 		islands.translate(-20,13,-18);
 		islands.scale(2.5,5,2.5);		
