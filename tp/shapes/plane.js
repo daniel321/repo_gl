@@ -1,6 +1,9 @@
-Plane = function (width, height, isWater){
+Plane = function (width, height, cols, rows, isWater){
     this.width = width;
     this.height = height;
+
+    this.cols = cols;
+    this.rows = rows;
 
     this.position_buffer = null;
     this.normal_buffer = null;
@@ -39,25 +42,44 @@ Plane = function (width, height, isWater){
 
     this.setVertices = function(width, height){
 
-        this.position_buffer = [0.0, 0.0, 0.0,
-                                0.0, height, 0.0,
-                                width, 0.0, 0.0,
-                                width, height, 0.0];
+        var incW = width/(this.cols-1);
+        var incH = height/(this.rows-1);
 
-        this.normal_buffer = [ -1.0,  1.0, 1.0,
-                              1.0,  1.0, 1.0,
-                              -1.0, -1.0, 1.0,
-                              1.0, -1.0, 1.0 ];
+        this.position_buffer = [];
+        this.normal_buffer = [];
+        this.texture_coord_buffer = [];
 
-							  
-		var x = 1;					  
-        this.texture_coord_buffer = [        0,        0,
-                                       width/x,        0,
-									         0, height/x,
-									   width/x, height/x,];
+        for (var i = 0.0; i < this.rows; i++) { 
+            for (var j = 0.0; j < this.cols; j++) {
 
-        for (var i = 0; i < 4; i++) {
-            this.index_buffer.push(i);
+                // Para cada vertice definimos su posicion
+                // como coordenada (x, y, z=0)
+                this.position_buffer.push(j * incW);
+                this.position_buffer.push(i * incH);
+                this.position_buffer.push(0);
+                
+                this.normal_buffer.push(0.0);
+                this.normal_buffer.push(0.0);
+                this.normal_buffer.push(1.0);
+                
+                this.texture_coord_buffer.push(j/(this.cols-1));
+                this.texture_coord_buffer.push(i/(this.rows-1));
+            }
+        }
+
+        this.index_buffer = [];
+        for (var i = 0; i < (this.rows-1); i++) { 
+
+            for (var j = 0; j < this.cols; j++) {
+                this.index_buffer.push((this.cols * i) + j);
+                this.index_buffer.push((this.cols * (i+1)) + j);
+            }
+
+            //Verifico si debo degenerar el index para hacer la siguiente "banda"
+            if ((i+2) < this.rows) {
+                this.index_buffer.push(this.index_buffer[this.index_buffer.length-1]);
+                this.index_buffer.push(this.cols * (i+1));
+            }
         }
     }
 
@@ -114,7 +136,7 @@ Plane = function (width, height, isWater){
         gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
 
         gl.uniform1i(shaderProgram.isWater, this.isWater);
-        
+
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);

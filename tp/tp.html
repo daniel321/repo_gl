@@ -306,7 +306,7 @@
 
 		bckShape.rotate(0,0.001,0);
 		lightPosition = [20.0*Math.cos(0.001),0.0,20.0*Math.sin(0.001)]
-		shader_utick += 0.001;
+		shader_utick += 0.01;
         
 		handleKeys();
 		handleMouse();
@@ -468,7 +468,7 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		water = new Plane(200, 200, true);
+		water = new Plane(200, 200, 200, 200, true);
         water.initTexture("./textures/water.jpg");	
 		
 		waterShape = new Shape(water,sourceUniform);
