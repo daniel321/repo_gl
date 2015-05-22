@@ -83,7 +83,7 @@
         
         //Verifico si es water, para "moverlo"
         if (isWater) {
-            aux_pos.z = aux_pos.z + 0.25*cos( 3.14/50.0 * aux_pos.x + 10.0*utick) * cos(3.14/50.0 * aux_pos.z + 20.0*utick);
+			aux_pos.z = aux_pos.z + cos( 3.14/150.0 * aux_pos.x + 2.0*utick) * cos(3.14/150.0 * aux_pos.y + 1.0*utick);
         }
 	
 		// Transformamos al vértice al espacio de la cámara
@@ -458,21 +458,21 @@
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		floor = new Box(20, 1, 40);
+		floor = new Box(20, 2.5, 40);
         floor.initTexture("./textures/floor.jpg");	
 		
 		floorShape = new Shape(floor,sourceUniform);
-		floorShape.translate(-8, -5.3 , 8);
+		floorShape.translate(-8, -6.05 , 8);
 		
 		all.add(floorShape);
 		//--------------------------------------------------
 
 		//--------------------floor---------------------------
-		water = new Plane(200, 200, 200, 200, true);
+		water = new Plane(150, 150, 15, 15, true);
         water.initTexture("./textures/water.jpg");	
 		
 		waterShape = new Shape(water,sourceUniform);
-		waterShape.translate(-100, -5.5 , 100);
+		waterShape.translate(-75, -6 , 75);
 		waterShape.rotate(-Math.PI/2, 0 , 0);	
 		
 		all.add(waterShape);

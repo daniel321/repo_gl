@@ -62,8 +62,8 @@ Plane = function (width, height, cols, rows, isWater){
                 this.normal_buffer.push(0.0);
                 this.normal_buffer.push(1.0);
                 
-                this.texture_coord_buffer.push(j/(this.cols-1));
-                this.texture_coord_buffer.push(i/(this.rows-1));
+                this.texture_coord_buffer.push(j);
+                this.texture_coord_buffer.push(i);
             }
         }
 
