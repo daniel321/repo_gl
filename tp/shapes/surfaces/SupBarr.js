@@ -2,11 +2,9 @@
 
         this.shape = shape.getPoints();
         this.normals = shape.getNormals();
-
-	this.scales = scales;
-
+		this.scales = scales;
+		
         this.path = path;
-  	this.normal = [0,1,0];
 		
         this.position_buffer = null;
         this.normal_buffer = null;

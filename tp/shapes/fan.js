@@ -48,7 +48,7 @@
 		this.texture_coord_buffer.push(0.5);
 		this.texture_coord_buffer.push(0.5);
 	
-		this.normal_buffer.push(0);				// TODO mejorar texturas y normales
+		this.normal_buffer.push(0);				
 		this.normal_buffer.push(1);
 		this.normal_buffer.push(0);
 		

@@ -75,7 +75,7 @@
 		var t = 0;
 		
 		for (t=0; t< this.position_buffer.length-3 ;t+=3){							// dx                      dy              dz
-																					// vectPerp[0] vectPerp[1]  vectPerp[2]
+																					// vectPerp[0]             vectPerp[1]     vectPerp[2]
 			var dx = (this.position_buffer[t+3] - this.position_buffer[t])/h ;		// x' = dy*vectPerp[2]-dz*vectPerp[1]
 			var dy = (this.position_buffer[t+4] - this.position_buffer[t+1])/h;		// y' = dz*vectPerp[0]-dx*vectPerp[2]
 			var dz = (this.position_buffer[t+5] - this.position_buffer[t+2])/h;		// z' = dx*vectPerp[1]-dy*vectPerp[0]

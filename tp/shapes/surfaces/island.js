@@ -5,9 +5,7 @@ Island = function(objectUniform){
 	this.controlPointsPath = [];
 	this.controlPointsCurve = [];
 	
-	this.surfShape = null;
-	this.surfShape2 = null;		
-	
+	this.surfShape = null;	
 	this.surf = null;
 	
 	this.uniform = objectUniform;
@@ -29,16 +27,11 @@ Island = function(objectUniform){
 	    this.surf.initTexture(this.texturePath);
 			
 		this.surfShape = new Shape(this.surf,this.uniform);
-		this.surfShape2 = new Shape(this.surf,this.uniform);
 		
 		this.all = new ShapeGroup();
-		this.all.add(this.surfShape);	
-		this.all.add(this.surfShape2);			
+		this.all.add(this.surfShape);				
 		
-		this.surfShape.rotate(Math.PI*3/2,-Math.PI,0);
-		this.surfShape2.rotate(Math.PI*3/2,-Math.PI,-Math.PI);		
-
-		this.surfShape2.translate(1.5,0,0);
+		this.surfShape.rotate(Math.PI*3/2,-Math.PI,0);	
 	}
 	
 	

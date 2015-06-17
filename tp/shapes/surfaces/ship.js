@@ -69,13 +69,13 @@ Ship = function(objectUniform){
 			this.scales.push(escalaX,escalaY,1);
 		}	
 		
-		this.controlPointsCurve = [  -1,   1,0,
-									  1,   1,0,
-									1.5,   0,0,
-									  1,  -1,0,
-									 -1,  -1,0,
-									 -1,   1,0,
-									 -1,   1,0 ];		
+		this.controlPointsCurve = [  -1,  1,  0,
+									  1,  1,  0,
+									1.5,  0,  0,
+									  1, -1,  0,
+									 -1, -1,  0,
+									 -1,  1,  0,
+									 -1,  1,  0 ];		
 	}
 	
 	this.generateTop = function(){
