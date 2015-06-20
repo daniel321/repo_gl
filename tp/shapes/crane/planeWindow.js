@@ -39,7 +39,7 @@ PlaneWindow = function (positions){
         for (var i = 0; i < this.position_buffer.length; i = i+3) {
             this.normal_buffer.push(0.0);
             this.normal_buffer.push(0.0);
-            this.normal_buffer.push(1.0);
+            this.normal_buffer.push(-1.0);
         }
 
         for (var i = 0; i < this.position_buffer.length; i = i+3) {

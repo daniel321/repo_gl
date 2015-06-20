@@ -50,7 +50,7 @@
 
     void main(void) {
         vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        gl_FragColor = vec4(textureColor.rgb * vLightWeighting, textureColor.a);
+        gl_FragColor = vec4(textureColor.rgb * normalize(vLightWeighting), textureColor.a);
     }
 </script>
 
@@ -87,14 +87,16 @@
         }
 	
 		// Transformamos al vértice al espacio de la cámara
-		vec4 pos_camera_view = uViewMatrix * uModelMatrix * vec4(aux_pos, 1.0);
+		vec4 pos_camera_view = uModelMatrix * vec4(aux_pos, 1.0);
 		
 		// Transformamos al vértice al espacio de la proyección
-        gl_Position = uPMatrix * pos_camera_view;
+        gl_Position = uPMatrix * uViewMatrix * pos_camera_view;
 		
 		// Coordenada de textura sin modifiaciones
         vTextureCoord = aTextureCoord;
-							
+
+	vec4 lightPos = uModelMatrix * vec4(uLightPosition, 1.0);
+
 		////////////////////////////////////////////
 		// Calculos de la iluminación
         if (!uUseLighting) 
@@ -103,13 +105,15 @@
         }
 		else 
 		{			
-			vec3 dist = uLightPosition - vec3(gl_Position); // TODO: apostaria a que el error esta ac�, pero no se xq cambiar el gl_position....
+			vec3 dist = vec3(lightPos) - vec3(pos_camera_view); 
 			vec3 lightDirection = normalize(dist);
 			
-            vec3 transformedNormal = normalize(uNMatrix * aVertexNormal);
-            float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
-            vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-        }
+            		vec3 transformedNormal = normalize(uNMatrix * aVertexNormal);
+            		float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
+             		//vLightWeighting = uDirectionalColor * directionalLightWeighting;
+            		vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+  
+	}
 		////////////////////////////////////////////
     }
 </script>
@@ -259,13 +263,9 @@
         return degrees * Math.PI / 180;
     }
 
-	function sourceUniform(){
-		gl.uniform3f(shaderProgram.ambientColorUniform, 0.3, 0.3, 0.3 );
-	}
-
 	function objectUniform(){
-        gl.uniform3f(shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2 );
-        gl.uniform3f(shaderProgram.directionalColorUniform, 0.7, 0.7, 0.4);
+        gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
+        gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
 	}	
 	
     function drawScene() {
@@ -278,7 +278,7 @@
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		// Se configura la matriz de proyección
-        mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.01, 1000.0);
+        mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.01, 100000.0);
 
         /////////////////////////////////////////////////////
         // Configuración de la luz
@@ -286,7 +286,6 @@
         var lighting;
         lighting = true;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
-        vec3.transformMat4(lightPosition, lightPosition, cameras.getMatrix());
         
 		if (lighting) {
 			gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
@@ -309,7 +308,7 @@
 	
 	var lightPosition = [100.0,30.0,100.0];
 	var ang_0 = -Math.PI/1.5;
-	var rotSpeedDivider = 10;
+	var rotSpeedDivider = 2;
 	
     function tick() {
         requestAnimFrame(tick);
@@ -318,7 +317,7 @@
 		
 		lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
 		sunshape.restore();
-		sunshape.translate(lightPosition[0],lightPosition[1],lightPosition[2]);
+		sunshape.translate(lightPosition[0]-1,lightPosition[1],lightPosition[2]+1);
 		
 		shader_utick += 0.01;
         
@@ -467,9 +466,10 @@
 		bck = new Background(128, 128);
         bck.initTexture("./textures/sky.jpg");	
 		
-		bckShape = new Shape(bck,sourceUniform);
+		bckShape = new Shape(bck,objectUniform);
 		bckShape.scale(120.0, 60.0, 120.0);
-
+		bckShape.initBuffers();
+		
 		all.add(bckShape);
 		//--------------------------------------------------
 
@@ -477,8 +477,9 @@
 		floor = new Box(20, 2.5, 40);
         floor.initTexture("./textures/floor.jpg");	
 		
-		floorShape = new Shape(floor,sourceUniform);
+		floorShape = new Shape(floor,objectUniform);
 		floorShape.translate(-8, -6.05 , 8);
+		floorShape.initBuffers();
 		
 		all.add(floorShape);
 		//--------------------------------------------------
@@ -487,9 +488,10 @@
 		water = new Plane(350, 350, 25, 25, true);
         water.initTexture("./textures/water.jpg");	
 		
-		waterShape = new Shape(water,sourceUniform);
+		waterShape = new Shape(water,objectUniform);
 		waterShape.translate(-150, -6 , 150);
 		waterShape.rotate(-Math.PI/2, 0 , 0);	
+		waterShape.initBuffers();
 		
 		all.add(waterShape);
 		//--------------------------------------------------		
@@ -498,10 +500,11 @@
 		//-----------------crane------------------------------
 		crane = new Crane(objectUniform,9);
 	    crane.initTexture("./textures/crane.jpg");
-		crane.initTextureCargo("./textures/container_difusemap.jpg");
+		crane.initTextureCargo("./textures/container_difusemap");
 		crane.initTextureCabin("./textures/cabin.jpg");
-		crane.initTextureSupport("./textures/support.jpg");
+		crane.initTextureSupport("./textures/crane.jpg");
 		crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
+		crane.initBuffers();
 		
 		all.add(crane);
 		//--------------------------------------------------
@@ -509,7 +512,8 @@
 
 		//----------------------Island----------------------		
 		island = new Island(objectUniform);
-		island.initTexture("./textures/floor.bmp");
+		island.initTexture("./textures/isla.jpg");
+		island.initBuffers();
 		
 		all.add(island);		
 		//--------------------------------------------------
@@ -518,6 +522,7 @@
 		ship = new Ship(objectUniform);
 		ship.initTexture("./textures/bridgeBase.jpg");
 		ship.initTextureTop("./textures/bridgeBase.jpg");
+		ship.initBuffers();
 		
 		all.add(ship);
 		//--------------------------------------------------
@@ -527,20 +532,19 @@
 		var sun = new TexturedSphere(64, 64);
         sun.initTexture("./textures/sun.bmp");	
 
-		sunshape = new Shape(sun,sourceUniform);
+		sunshape = new Shape(sun,objectUniform);
+		sunshape.initBuffers();
 		sunshape.scale(1.0, 1.0, 1.0);
-
+		
 		all.add(sunshape);		
 		//--------------------------------------------------
-		
-		all.initBuffers();
 	
 		ship.translate(8,-10,10);
 		ship.scale(3,6,6);
 		crane.translate(0, -1 , 10);
 
-		island.translate(-5,28,-53);
-		island.scale(10,7.5,7);	
+		island.translate(-5,20,-53);
+		island.scale(10,6,7);	
 		island.rotate(0.0,Math.PI/8,0.0);	
 		
 		document.onkeydown = handleKeyDown;

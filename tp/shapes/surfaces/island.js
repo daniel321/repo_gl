@@ -8,6 +8,11 @@ Island = function(objectUniform){
 	this.surfShape = null;	
 	this.surf = null;
 	
+	this.fanScale = null;
+	this.fanCenter = null;
+	this.fan = null;
+	this.fanshape = null;
+
 	this.uniform = objectUniform;
 	this.texturePath = null;
 
@@ -25,13 +30,22 @@ Island = function(objectUniform){
 		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
-			
-		this.surfShape = new Shape(this.surf,this.uniform);
 		
+		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale);
+		this.fan.initBuffers();
+		this.fan.initTexture("./textures/pastoIsla.jpg");	
+
+		this.surfShape = new Shape(this.surf,this.uniform);
+		this.fanshape = new Shape(this.fan,this.uniform);
+
 		this.all = new ShapeGroup();
 		this.all.add(this.surfShape);				
+		this.all.add(this.fanshape);
 		
 		this.surfShape.rotate(Math.PI*3/2,-Math.PI,0);	
+		this.fanshape.rotate(Math.PI*3/2,-Math.PI,0);
+		this.fanshape.translate(0,0.415,0);
+	
 	}
 	
 	
@@ -39,32 +53,22 @@ Island = function(objectUniform){
 		var delta = 1;
 		var m = 10;
 
-		for(var i=0; i<m/3 ; i+= delta){
-			this.controlPointsPath.push(0,0,i*0.02);
+		this.fanScale = mat4.create();
+		mat4.scale(this.fanScale,this.fanScale,[1,1,1]);
+		
+		var acum  = (m/3+(-6*delta)+1)*0.25;
+		this.fanCenter = [0,0,acum];
+	
+	
+		for(var i=0; i<=2*m ; i+= delta){
+			this.controlPointsPath.push(0,0,acum + i*0.25);
 			var h = i/m;
-			var escalaY = Math.sqrt(h)*1.0;			
-			var escalaX = Math.sqrt(h)*0.75;
+
+			var escalaY = 1 + Math.sqrt(h)*1.25;	
+			var escalaX = 1 + Math.sqrt(h)*1.0;
 			
 			this.scales.push(escalaX,escalaY,1);
-		}
-		
-		for(var i=0; i<m ; i+= delta){
-			this.controlPointsPath.push(0,0,(m/3)*0.2+(i+1)*0.2);
-			var h = i/m;
-			var escalaY = 1+Math.sqrt(h);			
-			var escalaX = 1+Math.sqrt(h)*0.5;
-
-			this.scales.push(escalaX,escalaY,1);
 		}	
-
-		for(var i=0; i<m ; i+= delta){
-			this.controlPointsPath.push(0,0,(m/3+m)*0.2+(i+1)*0.2);
-			var h = i/m;
-			var escalaY = 2+Math.sqrt(h)*1.14;			
-			var escalaX = 2+Math.sqrt(h)*0.35;
-
-			this.scales.push(escalaX,escalaY,1);
-		}
 		
 		this.controlPointsCurve = [ -4.0,  0.0, 0.0,
 									-3.0,  1.0, 0.0,
@@ -84,7 +88,9 @@ Island = function(objectUniform){
 									-1.0, -2.8, 0.0,
 									-2.0, -2.0, 0.0,
 									-3.0, -1.5, 0.0,
-									-4.0,  0.0, 0.0 ];		
+									-4.0,  0.0, 0.0,
+									-3.0,  1.0, 0.0	
+														];		
 	}
 	
 	this.initTexture = function(texturePath){

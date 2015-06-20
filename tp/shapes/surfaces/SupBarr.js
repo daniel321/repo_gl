@@ -82,7 +82,8 @@
 		this.calculateShape = function(){		
 			var numShapes = this.path.length;
 			var pointsPerShape = this.shape.length; 
-		
+	
+			var centerFirst = [ this.path[0] , this.path[1] , this.path[2] ];
 			var centerLast = [ this.path[numShapes-3] , this.path[numShapes-2] , this.path[numShapes-1] ];	
 		
 			var cont = 0;
@@ -115,15 +116,23 @@
 					}
 					
 					// ---------- normales ----------				
-					var normals = [this.normals[y] , this.normals[y+1] , this.normals[y+2]];				
+					var normals = [this.normals[x] , this.normals[x+1] , this.normals[x+2]];				
 
 					this.normal_buffer.push(normals[0]); 
 					this.normal_buffer.push(normals[1]); 
 					this.normal_buffer.push(normals[2]); 
 	
 					// ---------- texturas ----------	
-					this.texture_coord_buffer.push(point[0]);
-					this.texture_coord_buffer.push(point[1]);	
+					
+					var utils = new VectorUtils();
+					var textCoord = utils.normalize(utils.difference(centerFirst,point));
+					
+					
+					this.texture_coord_buffer.push(-textCoord[0]);
+					this.texture_coord_buffer.push(-textCoord[2]);
+					
+//					this.texture_coord_buffer.push(20*x/pointsPerShape);
+//					this.texture_coord_buffer.push(1-(y/1.5)/numShapes);
 				}			
 			}
 		}		

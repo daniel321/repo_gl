@@ -36,6 +36,10 @@ CargoMover = function(objectUniform){
 
 	this.errAdmitido = [0.3,0.75,0.5];
 	
+	this.generateNumber = function(num){
+		return String(Math.floor(Math.random()*num));
+	}
+	
 	this.initBuffers = function(){
         var width = 0.99;
         var height = 0.8;
@@ -63,7 +67,7 @@ CargoMover = function(objectUniform){
 		
 		this.cargoSupportLeft.initTexture(this.texturePath);		
 		this.cargoSupportRight.initTexture(this.texturePath);		
-		this.cargo.initTexture(this.CargoTexturePath);		
+		this.cargo.initTexture(this.CargoTexturePath + this.generateNumber(5) + ".jpg");		
 		
 		this.cabinShape = new Shape(this.cabin,this.uniform);
 		this.cargoSupportLeftShape = new Shape(this.cargoSupportLeft,this.uniform);
@@ -108,7 +112,7 @@ CargoMover = function(objectUniform){
 	this.createOldCargo = function(){
 		for (var i=0 ; i<=11 ; i++){
 			var cargo_i = new Cargo(this.uniform);
-			cargo_i.initTexture(this.CargoTexturePath);
+			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
 			this.oldCargo.add(cargo_i);
 		}

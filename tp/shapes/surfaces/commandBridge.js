@@ -84,11 +84,11 @@ CommandBridge = function (objectUniform){
 
 		this.windowShape3.rotate(0,Math.PI/2,0);			
 		this.windowShape3.translate(-3,2.5,0);
-		this.windowShape3.scale(0.25,0.5,1);		
+		this.windowShape3.scale(-0.25,0.5,1);		
 
-		this.windowShape4.rotate(0,-Math.PI/2,0);			
+		this.windowShape4.rotate(0,Math.PI/2,0);			
 		this.windowShape4.translate(3,2.5,0);
-		this.windowShape4.scale(0.25,0.5,1);
+		this.windowShape4.scale(-0.25,0.5,1);
 
 		this.windowShape5.rotate(0,Math.PI,0);
 		this.windowShape5.translate(1.5,2.5,-0.375);

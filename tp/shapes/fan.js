@@ -49,8 +49,8 @@
 		this.texture_coord_buffer.push(0.5);
 	
 		this.normal_buffer.push(0);				
-		this.normal_buffer.push(1);
 		this.normal_buffer.push(0);
+		this.normal_buffer.push(1);
 		
 		var cont = 0;
 		this.index_buffer.push(cont++);
@@ -66,12 +66,14 @@
 						
 			this.index_buffer.push(cont++);
 			
-			this.texture_coord_buffer.push(point[0]/Math.sqrt(point[0]*point[0]+point[1]*point[1]));	
-			this.texture_coord_buffer.push(point[2]/Math.sqrt(point[0]*point[0]+point[1]*point[1]));	
+			var utils = new VectorUtils();
+			var textCoord = utils.normalize(utils.difference(point,center));
+			this.texture_coord_buffer.push( textCoord[0] );	
+			this.texture_coord_buffer.push( textCoord[1] );	
 			
 			this.normal_buffer.push(0);
-			this.normal_buffer.push(1);
 			this.normal_buffer.push(0);
+			this.normal_buffer.push(1);
 		}
 									 
 	}
