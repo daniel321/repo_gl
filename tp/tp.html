@@ -31,6 +31,8 @@
 <script type="text/javascript" src="./shapes/fan.js"></script>
 <script type="text/javascript" src="./shapes/cylinder.js"></script>
 <script type="text/javascript" src="./shapes/box.js"></script>
+<script type="text/javascript" src="./shapes/Pharo.js"></script>
+<script type="text/javascript" src="./shapes/Pharos.js"></script>
 
 <script type="text/javascript" src="./shapes/crane/Frame.js"></script>
 <script type="text/javascript" src="./shapes/crane/MovingThing.js"></script>
@@ -76,7 +78,10 @@
 
     varying vec2 vTextureCoord;
     varying vec3 vLightWeighting;
-
+    
+    uniform vec3 uLightColor;
+    uniform vec3 lights[3];
+    
     void main(void) {
     
         vec3 aux_pos = aVertexPosition;
@@ -86,10 +91,10 @@
 			aux_pos.z = aux_pos.z + cos( 3.14/150.0 * aux_pos.x + 2.0*utick) * cos(3.14/150.0 * aux_pos.y + 1.0*utick);
         }
 	
-		// Transformamos al vértice al espacio de la cámara
+		// Transformamos al vertice al espacio de la camara
 		vec4 pos_camera_view = uModelMatrix * vec4(aux_pos, 1.0);
 		
-		// Transformamos al vértice al espacio de la proyección
+		// Transformamos al vertice al espacio de la proyeccion
         gl_Position = uPMatrix * uViewMatrix * pos_camera_view;
 		
 		// Coordenada de textura sin modifiaciones
@@ -98,7 +103,7 @@
 	vec4 lightPos = uModelMatrix * vec4(uLightPosition, 1.0);
 
 		////////////////////////////////////////////
-		// Calculos de la iluminación
+		// Calculos de la iluminacion
         if (!uUseLighting) 
 		{
             vLightWeighting = vec3(1.0, 1.0, 1.0);
@@ -208,11 +213,15 @@
         shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
         shaderProgram.utick = gl.getUniformLocation(shaderProgram, "utick");
         shaderProgram.isWater = gl.getUniformLocation(shaderProgram, "isWater");
+           
+        shaderProgram.lightColor = gl.getUniformLocation(shaderProgram, "uLightColor");
+        
+        shaderProgram.lightPosition0 = gl.getUniformLocation(shaderProgram, "lights[0]");
+        shaderProgram.lightPosition1 = gl.getUniformLocation(shaderProgram, "lights[1]");
+        shaderProgram.lightPosition2 = gl.getUniformLocation(shaderProgram, "lights[2]");
     }
 
-    var mvMatrix = mat4.create();
-    var mvMatrixStack = [];
-    var pMatrix = mat4.create();
+    var pMatrix = null;
 
 	var currentlyPressedKeys = {};
 	
@@ -233,36 +242,19 @@
 	var cameras = null;
 	var locked = false;
 
-	var sun = null;
-	var sunshape = null;
-	
+    var pharos = null;
+	var pharosShape = null;
+	var lightCabin = null;
+	var lightCabinShape = null;
+    
 	var pitch = 0;
 	var yaw = 0;
 	var rotAmount = 0.005;
+    
+    var lightPosition0 = [11.9, 2.2, 14.8];
+    var lightPosition1 = [0.0, -0.3, 24.5];
+    var lightPosition2 = [0.0, -0.3, 4.0];
 	
-    function mvPushMatrix() {
-        var copy = mat4.create();
-        mat4.set(mvMatrix, copy);
-        mvMatrixStack.push(copy);
-    }
-
-    function mvPopMatrix() {
-        if (mvMatrixStack.length == 0) {
-            throw "Invalid popMatrix!";
-        }
-        mvMatrix = mvMatrixStack.pop();
-    }
-
-    function setViewProjectionMatrix() {
-        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix());        
-    }
-
-
-    function degToRad(degrees) {
-        return degrees * Math.PI / 180;
-    }
-
 	function objectUniform(){
         gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
         gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
@@ -270,54 +262,54 @@
 	
     function drawScene() {
 	
-		// Se configura el vierport dentro de área šcanvasš. en este caso se utiliza toda 
-		// el área disponible
+		// Se configura el viewport dentro de area canvas. En este caso se utiliza toda 
+		// el area disponible
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 		
 		// Se habilita el color de borrado para la pantalla (Color Buffer) y otros buffers
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		// Se configura la matriz de proyección
+		// Se configura la matriz de proyeccion
+        pMatrix = mat4.create();
         mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.01, 100000.0);
+        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+        
+        // Se configura la matriz de vista
+        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix()); 
 
         /////////////////////////////////////////////////////
-        // Configuración de la luz
-        // Se inicializan las variables asociadas con la Iluminación
-        var lighting;
-        lighting = true;
+        // Configuracion de la luz
+        // Se inicializan las variables asociadas con la Iluminacion
+        var lighting = false;
         gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
         
+        var lightColor = [1.0, 1.0, 1.0];
+        
 		if (lighting) {
-			gl.uniform3fv(shaderProgram.lightingDirectionUniform, lightPosition);       	
+            gl.uniform3fv(shaderProgram.lightColor, lightColor);
+            
+            gl.uniform3fv(shaderProgram.lightPosition0, lightPosition0);
+            gl.uniform3fv(shaderProgram.lightPosition1, lightPosition1);
+            gl.uniform3fv(shaderProgram.lightPosition2, lightPosition2);
         }
 		
         gl.uniform1f(shaderProgram.utick, shader_utick);
-        
-        /////////////////////////////////////////////////////
-		// Definimos la ubicación de la camara
-		// Pensamos por el momento sunamente la posición de la cámara, la cual siempre mira al sun.
-		var matriz_camara = cameras.getMatrix();
-		
-        setViewProjectionMatrix();
 		
 		var identity = mat4.create();
 		mat4.identity(identity);
 	    all.draw(identity);
     }
 
-	
-	var lightPosition = [100.0,30.0,100.0];
-	var ang_0 = -Math.PI/1.5;
+//	var lightPosition = [100.0,30.0,100.0];
+//	var ang_0 = -Math.PI/1.5;
 	var rotSpeedDivider = 2;
 	
     function tick() {
         requestAnimFrame(tick);
 
-		bckShape.rotate(0,0.01/rotSpeedDivider,0);
+//		bckShape.rotate(0,0.01/rotSpeedDivider,0);
 		
-		lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
-		sunshape.restore();
-		sunshape.translate(lightPosition[0]-1,lightPosition[1],lightPosition[2]+1);
+//		lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
 		
 		shader_utick += 0.01;
         
@@ -464,10 +456,11 @@
 	
 		//--------------------bck---------------------------
 		bck = new Background(128, 128);
-        bck.initTexture("./textures/sky.jpg");	
+        bck.initTexture("./textures/reflexionMap.jpg");	
 		
 		bckShape = new Shape(bck,objectUniform);
 		bckShape.scale(120.0, 60.0, 120.0);
+        bckShape.rotate(0.0, Math.PI, 0.0);
 		bckShape.initBuffers();
 		
 		all.add(bckShape);
@@ -483,6 +476,33 @@
 		
 		all.add(floorShape);
 		//--------------------------------------------------
+        
+        //--------------------pharos---------------------------
+		var heightPharo = 4.2;
+        var radioPoste = 0.15;
+        var radioPharo = 0.5;
+        
+        pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, 32);
+        pharos.initTexture("./textures/gray.jpg", "./textures/dirtyWhite.jpg");
+		
+		pharosShape = new Shape(pharos, objectUniform);
+		pharosShape.initBuffers();
+    
+		all.add(pharosShape);
+		//--------------------------------------------------
+        
+        //--------------------lightCabin--------------------------	
+		var lightCabin = new TexturedSphere(32, 32);
+        lightCabin.initTexture("./textures/dirtyWhite.jpg");	
+
+		lightCabinShape = new Shape(lightCabin,objectUniform);
+		lightCabinShape.initBuffers();
+        
+        lightCabinShape.scale(0.1, 0.1, 0.1);
+		lightCabinShape.translate(lightPosition0[0],lightPosition0[1],lightPosition0[2]);
+		
+		all.add(lightCabinShape);		
+		//--------------------------------------------------
 
 		//--------------------floor---------------------------
 		water = new Plane(350, 350, 25, 25, true);
@@ -496,7 +516,6 @@
 		all.add(waterShape);
 		//--------------------------------------------------		
 		
-		
 		//-----------------crane------------------------------
 		crane = new Crane(objectUniform,9);
 	    crane.initTexture("./textures/crane.jpg");
@@ -508,7 +527,6 @@
 		
 		all.add(crane);
 		//--------------------------------------------------
-
 
 		//----------------------Island----------------------		
 		island = new Island(objectUniform);
@@ -525,18 +543,6 @@
 		ship.initBuffers();
 		
 		all.add(ship);
-		//--------------------------------------------------
-	
-		
-		//--------------------sun--------------------------	
-		var sun = new TexturedSphere(64, 64);
-        sun.initTexture("./textures/sun.bmp");	
-
-		sunshape = new Shape(sun,objectUniform);
-		sunshape.initBuffers();
-		sunshape.scale(1.0, 1.0, 1.0);
-		
-		all.add(sunshape);		
 		//--------------------------------------------------
 	
 		ship.translate(8,-10,10);
@@ -575,8 +581,8 @@
 
 <body onload="webGLStart();">
     <center>
-            <h1>Sistemas Gr�ficos - 66.71</h1>
-            <h2>tp</h2>
+            <h1>Sistemas Gr&aacute;ficos - 66.71</h1>
+            <h2>Trabajo Pr&aacute;ctico</h2>
 				<canvas id="tp" style="border: none;" width="1280" height="720">
 					Your browser does not support the HTML5 canvas element.
 				</canvas>
