@@ -1,0 +1,88 @@
+Program = function (gl, idVertex, idFragment) {
+    this.gl = gl;
+    this.idVertex = idVertex;
+    this.idFragment = idFragment;
+    
+    this.program = null;
+    
+    this.getProgram = function() {
+        return this.program;
+    }
+    
+    this.initShaders = function() {        
+        var vertexShader = this.getShader(this.idVertex, this.gl.VERTEX_SHADER);
+        var fragmentShader = this.getShader(this.idFragment, this.gl.FRAGMENT_SHADER);
+        
+        this.program = this.gl.createProgram();
+        this.gl.attachShader(this.program, vertexShader);
+        this.gl.attachShader(this.program, fragmentShader);
+        this.gl.linkProgram(this.program);
+
+        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+    }
+    
+    this.getShader = function(id, type) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+
+        var str = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                str += k.textContent;
+            }
+            k = k.nextSibling;
+        }
+        
+        var shader = this.gl.createShader(type);
+
+        this.gl.shaderSource(shader, str);
+        this.gl.compileShader(shader);
+
+        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+            alert(this.gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+    
+    this.definitionVariablesDifuso = function() {
+        this.gl.useProgram(this.program);
+
+        this.program.vertexPositionAttribute = this.gl.getAttribLocation(this.program, "aVertexPosition");
+        this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
+        
+        this.program.vertexNormalAttribute = this.gl.getAttribLocation(this.program, "aVertexNormal");
+        this.gl.enableVertexAttribArray(this.program.vertexNormalAttribute);
+
+        this.program.textureCoordAttribute = this.gl.getAttribLocation(this.program, "aTextureCoord");
+        this.gl.enableVertexAttribArray(this.program.textureCoordAttribute);
+
+        this.program.ModelMatrixUniform = this.gl.getUniformLocation(this.program, "uModelMatrix");
+        this.program.ViewMatrixUniform = this.gl.getUniformLocation(this.program, "uViewMatrix");
+        this.program.pMatrixUniform = this.gl.getUniformLocation(this.program, "uPMatrix");
+        this.program.nMatrixUniform = this.gl.getUniformLocation(this.program, "uNMatrix");
+        
+        this.program.samplerUniform = this.gl.getUniformLocation(this.program, "uSampler");
+        
+        this.program.useLightingUniform = this.gl.getUniformLocation(this.program, "uUseLighting");
+        this.program.ambientColorUniform = gl.getUniformLocation(this.program, "uAmbientColor");
+        this.program.lightingDirectionUniform = gl.getUniformLocation(this.program, "uLightPosition");
+        this.program.directionalColorUniform = gl.getUniformLocation(this.program, "uDirectionalColor");
+        
+        this.program.utick = this.gl.getUniformLocation(this.program, "utick");
+        this.program.isWater = this.gl.getUniformLocation(this.program, "isWater");
+           
+        this.program.lightColor = this.gl.getUniformLocation(this.program, "uLightColor");
+        
+        this.program.lightPosition0 = this.gl.getUniformLocation(this.program, "lights[0]");
+        this.program.lightPosition1 = this.gl.getUniformLocation(this.program, "lights[1]");
+        this.program.lightPosition2 = this.gl.getUniformLocation(this.program, "lights[2]");
+        
+    }
+}

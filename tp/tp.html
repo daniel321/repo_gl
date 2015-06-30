@@ -1,596 +1,529 @@
-
 <html>
+    <head>
+        <title>Sistemas Gr&aacute;ficos - Trabajo Pr&aacute;ctico</title>
+        <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-<head>
-<title>tp</title>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+        <script type="text/javascript" src="./utils/gl-matrix-2.2.0.js"></script>
+        <script type="text/javascript" src="./utils/webgl-utils.js"></script>
+        <script type="text/javascript" src="./utils/vectorUtils.js"></script>
+        <script type="text/javascript" src="./utils/Program.js"></script>
 
-<script type="text/javascript" src="./utils/gl-matrix-2.2.0.js"></script>
-<script type="text/javascript" src="./utils/webgl-utils.js"></script>
-<script type="text/javascript" src="./utils/vectorUtils.js"></script>
+        <script type="text/javascript" src="./shapes/curves/BezierCuadCurve.js"></script>
+        <script type="text/javascript" src="./shapes/curves/BSplineCuadCurve.js"></script>
 
-<script type="text/javascript" src="./shapes/curves/BezierCuadCurve.js"></script>
-<script type="text/javascript" src="./shapes/curves/BSplineCuadCurve.js"></script>
+        <script type="text/javascript" src="./shapes/surfaces/SupBarr.js"></script>
+        <script type="text/javascript" src="./shapes/surfaces/island.js"></script>
+        <script type="text/javascript" src="./shapes/surfaces/ship.js"></script>
+        <script type="text/javascript" src="./shapes/surfaces/commandBridge.js"></script>
 
-<script type="text/javascript" src="./shapes/surfaces/SupBarr.js"></script>
-<script type="text/javascript" src="./shapes/surfaces/island.js"></script>
-<script type="text/javascript" src="./shapes/surfaces/ship.js"></script>
-<script type="text/javascript" src="./shapes/surfaces/commandBridge.js"></script>
+        <script type="text/javascript" src="./cameras/CameraManager.js"></script>
+        <script type="text/javascript" src="./cameras/FreeCamera.js"></script>
+        <script type="text/javascript" src="./cameras/WalkingCamera.js"></script>
+        <script type="text/javascript" src="./cameras/FirstPersonCamera.js"></script>
+        <script type="text/javascript" src="./cameras/OrbitalCamera.js"></script>
 
-<script type="text/javascript" src="./cameras/CameraManager.js"></script>
-<script type="text/javascript" src="./cameras/FreeCamera.js"></script>
-<script type="text/javascript" src="./cameras/WalkingCamera.js"></script>
-<script type="text/javascript" src="./cameras/FirstPersonCamera.js"></script>
-<script type="text/javascript" src="./cameras/OrbitalCamera.js"></script>
+        <script type="text/javascript" src="./shapes/ShapeGroup.js"></script>
+        <script type="text/javascript" src="./shapes/Shape.js"></script>
+        <script type="text/javascript" src="./shapes/Background.js"></script>
+        <script type="text/javascript" src="./shapes/TexturedSphere.js"></script>
+        <script type="text/javascript" src="./shapes/plane.js"></script>
+        <script type="text/javascript" src="./shapes/fan.js"></script>
+        <script type="text/javascript" src="./shapes/cylinder.js"></script>
+        <script type="text/javascript" src="./shapes/box.js"></script>
+        <script type="text/javascript" src="./shapes/Pharo.js"></script>
+        <script type="text/javascript" src="./shapes/Pharos.js"></script>
 
-<script type="text/javascript" src="./shapes/ShapeGroup.js"></script>
-<script type="text/javascript" src="./shapes/Shape.js"></script>
-<script type="text/javascript" src="./shapes/Background.js"></script>
-<script type="text/javascript" src="./shapes/TexturedSphere.js"></script>
-<script type="text/javascript" src="./shapes/plane.js"></script>
-<script type="text/javascript" src="./shapes/fan.js"></script>
-<script type="text/javascript" src="./shapes/cylinder.js"></script>
-<script type="text/javascript" src="./shapes/box.js"></script>
-<script type="text/javascript" src="./shapes/Pharo.js"></script>
-<script type="text/javascript" src="./shapes/Pharos.js"></script>
+        <script type="text/javascript" src="./shapes/crane/Frame.js"></script>
+        <script type="text/javascript" src="./shapes/crane/MovingThing.js"></script>
+        <script type="text/javascript" src="./shapes/crane/Crane.js"></script>
+        <script type="text/javascript" src="./shapes/crane/CargoMover.js"></script>
+        <script type="text/javascript" src="./shapes/crane/planeWindow.js"></script>
+        <script type="text/javascript" src="./shapes/crane/Cabin.js"></script>
+        <script type="text/javascript" src="./shapes/crane/Cargo.js"></script>
 
-<script type="text/javascript" src="./shapes/crane/Frame.js"></script>
-<script type="text/javascript" src="./shapes/crane/MovingThing.js"></script>
-<script type="text/javascript" src="./shapes/crane/Crane.js"></script>
-<script type="text/javascript" src="./shapes/crane/CargoMover.js"></script>
-<script type="text/javascript" src="./shapes/crane/planeWindow.js"></script>
-<script type="text/javascript" src="./shapes/crane/Cabin.js"></script>
-<script type="text/javascript" src="./shapes/crane/Cargo.js"></script>
+        <script id="shader-fs" type="x-shader/x-fragment">
+            precision mediump float;
 
-<script id="shader-fs" type="x-shader/x-fragment">
-    precision mediump float;
+            struct Material {
+                vec3 Ka;
+                vec3 Kd;
+                vec3 Ks;
+                float Shininess;
+            };
 
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
+            uniform Material material;
 
-    uniform sampler2D uSampler;
+            uniform vec3 uLightColor;
+            uniform vec3 lights[3];
 
-    void main(void) {
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        gl_FragColor = vec4(textureColor.rgb * normalize(vLightWeighting), textureColor.a);
-    }
-</script>
+            uniform vec3 uLightPosition;
+            uniform vec3 uDirectionalColor;
+            uniform vec3 uAmbientColor;
+            uniform bool uUseLighting;
 
-<script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec3 aVertexPosition;
-    attribute vec3 aVertexNormal;
-    attribute vec2 aTextureCoord;
+            varying vec2 vTextureCoord;
+            varying vec3 vVertex;
+            varying vec3 vNormal;
 
-    uniform mat4 uViewMatrix;
-    uniform mat4 uModelMatrix;
-    uniform mat4 uPMatrix;
-    uniform mat3 uNMatrix;
+            uniform sampler2D uSampler;
 
-    uniform vec3 uAmbientColor;
-    
-    uniform float utick;
-    uniform bool isWater;
-
-    uniform vec3 uLightPosition;
-    uniform vec3 uDirectionalColor;
-
-    uniform bool uUseLighting;
-
-    varying vec2 vTextureCoord;
-    varying vec3 vLightWeighting;
-    
-    uniform vec3 uLightColor;
-    uniform vec3 lights[3];
-    
-    void main(void) {
-    
-        vec3 aux_pos = aVertexPosition;
-        
-        //Verifico si es water, para "moverlo"
-        if (isWater) {
-			aux_pos.z = aux_pos.z + cos( 3.14/150.0 * aux_pos.x + 2.0*utick) * cos(3.14/150.0 * aux_pos.y + 1.0*utick);
-        }
-	
-		// Transformamos al vertice al espacio de la camara
-		vec4 pos_camera_view = uModelMatrix * vec4(aux_pos, 1.0);
-		
-		// Transformamos al vertice al espacio de la proyeccion
-        gl_Position = uPMatrix * uViewMatrix * pos_camera_view;
-		
-		// Coordenada de textura sin modifiaciones
-        vTextureCoord = aTextureCoord;
-
-	vec4 lightPos = uModelMatrix * vec4(uLightPosition, 1.0);
-
-		////////////////////////////////////////////
-		// Calculos de la iluminacion
-        if (!uUseLighting) 
-		{
-            vLightWeighting = vec3(1.0, 1.0, 1.0);
-        }
-		else 
-		{			
-			vec3 dist = vec3(lightPos) - vec3(pos_camera_view); 
-			vec3 lightDirection = normalize(dist);
-			
-            		vec3 transformedNormal = normalize(uNMatrix * aVertexNormal);
-            		float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
-             		//vLightWeighting = uDirectionalColor * directionalLightWeighting;
-            		vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
-  
-	}
-		////////////////////////////////////////////
-    }
-</script>
-
-
-<script type="text/javascript">
-
-    var gl;
-
-    function initGL(canvas) {
-        try {
-            gl = canvas.getContext("experimental-webgl");
-            gl.viewportWidth = canvas.width;
-            gl.viewportHeight = canvas.height;
-        } catch (e) {
-        }
-        if (!gl) {
-            alert("Could not initialise WebGL, sorry :-(");
-        }
-    }
-
-
-    function getShader(gl, id) {
-        var shaderScript = document.getElementById(id);
-        if (!shaderScript) {
-            return null;
-        }
-
-        var str = "";
-        var k = shaderScript.firstChild;
-        while (k) {
-            if (k.nodeType == 3) {
-                str += k.textContent;
+            vec3 ads(void) {
+                vec4 lightPos = vec4(uLightPosition, 1.0);
+                
+                ///////////////////////////////////////////
+                // Calculos de la iluminacion
+                vec3 vLightWeighting = vec3(1.0, 1.0, 1.0);
+                if (uUseLighting) {		
+                    vec3 dist = uLightPosition - vVertex; 
+                    vec3 lightDirection = normalize(dist);
+                    vec3 transformedNormal = vNormal;
+                    float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
+                    //vLightWeighting = uDirectionalColor * directionalLightWeighting;
+                    vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+                }
+                return vLightWeighting;
             }
-            k = k.nextSibling;
-        }
-
-        var shader;
-        if (shaderScript.type == "x-shader/x-fragment") {
-            shader = gl.createShader(gl.FRAGMENT_SHADER);
-        } else if (shaderScript.type == "x-shader/x-vertex") {
-            shader = gl.createShader(gl.VERTEX_SHADER);
-        } else {
-            return null;
-        }
-
-        gl.shaderSource(shader, str);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            alert(gl.getShaderInfoLog(shader));
-            return null;
-        }
-
-        return shader;
-    }
-
-    var shaderProgram;
-
-       function initShaders() {
-        var fragmentShader = getShader(gl, "shader-fs");
-        var vertexShader = getShader(gl, "shader-vs");
-
-        shaderProgram = gl.createProgram();
-        gl.attachShader(shaderProgram, vertexShader);
-        gl.attachShader(shaderProgram, fragmentShader);
-        gl.linkProgram(shaderProgram);
-
-        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            alert("Could not initialise shaders");
-        }
-
-        gl.useProgram(shaderProgram);
-
-        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-        shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-        gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-
-        shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-        gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-
-        shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-        shaderProgram.ViewMatrixUniform = gl.getUniformLocation(shaderProgram, "uViewMatrix");
-        shaderProgram.ModelMatrixUniform = gl.getUniformLocation(shaderProgram, "uModelMatrix");
-        shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
-        shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-        shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
-        shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-        shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightPosition");
-        shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
-        shaderProgram.utick = gl.getUniformLocation(shaderProgram, "utick");
-        shaderProgram.isWater = gl.getUniformLocation(shaderProgram, "isWater");
-           
-        shaderProgram.lightColor = gl.getUniformLocation(shaderProgram, "uLightColor");
         
-        shaderProgram.lightPosition0 = gl.getUniformLocation(shaderProgram, "lights[0]");
-        shaderProgram.lightPosition1 = gl.getUniformLocation(shaderProgram, "lights[1]");
-        shaderProgram.lightPosition2 = gl.getUniformLocation(shaderProgram, "lights[2]");
-    }
-
-    var pMatrix = null;
-
-	var currentlyPressedKeys = {};
-	
-	var all = null;
-	var bckShape = null;
-	var floorShape = null;
-	
-    var bck = null;
-	var floor = null;
-	var crane = null;
-	var ship = null;
-	var island = null;
-	
-	var water = null;
-	var waterShape = null;
-    var shader_utick = 0.0;
-	
-	var cameras = null;
-	var locked = false;
-
-    var pharos = null;
-	var pharosShape = null;
-	var lightCabin = null;
-	var lightCabinShape = null;
-    
-	var pitch = 0;
-	var yaw = 0;
-	var rotAmount = 0.005;
-    
-    var lightPosition0 = [11.9, 2.2, 14.8];
-    var lightPosition1 = [0.0, -0.3, 24.5];
-    var lightPosition2 = [0.0, -0.3, 4.0];
-	
-	function objectUniform(){
-        gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
-        gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
-	}	
-	
-    function drawScene() {
-	
-		// Se configura el viewport dentro de area canvas. En este caso se utiliza toda 
-		// el area disponible
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-		
-		// Se habilita el color de borrado para la pantalla (Color Buffer) y otros buffers
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-		// Se configura la matriz de proyeccion
-        pMatrix = mat4.create();
-        mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.01, 100000.0);
-        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+            void main(void) {
+                vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+                gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+            }
         
-        // Se configura la matriz de vista
-        gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix()); 
+        </script>
 
-        /////////////////////////////////////////////////////
-        // Configuracion de la luz
-        // Se inicializan las variables asociadas con la Iluminacion
-        var lighting = false;
-        gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
-        
-        var lightColor = [1.0, 1.0, 1.0];
-        
-		if (lighting) {
-            gl.uniform3fv(shaderProgram.lightColor, lightColor);
+        <script id="shader-vs" type="x-shader/x-vertex">
+            attribute vec3 aVertexPosition;
+            attribute vec3 aVertexNormal;
+            attribute vec2 aTextureCoord;
+
+            uniform mat4 uModelMatrix;
+            uniform mat4 uViewMatrix;
+            uniform mat4 uPMatrix;
+            uniform mat3 uNMatrix;
+
+            uniform float utick;
+            uniform bool isWater;
+
+            varying vec2 vTextureCoord;
+            varying vec3 vVertex;
+            varying vec3 vNormal;
+
+            void main(void) {
+                vec3 aux_pos = aVertexPosition;
+
+                //Verifico si es water, para "moverlo"
+                if (isWater) {
+                    aux_pos.z = aux_pos.z + cos( 3.14/150.0 * aux_pos.x + 2.0*utick) * cos(3.14/150.0 * aux_pos.y + 1.0*utick);
+                }
+                
+                // Transformamos al vertice al espacio de la camara
+                vec4 aux_vertex = uViewMatrix * uModelMatrix * vec4(aux_pos, 1.0);
+                
+                // Transformamos al vertice al espacio de la proyeccion
+                gl_Position = uPMatrix * aux_vertex;
+
+                vVertex = vec3(aux_vertex);
+                vNormal = normalize(uNMatrix * aVertexNormal);
+                
+                // Coordenada de textura sin modificaciones
+                vTextureCoord = aTextureCoord;
+            }
             
-            gl.uniform3fv(shaderProgram.lightPosition0, lightPosition0);
-            gl.uniform3fv(shaderProgram.lightPosition1, lightPosition1);
-            gl.uniform3fv(shaderProgram.lightPosition2, lightPosition2);
-        }
-		
-        gl.uniform1f(shaderProgram.utick, shader_utick);
-		
-		var identity = mat4.create();
-		mat4.identity(identity);
-	    all.draw(identity);
-    }
-
-//	var lightPosition = [100.0,30.0,100.0];
-//	var ang_0 = -Math.PI/1.5;
-	var rotSpeedDivider = 2;
-	
-    function tick() {
-        requestAnimFrame(tick);
-
-//		bckShape.rotate(0,0.01/rotSpeedDivider,0);
-		
-//		lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
-		
-		shader_utick += 0.01;
-        
-		handleKeys();
-		handleMouse();
-        drawScene();
-    }	
-	
-	
-	var speed = 0.5;
-	function handleKeys(event){ 		
-		if( currentlyPressedKeys["|".charCodeAt(0)] ){
-			cameras.cycleCamera();
-		}	
-		if( currentlyPressedKeys["1".charCodeAt(0)] ){
-			cameras.ToCamera(0);
-		}	
-		if( currentlyPressedKeys["2".charCodeAt(0)] ){
-			cameras.ToCamera(1);
-		}	
-		if( currentlyPressedKeys["3".charCodeAt(0)] ){
-			cameras.ToCamera(2);
-		}	
-		if( currentlyPressedKeys["4".charCodeAt(0)] ){
-			cameras.ToCamera(3);
-		}	
-		
-		
-		if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
-			cameras.Down(speed);
-		}
-		if( currentlyPressedKeys["e".charCodeAt(0)] || currentlyPressedKeys["E".charCodeAt(0)]){
-			cameras.Up(speed);
-		}
-		
-		if( currentlyPressedKeys["s".charCodeAt(0)] || currentlyPressedKeys["S".charCodeAt(0)]){
-			cameras.Forward(speed);
-		}
-		if( currentlyPressedKeys["w".charCodeAt(0)] || currentlyPressedKeys["W".charCodeAt(0)]){
-			cameras.Backwards(speed);
-		}
-	
-		if( currentlyPressedKeys["a".charCodeAt(0)] || currentlyPressedKeys["A".charCodeAt(0)]){
-			cameras.Left(speed);
-		}		
-		if( currentlyPressedKeys["d".charCodeAt(0)] || currentlyPressedKeys["D".charCodeAt(0)]){
-			cameras.Right(speed);
-		}
-	
-        	
-		if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
-			crane.moveCrane(-speed);
-		}	
-		if( currentlyPressedKeys["k".charCodeAt(0)] || currentlyPressedKeys["K".charCodeAt(0)]){
-			crane.moveCrane(speed);
-		}
-		
-		if( currentlyPressedKeys["j".charCodeAt(0)] || currentlyPressedKeys["J".charCodeAt(0)]){
-			crane.moveMover(-speed);
-		}		
-		if( currentlyPressedKeys["l".charCodeAt(0)] || currentlyPressedKeys["L".charCodeAt(0)]){
-			crane.moveMover(speed);
-		}	
-		
-		if( currentlyPressedKeys["u".charCodeAt(0)] || currentlyPressedKeys["U".charCodeAt(0)]){
-			crane.moveCargo(speed);
-		}				
-		if( currentlyPressedKeys["o".charCodeAt(0)] || currentlyPressedKeys["O".charCodeAt(0)]){
-			crane.moveCargo(-speed);
-		}		
-		
-		if( currentlyPressedKeys["9".charCodeAt(0)]){
-			crane.releaseCargo();
-		}		
-		if( currentlyPressedKeys["0".charCodeAt(0)] ){
-			crane.attachCargo();
-		}			
-	}
-
-	function handleMouse(){
-		if(locked){
-			cameras.Pitch(pitch);
-			cameras.Yaw(yaw);
-		}
-		pitch = 0;
-		yaw = 0;
-	}
-	
-	function myMoveFunction(event) {
-		//console.log( "ev :" + event.clientX + " " +  event.clientY);
-		//console.log( "mouse :" +mouseX + " " +  mouseY);
-		
-		if(locked){
-			var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-			var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-		
-			if(movementX)
-				pitch = -movementX*rotAmount;
-				
-			if(movementY)	
-				yaw = movementY*rotAmount;		
-			//console.log(movementX);
-		}
-		//console.log(locked);
-	}
-
-	function handleKeyDown(event){
-		currentlyPressedKeys[event.keyCode] = true;
-	}
-	
-	function handleKeyUp(event) {
-		currentlyPressedKeys[event.keyCode] = false;
-	}
-
-	function pointerlockchange() {
-		locked = !locked;
-		//console.log(locked);
-	}
+        </script>
 
 
-	function lockPointer() {
-		var lock = document.getElementById("pointer-lock-element");
-		lock.requestPointerLock = lock.requestPointerLock    ||
-							      lock.mozRequestPointerLock ||
-							      lock.webkitRequestPointerLock;
-		lock.requestPointerLock();
-	}	
-	
-	function setUpListeners(){				
-		document.addEventListener( 'mousemove', myMoveFunction, false );
+        <script type="text/javascript">
 
-		window.addEventListener('pointerlockchange', pointerlockchange, false);
-		window.addEventListener('mozpointerlockchange', pointerlockchange, false);
-		window.addEventListener('webkitpointerlockchange', pointerlockchange, false);
-	}
-	
-    function webGLStart() {
-        var canvas = document.getElementById("tp");
-        initGL(canvas);
-        initShaders();
-		
-		setUpListeners();		
-		all = new ShapeGroup();
-	
-		//--------------------bck---------------------------
-		bck = new Background(128, 128);
-        bck.initTexture("./textures/reflexionMap.jpg");	
-		
-		bckShape = new Shape(bck,objectUniform);
-		bckShape.scale(120.0, 60.0, 120.0);
-        bckShape.rotate(0.0, Math.PI, 0.0);
-		bckShape.initBuffers();
-		
-		all.add(bckShape);
-		//--------------------------------------------------
+            var gl;
 
-		//--------------------floor---------------------------
-		floor = new Box(20, 2.5, 40);
-        floor.initTexture("./textures/floor.jpg");	
-		
-		floorShape = new Shape(floor,objectUniform);
-		floorShape.translate(-8, -6.05 , 8);
-		floorShape.initBuffers();
-		
-		all.add(floorShape);
-		//--------------------------------------------------
-        
-        //--------------------pharos---------------------------
-		var heightPharo = 4.2;
-        var radioPoste = 0.15;
-        var radioPharo = 0.5;
-        
-        pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, 32);
-        pharos.initTexture("./textures/gray.jpg", "./textures/dirtyWhite.jpg");
-		
-		pharosShape = new Shape(pharos, objectUniform);
-		pharosShape.initBuffers();
-    
-		all.add(pharosShape);
-		//--------------------------------------------------
-        
-        //--------------------lightCabin--------------------------	
-		var lightCabin = new TexturedSphere(32, 32);
-        lightCabin.initTexture("./textures/dirtyWhite.jpg");	
+            function initGL(canvas) {
+                try {
+                    gl = canvas.getContext("experimental-webgl");
+                    gl.viewportWidth = canvas.width;
+                    gl.viewportHeight = canvas.height;
+                } catch (e) {
+                }
+                if (!gl) {
+                    alert("Could not initialise WebGL, sorry :-(");
+                }
+            }
 
-		lightCabinShape = new Shape(lightCabin,objectUniform);
-		lightCabinShape.initBuffers();
-        
-        lightCabinShape.scale(0.1, 0.1, 0.1);
-		lightCabinShape.translate(lightPosition0[0],lightPosition0[1],lightPosition0[2]);
-		
-		all.add(lightCabinShape);		
-		//--------------------------------------------------
+            var shaderProgram;
 
-		//--------------------floor---------------------------
-		water = new Plane(350, 350, 25, 25, true);
-        water.initTexture("./textures/water.jpg");	
-		
-		waterShape = new Shape(water,objectUniform);
-		waterShape.translate(-150, -6 , 150);
-		waterShape.rotate(-Math.PI/2, 0 , 0);	
-		waterShape.initBuffers();
-		
-		all.add(waterShape);
-		//--------------------------------------------------		
-		
-		//-----------------crane------------------------------
-		crane = new Crane(objectUniform,9);
-	    crane.initTexture("./textures/crane.jpg");
-		crane.initTextureCargo("./textures/container_difusemap");
-		crane.initTextureCabin("./textures/cabin.jpg");
-		crane.initTextureSupport("./textures/crane.jpg");
-		crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
-		crane.initBuffers();
-		
-		all.add(crane);
-		//--------------------------------------------------
+            function initShaders() {
+                var program = new Program(gl, "shader-vs", "shader-fs");
+                program.initShaders();
+                program.definitionVariablesDifuso();
+                shaderProgram = program.getProgram();
 
-		//----------------------Island----------------------		
-		island = new Island(objectUniform);
-		island.initTexture("./textures/isla.jpg");
-		island.initBuffers();
-		
-		all.add(island);		
-		//--------------------------------------------------
-		
-		//--------------------ship--------------------------
-		ship = new Ship(objectUniform);
-		ship.initTexture("./textures/bridgeBase.jpg");
-		ship.initTextureTop("./textures/bridgeBase.jpg");
-		ship.initBuffers();
-		
-		all.add(ship);
-		//--------------------------------------------------
-	
-		ship.translate(8,-10,10);
-		ship.scale(3,6,6);
-		crane.translate(0, -1 , 10);
+            }
 
-		island.translate(-5,20,-53);
-		island.scale(10,6,7);	
-		island.rotate(0.0,Math.PI/8,0.0);	
-		
-		document.onkeydown = handleKeyDown;
-		document.onkeyup = handleKeyUp;
-				
-		//--------------------cameras-----------------------
+            var pMatrix = null;
 
-		cameras = new CameraManager();
-		cameras.add(new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]));
-		cameras.add(new WalkingCamera([0, -2.5, 25],[0,0,1],[0,1,0]));
-		cameras.add(new OrbitalCamera([0, 0, 30],[0,0,10],[0,1,0]));
-		
-		var cabinCamera = new FirstPersonCamera([0, 0, 0],[0.2,-1,0],[0,1,0]);
-		crane.setCabinCamera(cabinCamera);
-		cameras.add(cabinCamera);
-		//-------------------------------------------------
-		
-		gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.enable(gl.DEPTH_TEST);
-        tick();
-    }
+            var currentlyPressedKeys = {};
 
-</script>
+            var all = null;
+            var bckShape = null;
+            var floorShape = null;
+
+            var bck = null;
+            var floor = null;
+            var crane = null;
+            var ship = null;
+            var island = null;
+
+            var water = null;
+            var waterShape = null;
+            var shader_utick = 0.0;
+
+            var cameras = null;
+            var locked = false;
+
+            var pharos = null;
+            var pharosShape = null;
+            var lightCabin = null;
+            var lightCabinShape = null;
+
+            var pitch = 0;
+            var yaw = 0;
+            var rotAmount = 0.005;
+
+            var lightColor = [1.0, 1.0, 1.0];
+            var lightPosition0 = [11.9, 2.2, 14.8];
+            var lightPosition1 = [0.0, -0.3, 24.5];
+            var lightPosition2 = [0.0, -0.3, 4.0];
+
+            function objectUniform(){
+                gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
+                gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
+            }	
+
+            function drawScene() {
+
+                // Se configura el viewport dentro de area canvas. En este caso se utiliza toda 
+                // el area disponible
+                gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+
+                // Se habilita el color de borrado para la pantalla (Color Buffer) y otros buffers
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                // Se configura la matriz de proyeccion
+                pMatrix = mat4.create();
+                mat4.perspective(pMatrix, -30, gl.viewportWidth / gl.viewportHeight, 0.01, 100000.0);
+                gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+
+                // Se configura la matriz de vista
+                gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix()); 
+
+                /////////////////////////////////////////////////////
+                // Configuracion de la luz
+                // Se inicializan las variables asociadas con la Iluminacion
+                var lighting = true;
+                gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
+
+                gl.uniform3fv(shaderProgram.lightColor, lightColor);
+                gl.uniform3fv(shaderProgram.lightPosition0, lightPosition0);
+                gl.uniform3fv(shaderProgram.lightPosition1, lightPosition1);
+                gl.uniform3fv(shaderProgram.lightPosition2, lightPosition2);
+
+                gl.uniform1f(shaderProgram.utick, shader_utick);
+
+                var identity = mat4.create();
+                mat4.identity(identity);
+                all.draw(identity);
+            }
+
+            //	var lightPosition = [100.0,30.0,100.0];
+            //	var ang_0 = -Math.PI/1.5;
+            var rotSpeedDivider = 2;
+
+            function tick() {
+                requestAnimFrame(tick);
+
+                //bckShape.rotate(0,0.01/rotSpeedDivider,0);
+
+                //lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
+
+                shader_utick += 0.01;
+
+                handleKeys();
+                handleMouse();
+                drawScene();
+            }	
 
 
-</head>
+            var speed = 0.5;
+            function handleKeys(event){ 		
+                if( currentlyPressedKeys["|".charCodeAt(0)] ){
+                    cameras.cycleCamera();
+                }	
+                if( currentlyPressedKeys["1".charCodeAt(0)] ){
+                    cameras.ToCamera(0);
+                }	
+                if( currentlyPressedKeys["2".charCodeAt(0)] ){
+                    cameras.ToCamera(1);
+                }	
+                if( currentlyPressedKeys["3".charCodeAt(0)] ){
+                    cameras.ToCamera(2);
+                }	
+                if( currentlyPressedKeys["4".charCodeAt(0)] ){
+                    cameras.ToCamera(3);
+                }	
 
 
-<body onload="webGLStart();">
-    <center>
+                if( currentlyPressedKeys["q".charCodeAt(0)] || currentlyPressedKeys["Q".charCodeAt(0)]){
+                    cameras.Down(speed);
+                }
+                if( currentlyPressedKeys["e".charCodeAt(0)] || currentlyPressedKeys["E".charCodeAt(0)]){
+                    cameras.Up(speed);
+                }
+
+                if( currentlyPressedKeys["s".charCodeAt(0)] || currentlyPressedKeys["S".charCodeAt(0)]){
+                    cameras.Forward(speed);
+                }
+                if( currentlyPressedKeys["w".charCodeAt(0)] || currentlyPressedKeys["W".charCodeAt(0)]){
+                    cameras.Backwards(speed);
+                }
+
+                if( currentlyPressedKeys["a".charCodeAt(0)] || currentlyPressedKeys["A".charCodeAt(0)]){
+                    cameras.Left(speed);
+                }		
+                if( currentlyPressedKeys["d".charCodeAt(0)] || currentlyPressedKeys["D".charCodeAt(0)]){
+                    cameras.Right(speed);
+                }
+
+
+                if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
+                    crane.moveCrane(-speed);
+                }	
+                if( currentlyPressedKeys["k".charCodeAt(0)] || currentlyPressedKeys["K".charCodeAt(0)]){
+                    crane.moveCrane(speed);
+                }
+
+                if( currentlyPressedKeys["j".charCodeAt(0)] || currentlyPressedKeys["J".charCodeAt(0)]){
+                    crane.moveMover(-speed);
+                }		
+                if( currentlyPressedKeys["l".charCodeAt(0)] || currentlyPressedKeys["L".charCodeAt(0)]){
+                    crane.moveMover(speed);
+                }	
+
+                if( currentlyPressedKeys["u".charCodeAt(0)] || currentlyPressedKeys["U".charCodeAt(0)]){
+                    crane.moveCargo(speed);
+                }				
+                if( currentlyPressedKeys["o".charCodeAt(0)] || currentlyPressedKeys["O".charCodeAt(0)]){
+                    crane.moveCargo(-speed);
+                }		
+
+                if( currentlyPressedKeys["9".charCodeAt(0)]){
+                    crane.releaseCargo();
+                }		
+                if( currentlyPressedKeys["0".charCodeAt(0)] ){
+                    crane.attachCargo();
+                }			
+            }
+
+            function handleMouse(){
+                if(locked){
+                    cameras.Pitch(pitch);
+                    cameras.Yaw(yaw);
+                }
+                pitch = 0;
+                yaw = 0;
+            }
+
+            function myMoveFunction(event) {
+                //console.log( "ev :" + event.clientX + " " +  event.clientY);
+                //console.log( "mouse :" +mouseX + " " +  mouseY);
+
+                if(locked){
+                    var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                    var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+                    if(movementX)
+                        pitch = -movementX*rotAmount;
+
+                    if(movementY)	
+                        yaw = movementY*rotAmount;		
+                    //console.log(movementX);
+                }
+                //console.log(locked);
+            }
+
+            function handleKeyDown(event){
+                currentlyPressedKeys[event.keyCode] = true;
+            }
+
+            function handleKeyUp(event) {
+                currentlyPressedKeys[event.keyCode] = false;
+            }
+
+            function pointerlockchange() {
+                locked = !locked;
+                //console.log(locked);
+            }
+
+
+            function lockPointer() {
+                var lock = document.getElementById("pointer-lock-element");
+                lock.requestPointerLock = lock.requestPointerLock    ||
+                    lock.mozRequestPointerLock ||
+                    lock.webkitRequestPointerLock;
+                lock.requestPointerLock();
+            }	
+
+            function setUpListeners(){				
+                document.addEventListener( 'mousemove', myMoveFunction, false );
+
+                window.addEventListener('pointerlockchange', pointerlockchange, false);
+                window.addEventListener('mozpointerlockchange', pointerlockchange, false);
+                window.addEventListener('webkitpointerlockchange', pointerlockchange, false);
+            }
+
+            function webGLStart() {
+                var canvas = document.getElementById("tp");
+                initGL(canvas);
+                initShaders();
+
+                setUpListeners();		
+                all = new ShapeGroup();
+
+                //--------------------bck---------------------------
+                bck = new Background(128, 128);
+                bck.initTexture("./textures/reflexionMap.jpg");	
+
+                bckShape = new Shape(bck,objectUniform);
+                bckShape.scale(120.0, 60.0, 120.0);
+                bckShape.rotate(0.0, Math.PI, 0.0);
+                bckShape.initBuffers();
+
+                all.add(bckShape);
+                //--------------------------------------------------
+
+                //--------------------floor---------------------------
+                floor = new Box(20, 2.5, 40);
+                floor.initTexture("./textures/floor.jpg");	
+
+                floorShape = new Shape(floor,objectUniform);
+                floorShape.translate(-8, -6.05 , 8);
+                floorShape.initBuffers();
+
+                all.add(floorShape);
+                //--------------------------------------------------
+
+                //--------------------pharos---------------------------
+                var heightPharo = 4.2;
+                var radioPoste = 0.15;
+                var radioPharo = 0.5;
+
+                pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, 32);
+                pharos.initTexture("./textures/gray.jpg", "./textures/dirtyWhite.jpg");
+
+                pharosShape = new Shape(pharos, objectUniform);
+                pharosShape.initBuffers();
+
+                all.add(pharosShape);
+                //--------------------------------------------------
+
+                //--------------------lightCabin--------------------------	
+                var lightCabin = new TexturedSphere(32, 32);
+                lightCabin.initTexture("./textures/dirtyWhite.jpg");	
+
+                lightCabinShape = new Shape(lightCabin,objectUniform);
+                lightCabinShape.initBuffers();
+
+                lightCabinShape.scale(0.1, 0.1, 0.1);
+                lightCabinShape.translate(lightPosition0[0],lightPosition0[1],lightPosition0[2]);
+
+                all.add(lightCabinShape);		
+                //--------------------------------------------------
+
+                //--------------------floor---------------------------
+                water = new Plane(350, 350, 25, 25, true);
+                water.initTexture("./textures/water.jpg");	
+
+                waterShape = new Shape(water,objectUniform);
+                waterShape.translate(-150, -6 , 150);
+                waterShape.rotate(-Math.PI/2, 0 , 0);	
+                waterShape.initBuffers();
+
+                all.add(waterShape);
+                //--------------------------------------------------		
+
+                //-----------------crane------------------------------
+                crane = new Crane(objectUniform,9);
+                crane.initTexture("./textures/crane.jpg");
+                crane.initTextureCargo("./textures/container_difusemap");
+                crane.initTextureCabin("./textures/cabin.jpg");
+                crane.initTextureSupport("./textures/crane.jpg");
+                crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
+                crane.initBuffers();
+
+                all.add(crane);
+                //--------------------------------------------------
+
+                //----------------------Island----------------------		
+                island = new Island(objectUniform);
+                island.initTexture("./textures/isla.jpg");
+                island.initBuffers();
+
+                all.add(island);		
+                //--------------------------------------------------
+
+                //--------------------ship--------------------------
+                ship = new Ship(objectUniform);
+                ship.initTexture("./textures/bridgeBase.jpg");
+                ship.initTextureTop("./textures/bridgeBase.jpg");
+                ship.initBuffers();
+
+                all.add(ship);
+                //--------------------------------------------------
+
+                ship.translate(8,-10,10);
+                ship.scale(3,6,6);
+                crane.translate(0, -1 , 10);
+
+                island.translate(-5,20,-53);
+                island.scale(10,6,7);	
+                island.rotate(0.0,Math.PI/8,0.0);	
+
+                document.onkeydown = handleKeyDown;
+                document.onkeyup = handleKeyUp;
+
+                //--------------------cameras-----------------------
+
+                cameras = new CameraManager();
+                cameras.add(new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]));
+                cameras.add(new WalkingCamera([0, -2.5, 25],[0,0,1],[0,1,0]));
+                cameras.add(new OrbitalCamera([0, 0, 30],[0,0,10],[0,1,0]));
+
+                var cabinCamera = new FirstPersonCamera([0, 0, 0],[0.2,-1,0],[0,1,0]);
+                crane.setCabinCamera(cabinCamera);
+                cameras.add(cabinCamera);
+                //-------------------------------------------------
+
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                tick();
+            }
+
+        </script>
+
+
+    </head>
+
+
+    <body onload="webGLStart();">
+        <center>
             <h1>Sistemas Gr&aacute;ficos - 66.71</h1>
             <h2>Trabajo Pr&aacute;ctico</h2>
-				<canvas id="tp" style="border: none;" width="1280" height="720">
-					Your browser does not support the HTML5 canvas element.
-				</canvas>
-				<button onclick="lockPointer();" style="width:100%" >Lock it!</button>
-				<div id="pointer-lock-element"></div>
+            <canvas id="tp" style="border: none;" width="1280" height="720">
+                Your browser does not support the HTML5 canvas element.
+            </canvas>
+            <button onclick="lockPointer();" style="width:100%" >Lock it!</button>
+            <div id="pointer-lock-element"></div>
         </center>
-    <br/>
+        <br/>
 
- </body>
+    </body>
 
 </html>
