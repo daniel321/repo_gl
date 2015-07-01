@@ -1,4 +1,5 @@
-PlaneWindow = function (positions){
+PlaneWindow = function (positions, material){
+    this.material = material;
 
     this.position_buffer = positions;
     this.normal_buffer = [];
@@ -94,36 +95,18 @@ PlaneWindow = function (positions){
     }
 
     this.draw = function(modelMatrix){
+        var variables = {
+            bufferPosition: this.webgl_position_buffer,
+            bufferTextureCoord: this.webgl_texture_coord_buffer,
+            bufferNormal: this.webgl_normal_buffer,
+            texture: this.texture,
+            matrixModel: modelMatrix,
+            isWater: false,
+            bufferIndex: this.webgl_index_buffer,
+            typeDraw: gl.TRIANGLE_STRIP,
+            material: this.material
+        };
 
-        // Se configuran los buffers que alimentarán el pipeline
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_position_buffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.webgl_position_buffer.itemSize, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_texture_coord_buffer);
-        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.webgl_texture_coord_buffer.itemSize, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_normal_buffer);
-        gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.webgl_normal_buffer.itemSize, gl.FLOAT, false, 0, 0);
-
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-        gl.uniform1i(shaderProgram.samplerUniform, 0);
-
-        gl.uniformMatrix4fv(shaderProgram.ModelMatrixUniform, false, modelMatrix);
-        var normalMatrix = mat3.create();
-        mat3.normalFromMat4(normalMatrix, modelMatrix);            
-        mat3.transpose(normalMatrix, normalMatrix);
-        gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, normalMatrix);
-
-        var isWater = false;
-        gl.uniform1i(shaderProgram.isWater, isWater); 
-        
-        gl.bindTexture(gl.TEXTURE_2D, this.texture);
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.webgl_index_buffer);
-        //gl.drawElements(gl.LINE_LOOP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
-        gl.drawElements(gl.TRIANGLE_STRIP, this.webgl_index_buffer.numItems, gl.UNSIGNED_SHORT, 0);
-
+        program.setVariablesDifuso(variables);
     }
-
 };

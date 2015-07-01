@@ -1,5 +1,6 @@
-Ship = function(objectUniform){
+Ship = function(objectUniform, material){
 	this.movmentAmount = 0;
+    this.material = material;
 	
 	this.scales = [];
 	this.controlPointsPath = [];
@@ -25,7 +26,7 @@ Ship = function(objectUniform){
 		
 		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,1], 10);
 		this.curve.initBuffers();
-	    this.curve.initTexture("./textures/red.jpg");		
+//	    this.curve.initTexture("./textures/red.jpg");		
 
 		this.generateTop();
 		this.top.initBuffers();
@@ -33,13 +34,13 @@ Ship = function(objectUniform){
 	
 		this.topShape = new Shape(this.top,this.uniform);
 	
-		this.surf = new SupBarr(this.curve,this.controlPointsPath,this.scales);
+		this.surf = new SupBarr(this.curve,this.controlPointsPath,this.scales, this.material);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
 		
 		this.surfShape = new Shape(this.surf,this.uniform);
 	
-        this.bridge = new CommandBridge(this.uniform);
+        this.bridge = new CommandBridge(this.uniform, this.material);
         this.bridge.initBuffers();
         
         this.bridgeShape = new Shape(this.bridge, this.uniform);
@@ -90,7 +91,7 @@ Ship = function(objectUniform){
 		mat4.scale(matrix,matrix,scale);
 		mat3.translate(matrix,matrix,pos);
 		
-		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix);
+		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material);
 	}
 	
 	this.initTexture = function(texturePath){

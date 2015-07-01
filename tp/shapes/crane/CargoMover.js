@@ -1,5 +1,6 @@
-CargoMover = function(objectUniform){
+CargoMover = function(objectUniform, material){
 	this.uniform = objectUniform;
+    this.material = material;
 	this.movmentCargoAmount = 0;
 	this.movmentAmount = 0;
 	
@@ -46,17 +47,17 @@ CargoMover = function(objectUniform){
         var depth = 1.0;
         var angle = (20 * Math.PI)/180;
         
-		this.cabin = new Cabin(this.uniform, width, height, depth, angle);
+		this.cabin = new Cabin(this.uniform, width, height, depth, angle, this.material);
 
 		var h = 2.0;
-		this.wireLeftFront  = new Box(0.01,h,0.01);
-		this.wireLeftBack   = new Box(0.01,h,0.01);
-		this.wireRightFront = new Box(0.01,h,0.01);
-		this.wireRightBack  = new Box(0.01,h,0.01);
+		this.wireLeftFront  = new Box(0.01,h,0.01, this.material);
+		this.wireLeftBack   = new Box(0.01,h,0.01, this.material);
+		this.wireRightFront = new Box(0.01,h,0.01, this.material);
+		this.wireRightBack  = new Box(0.01,h,0.01, this.material);
 		
-		this.cargoSupportLeft  = new Box(0.8,0.05,0.05);
-		this.cargoSupportRight = new Box(0.8,0.05,0.05);	
-		this.cargo = new Cargo(this.uniform);	
+		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material);
+		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material);	
+		this.cargo = new Cargo(this.uniform, this.material);	
 		
 		this.cabin.initTexture(this.CabinTexturePath);		
 		
@@ -111,7 +112,7 @@ CargoMover = function(objectUniform){
 
 	this.createOldCargo = function(){
 		for (var i=0 ; i<=11 ; i++){
-			var cargo_i = new Cargo(this.uniform);
+			var cargo_i = new Cargo(this.uniform, this.material);
 			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
 			this.oldCargo.add(cargo_i);

@@ -1,5 +1,6 @@
-Cargo = function(objectUniform){
+Cargo = function(objectUniform, material){
 	this.uniform = objectUniform;
+    this.material = material;
 	this.texturePath = null;
     
     this.coordTexture = null;
@@ -11,7 +12,7 @@ Cargo = function(objectUniform){
 	
 	this.initBuffers = function(){
         this.initCoordTexture();
-		this.box = new Box(0.75,0.75,2.5);
+		this.box = new Box(0.75,0.75,2.5, this.material);
         this.box.setCoordTexture(this.coordTexture);
 		this.box.initTexture(this.texturePath);	
 		this.boxShape = new Shape(this.box,this.uniform);

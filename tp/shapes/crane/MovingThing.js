@@ -1,5 +1,6 @@
-MovingThing = function(objectUniform){
+MovingThing = function(objectUniform, material){
 	this.uniform = objectUniform;
+    this.material = material;
 	this.texturePath = null;
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
@@ -19,11 +20,11 @@ MovingThing = function(objectUniform){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.box = new Box(1,1,1.6);
-		this.boxRailFront = new Box(14,0.2,0.2);
-		this.boxRailBack = new Box(14,0.2,0.2);
-		this.boxRailEnd = new Box(0.2,0.2,1.0);
-		this.cargoMover = new CargoMover(this.uniform);
+		this.box = new Box(1,1,1.6, this.material);
+		this.boxRailFront = new Box(14,0.2,0.2, this.material);
+		this.boxRailBack = new Box(14,0.2,0.2, this.material);
+		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material);
+		this.cargoMover = new CargoMover(this.uniform, this.material);
 		
 		this.box.initTexture(this.SupportTexturePath);
 		this.boxRailFront.initTexture(this.texturePath);

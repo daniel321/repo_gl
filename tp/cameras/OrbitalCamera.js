@@ -16,7 +16,11 @@ OrbitalCamera = function(source,target,up){
 		mat4.lookAt(this.matrix, this.source, this.target, this.up);
 		return this.matrix;
     }
-		
+	
+    this.getPosition = function(){
+		return this.source;
+    }
+    
 	this.Pitch = function(amount){			
 		var axisDir = this.up;
 		var axisPoint = this.target;

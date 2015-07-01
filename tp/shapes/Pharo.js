@@ -1,5 +1,6 @@
-Pharo = function(objectUniform, height, radioPoste, radioPharo, delta){
+Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material){
     this.uniform = objectUniform;
+    this.material = material;
     this.texturePathPoste = null;
     this.texturePathPharo = null;
 
@@ -18,8 +19,8 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta){
 
     this.initBuffers = function(){
 
-        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta);
-        this.faro = new TexturedSphere(this.delta, this.delta);
+        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material);
+        this.faro = new TexturedSphere(this.delta, this.delta, this.material);
 
         this.poste.initTexture(this.texturePathPoste);
         this.poste.initBot_TopTexture(this.texturePathPoste);

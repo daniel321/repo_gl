@@ -53,13 +53,10 @@
 
             uniform Material material;
 
-            uniform vec3 uLightColor;
-            uniform vec3 lights[3];
+            uniform vec3 uCameraPosition;
 
-            uniform vec3 uLightPosition;
-            uniform vec3 uDirectionalColor;
-            uniform vec3 uAmbientColor;
-            uniform bool uUseLighting;
+            uniform vec3 uLightColor;
+            uniform vec3 lights[3];            
 
             varying vec2 vTextureCoord;
             varying vec3 vVertex;
@@ -68,27 +65,30 @@
             uniform sampler2D uSampler;
 
             vec3 ads(void) {
-                vec4 lightPos = vec4(uLightPosition, 1.0);
-                
-                ///////////////////////////////////////////
-                // Calculos de la iluminacion
-                vec3 vLightWeighting = vec3(1.0, 1.0, 1.0);
-                if (uUseLighting) {		
-                    vec3 dist = uLightPosition - vVertex; 
-                    vec3 lightDirection = normalize(dist);
-                    vec3 transformedNormal = vNormal;
-                    float directionalLightWeighting = max(dot(transformedNormal, lightDirection), 0.0);
-                    //vLightWeighting = uDirectionalColor * directionalLightWeighting;
-                    vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+
+                vec3 N = normalize(vNormal);
+                vec3 finalColor = vec3(0.0, 0.0, 0.0);
+
+                for (int i = 0; i < 3; i++) {
+                    vec3 L = normalize(lights[i] - vVertex);
+                    vec3 V = normalize(uCameraPosition - vVertex);
+                    vec3 R = normalize(reflect(-L,N));
+
+                    vec3 Rd = material.Kd * max(dot(N,L), 0.0);
+                    vec3 Rs = material.Ks * pow(max(dot(R,V), 0.0), material.Shininess);
+
+                    finalColor += uLightColor * clamp(material.Ka + Rd + Rs, 0.0, 1.0);
                 }
-                return vLightWeighting;
+
+                return finalColor;
             }
-        
+
             void main(void) {
                 vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+                //gl_FragColor = vec4(normalize(vNormal), 1.0);
                 gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
             }
-        
+
         </script>
 
         <script id="shader-vs" type="x-shader/x-vertex">
@@ -115,20 +115,20 @@
                 if (isWater) {
                     aux_pos.z = aux_pos.z + cos( 3.14/150.0 * aux_pos.x + 2.0*utick) * cos(3.14/150.0 * aux_pos.y + 1.0*utick);
                 }
-                
-                // Transformamos al vertice al espacio de la camara
-                vec4 aux_vertex = uViewMatrix * uModelMatrix * vec4(aux_pos, 1.0);
-                
+
+                // Transformamos al vertice al espacio de modelo
+                vec4 aux_vertex = uModelMatrix * vec4(aux_pos, 1.0);
+
                 // Transformamos al vertice al espacio de la proyeccion
-                gl_Position = uPMatrix * aux_vertex;
+                gl_Position = uPMatrix * uViewMatrix * aux_vertex;
 
                 vVertex = vec3(aux_vertex);
                 vNormal = normalize(uNMatrix * aVertexNormal);
-                
+
                 // Coordenada de textura sin modificaciones
                 vTextureCoord = aTextureCoord;
             }
-            
+
         </script>
 
 
@@ -149,9 +149,9 @@
             }
 
             var shaderProgram;
-
+            var program;
             function initShaders() {
-                var program = new Program(gl, "shader-vs", "shader-fs");
+                program = new Program(gl, "shader-vs", "shader-fs");
                 program.initShaders();
                 program.definitionVariablesDifuso();
                 shaderProgram = program.getProgram();
@@ -188,14 +188,14 @@
             var yaw = 0;
             var rotAmount = 0.005;
 
-            var lightColor = [1.0, 1.0, 1.0];
+            var lightColor = [0.7, 0.7, 0.7];
             var lightPosition0 = [11.9, 2.2, 14.8];
             var lightPosition1 = [0.0, -0.3, 24.5];
             var lightPosition2 = [0.0, -0.3, 4.0];
 
             function objectUniform(){
-                gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
-                gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
+                //gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
+                //gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
             }	
 
             function drawScene() {
@@ -213,14 +213,14 @@
                 gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 
                 // Se configura la matriz de vista
-                gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix()); 
+                gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix());
+                
+                var cameraPosition = cameras.getPosition();
+                gl.uniform3f(shaderProgram.cameraPosition, cameraPosition[0], cameraPosition[1], cameraPosition[2]); 
 
                 /////////////////////////////////////////////////////
                 // Configuracion de la luz
                 // Se inicializan las variables asociadas con la Iluminacion
-                var lighting = true;
-                gl.uniform1i(shaderProgram.useLightingUniform, lighting);       
-
                 gl.uniform3fv(shaderProgram.lightColor, lightColor);
                 gl.uniform3fv(shaderProgram.lightPosition0, lightPosition0);
                 gl.uniform3fv(shaderProgram.lightPosition1, lightPosition1);
@@ -362,7 +362,6 @@
                 //console.log(locked);
             }
 
-
             function lockPointer() {
                 var lock = document.getElementById("pointer-lock-element");
                 lock.requestPointerLock = lock.requestPointerLock    ||
@@ -388,7 +387,14 @@
                 all = new ShapeGroup();
 
                 //--------------------bck---------------------------
-                bck = new Background(128, 128);
+                //TODO: arreglar valores de todos los materiales
+                var materialBck = {
+                    ka: [0.1, 0.1, 0.1],
+                    kd: [0.4, 0.4, 0.4],
+                    ks: [0.4, 0.4, 0.4],
+                    shininess: 2.0
+                };
+                bck = new Background(128, 128, materialBck);
                 bck.initTexture("./textures/reflexionMap.jpg");	
 
                 bckShape = new Shape(bck,objectUniform);
@@ -400,7 +406,13 @@
                 //--------------------------------------------------
 
                 //--------------------floor---------------------------
-                floor = new Box(20, 2.5, 40);
+                var materialFloor = {
+                    ka: [0.1, 0.1, 0.1],
+                    kd: [0.4, 0.4, 0.4],
+                    ks: [0.4, 0.4, 0.4],
+                    shininess: 2.0
+                };
+                floor = new Box(20, 2.5, 40, materialFloor);
                 floor.initTexture("./textures/floor.jpg");	
 
                 floorShape = new Shape(floor,objectUniform);
@@ -411,11 +423,19 @@
                 //--------------------------------------------------
 
                 //--------------------pharos---------------------------
+                var materialPharos = {
+                    ka: [0.5, 0.5, 0.5],
+                    kd: [0.1, 0.1, 0.1],
+                    ks: [0.8, 0.8, 0.8],
+                    shininess: 20.0
+                };
+                
                 var heightPharo = 4.2;
                 var radioPoste = 0.15;
                 var radioPharo = 0.5;
+                var delta = 32;
 
-                pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, 32);
+                pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, delta, materialPharos);
                 pharos.initTexture("./textures/gray.jpg", "./textures/dirtyWhite.jpg");
 
                 pharosShape = new Shape(pharos, objectUniform);
@@ -424,8 +444,8 @@
                 all.add(pharosShape);
                 //--------------------------------------------------
 
-                //--------------------lightCabin--------------------------	
-                var lightCabin = new TexturedSphere(32, 32);
+                //--------------------lightCabin--------------------------
+                var lightCabin = new TexturedSphere(32, 32, materialPharos);
                 lightCabin.initTexture("./textures/dirtyWhite.jpg");	
 
                 lightCabinShape = new Shape(lightCabin,objectUniform);
@@ -437,8 +457,14 @@
                 all.add(lightCabinShape);		
                 //--------------------------------------------------
 
-                //--------------------floor---------------------------
-                water = new Plane(350, 350, 25, 25, true);
+                //--------------------water---------------------------
+                var materialWater = {
+                    ka: [0.2, 0.2, 0.2],
+                    kd: [0.0, 0.0, 0.2],
+                    ks: [0.4, 0.4, 0.4],
+                    shininess: 2.0
+                };
+                water = new Plane(350, 350, 25, 25, true, materialWater);
                 water.initTexture("./textures/water.jpg");	
 
                 waterShape = new Shape(water,objectUniform);
@@ -450,7 +476,13 @@
                 //--------------------------------------------------		
 
                 //-----------------crane------------------------------
-                crane = new Crane(objectUniform,9);
+                var materialCrane = {
+                    ka: [0.1, 0.1, 0.1],
+                    kd: [0.2, 0.0, 0.0],
+                    ks: [0.4, 0.4, 0.4],
+                    shininess: 2.0
+                };
+                crane = new Crane(objectUniform,9, materialCrane);
                 crane.initTexture("./textures/crane.jpg");
                 crane.initTextureCargo("./textures/container_difusemap");
                 crane.initTextureCabin("./textures/cabin.jpg");
@@ -461,8 +493,14 @@
                 all.add(crane);
                 //--------------------------------------------------
 
-                //----------------------Island----------------------		
-                island = new Island(objectUniform);
+                //----------------------Island----------------------
+                var materialIsland = {
+                    ka: [0.2, 0.2, 0.2],
+                    kd: [0.0, 0.2, 0.0],
+                    ks: [0.4, 0.4, 0.4],
+                    shininess: 2.0
+                };
+                island = new Island(objectUniform, materialIsland);
                 island.initTexture("./textures/isla.jpg");
                 island.initBuffers();
 
@@ -470,7 +508,13 @@
                 //--------------------------------------------------
 
                 //--------------------ship--------------------------
-                ship = new Ship(objectUniform);
+                var materialShip = {
+                    ka: [0.1, 0.1, 0.1],
+                    kd: [0.3, 0.3, 0.3],
+                    ks: [0.2, 0.2, 0.2],
+                    shininess: 2.0
+                };
+                ship = new Ship(objectUniform, materialShip);
                 ship.initTexture("./textures/bridgeBase.jpg");
                 ship.initTextureTop("./textures/bridgeBase.jpg");
                 ship.initBuffers();

@@ -1,6 +1,7 @@
-Frame = function(objectUniform,height){
+Frame = function(objectUniform, material){
 
 	this.uniform = objectUniform;
+    this.material = material;
 	this.texturePath = null;
 	this.WheelTexturePath = null;
 	this.WheelTopTexturePath = null;
@@ -28,14 +29,14 @@ Frame = function(objectUniform,height){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.boxVertRight = new Box(0.2,7,0.2);
-		this.boxVertLeft = new Box(0.2,7,0.2);
-		this.boxHorizUp = new Box(2.6,0.2,0.2);
-		this.boxHorizMidd = new Box(3.4,0.15,0.15);
-		this.boxHorizDown = new Box(2.6,0.2,0.2);
+		this.boxVertRight = new Box(0.2,7,0.2, this.material);
+		this.boxVertLeft = new Box(0.2,7,0.2, this.material);
+		this.boxHorizUp = new Box(2.6,0.2,0.2, this.material);
+		this.boxHorizMidd = new Box(3.4,0.15,0.15, this.material);
+		this.boxHorizDown = new Box(2.6,0.2,0.2, this.material);
 		
-		this.wheelRight = new Cylinder(0.3,0.3,0.1);
-		this.wheelLeft = new Cylinder(0.3,0.3,0.1);		
+		this.wheelRight = new Cylinder(0.3,0.3,0.1, this.material);
+		this.wheelLeft = new Cylinder(0.3,0.3,0.1, this.material);		
 		
 		this.boxVertRight.initTexture(this.texturePath);
 		this.boxVertLeft.initTexture(this.texturePath);

@@ -17,6 +17,10 @@ WalkingCamera = function(source,target,up){
 		return this.matrix;
     }
 	
+    this.getPosition = function(){
+		return this.source;
+    }
+    
 	this.updateBinormal = function(){
 		var tgt = this.utils.getDir(this.target,this.source);
 		this.binorm = [ tgt[1]*up[2]-tgt[2]*up[1] , -tgt[0]*up[2]+tgt[2]*up[0], tgt[0]*up[1]-tgt[1]*up[0] ];	

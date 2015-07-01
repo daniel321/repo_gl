@@ -1,6 +1,7 @@
-Crane = function(objectUniform,dist){
+Crane = function(objectUniform, dist, material){
 	this.dist = dist;
 	this.movmentAmount = 0;
+    this.material = material;
 	
 	this.uniform = objectUniform;
 	this.texturePath = null;
@@ -24,11 +25,11 @@ Crane = function(objectUniform,dist){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.frameFront      = new Frame(this.uniform);
-		this.frameBack       = new Frame(this.uniform);	
-		this.boxSupportLeft  = new Box(0.2,0.2,this.dist);
-		this.boxSupportRight = new Box(0.2,0.2,this.dist);
-		this.movingThing     = new MovingThing(this.uniform);
+		this.frameFront      = new Frame(this.uniform, this.material);
+		this.frameBack       = new Frame(this.uniform, this.material);	
+		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material);
+		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material);
+		this.movingThing     = new MovingThing(this.uniform, this.material);
 		
 		this.frameFront.initTexture(this.texturePath);
 		this.frameBack.initTexture(this.texturePath);

@@ -1,6 +1,7 @@
-Island = function(objectUniform){
+Island = function(objectUniform, material){
 	this.movmentAmount = 0;
-	
+	this.material = material;
+    
 	this.scales = [];
 	this.controlPointsPath = [];
 	this.controlPointsCurve = [];
@@ -25,13 +26,13 @@ Island = function(objectUniform){
 		
 		var curve = new BSplineCuadCurve(this.controlPointsCurve, [0,0,1], 10);
 		curve.initBuffers();
-	    curve.initTexture("./textures/red.jpg");		
+//	    curve.initTexture("./textures/red.jpg");		
 	
-		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales);
+		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales, this.material);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
 		
-		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale);
+		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material);
 		this.fan.initBuffers();
 		this.fan.initTexture("./textures/pastoIsla.jpg");	
 

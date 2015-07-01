@@ -1,11 +1,13 @@
-Pharos = function(objectUniform, height, radioPoste, radioPharo){
+Pharos = function(objectUniform, height, radioPoste, radioPharo, delta, material){
     this.uniform = objectUniform;
+    this.material = material;
     this.texturePathPoste = null;
     this.texturePathPharo = null;
 
     this.height = height;
     this.radioPoste = radioPoste;
     this.radioPharo = radioPharo;
+    this.delta = delta;
 
     this.pharo0 = null;
     this.pharo1 = null;
@@ -16,14 +18,13 @@ Pharos = function(objectUniform, height, radioPoste, radioPharo){
     this.all = null;
     
     this.initBuffers = function(){
-        var delta = 32;
         
-        this.pharo0 = new Pharo(this.uniform, this.height, this.radioPoste, this.radioPharo, delta);
+        this.pharo0 = new Pharo(this.uniform, this.height, this.radioPoste, this.radioPharo, this.delta, this.material);
         this.pharo0.initTexture(this.texturePathPoste, this.texturePathPharo);
 		
 		this.pharo0Shape = new Shape(this.pharo0, this.uniform);
         
-        this.pharo1 = new Pharo(this.uniform, this.height, this.radioPoste, this.radioPharo, delta);
+        this.pharo1 = new Pharo(this.uniform, this.height, this.radioPoste, this.radioPharo, this.delta, this.material);
         this.pharo1.initTexture(this.texturePathPoste, this.texturePathPharo);
 		
 		this.pharo1Shape = new Shape(this.pharo1, this.uniform);

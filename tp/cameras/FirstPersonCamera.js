@@ -16,6 +16,10 @@ FirstPersonCamera = function(source,target,up){
 		mat4.lookAt(this.matrix, this.source, this.target, this.up);
 		return this.matrix;
     }
+    
+    this.getPosition = function(){
+		return this.source;
+    }
 
 	this.updateBinormal = function(){
 		var tgt = this.utils.getDir(this.target,this.source);

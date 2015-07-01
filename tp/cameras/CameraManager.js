@@ -55,5 +55,9 @@ CameraManager = function(){
 	
 	this.getActive = function(){
 		return this.cameras[this.active];
-	}	
+	}
+    
+    this.getPosition = function() {
+        return this.getActive().getPosition();	
+    }
 };

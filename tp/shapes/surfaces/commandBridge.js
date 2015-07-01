@@ -1,5 +1,6 @@
-CommandBridge = function (objectUniform){
+CommandBridge = function (objectUniform, material){
     this.uniform = objectUniform;
+    this.material = material;
     
     this.bridge = null;
     this.bridgeBase = null;
@@ -25,27 +26,27 @@ CommandBridge = function (objectUniform){
     this.initBuffers = function(){
 		this.initCoordTexture();
         
-        this.bridge = new Box(3.0, 0.2, 0.4);
+        this.bridge = new Box(3.0, 0.2, 0.4, this.material);
         this.bridge.setCoordTexture(this.coordTextureSup);
         this.bridge.initBuffers();
         this.bridge.initTexture("./textures/bridgeBase.jpg");
         
         this.bridgeShape = new Shape(this.bridge, this.uniform);
         
-        this.bridgeBase = new Box(2.5, 0.8, 0.25);
+        this.bridgeBase = new Box(2.5, 0.8, 0.25, this.material);
         this.bridgeBase.setCoordTexture(this.coordTextureInf);
         this.bridgeBase.initBuffers();
         this.bridgeBase.initTexture("./textures/bridgeBase.jpg");
         
         this.bridgeBaseShape = new Shape(this.bridgeBase, this.uniform);
 		
-		this.door = new Box(1, 1, 0.1);
+		this.door = new Box(1, 1, 0.1, this.material);
 		this.door.initBuffers();
 		this.door.initTexture("./textures/door.jpg");
 
         this.doorShape = new Shape(this.door, this.uniform);
 
-		this.window = new Box(1, 1, 0.1);
+		this.window = new Box(1, 1, 0.1, this.material);
 		this.window.initBuffers();
 		this.window.initTexture("./textures/window.png");
 
