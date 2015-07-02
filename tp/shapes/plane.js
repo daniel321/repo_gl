@@ -42,13 +42,24 @@ Plane = function (width, height, cols, rows, isWater, material){
         this.texture.image.src = texture_file;
     }
 
+    this.setNormal = function(normal) {
+        this.normal_buffer = [];
+            
+        for (var i = 0.0; i < this.rows; i++) { 
+            for (var j = 0.0; j < this.cols; j++) {
+                this.normal_buffer.push(normal[0]);
+                this.normal_buffer.push(normal[1]);
+                this.normal_buffer.push(normal[2]);
+            }
+        }
+    }
+    
     this.setVertices = function(width, height){
 
         var incW = width/(this.cols-1);
         var incH = height/(this.rows-1);
 
         this.position_buffer = [];
-        this.normal_buffer = [];
         this.texture_coord_buffer = [];
 
         for (var i = 0.0; i < this.rows; i++) { 
@@ -60,15 +71,23 @@ Plane = function (width, height, cols, rows, isWater, material){
                 this.position_buffer.push(i * incH);
                 this.position_buffer.push(0);
                 
-                this.normal_buffer.push(0.0);
-                this.normal_buffer.push(0.0);
-                this.normal_buffer.push(-1.0);
-                
                 this.texture_coord_buffer.push(j);
                 this.texture_coord_buffer.push(i);
             }
         }
-
+        
+        if (this.normal_buffer == null) {
+            this.normal_buffer = [];
+            
+            for (var i = 0.0; i < this.rows; i++) { 
+                for (var j = 0.0; j < this.cols; j++) {
+                    this.normal_buffer.push(0.0);
+                    this.normal_buffer.push(0.0);
+                    this.normal_buffer.push(-1.0);
+                }
+            }
+        }
+        
         this.index_buffer = [];
         for (var i = 0; i < (this.rows-1); i++) { 
 

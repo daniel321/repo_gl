@@ -65,6 +65,7 @@
 		
 		var top = new Fan(points, [0,0,0], matrix, this.material);
 		var bot = new Fan(points, [0,0,0], matrix, this.material);
+        bot.setNormal([0.0, 0.0, -1.0]);
 		
 		top.initBuffers();
 		bot.initBuffers();
@@ -77,7 +78,6 @@
 
 		this.botShape.translate(0,0,height/2);
 		this.topShape.translate(0,0,-height/2);		
-		this.topShape.rotate(Math.PI,0,0);
 	}	
 		
 	this.initBot_TopTexture = function(texture){

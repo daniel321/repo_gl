@@ -26,7 +26,6 @@ Ship = function(objectUniform, material){
 		
 		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,1], 10);
 		this.curve.initBuffers();
-//	    this.curve.initTexture("./textures/red.jpg");		
 
 		this.generateTop();
 		this.top.initBuffers();
@@ -92,6 +91,7 @@ Ship = function(objectUniform, material){
 		mat3.translate(matrix,matrix,pos);
 		
 		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material);
+        this.top.setNormal([1.0, 0.0, 0.0]);
 	}
 	
 	this.initTexture = function(texturePath){

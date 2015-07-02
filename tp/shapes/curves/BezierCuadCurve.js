@@ -63,9 +63,9 @@
 				z = z/mod;
 			}
 			
-			this.normal_buffer.push(x); 
-			this.normal_buffer.push(y); 
-			this.normal_buffer.push(z); 			
+			this.normal_buffer.push(-x); 
+			this.normal_buffer.push(-y); 
+			this.normal_buffer.push(-z); 			
 		}
 
 			var dx = (this.position_buffer[t]   - this.position_buffer[t-3])/h;		
@@ -77,7 +77,7 @@
 				dx = dx/mod;
 			}
 			this.normal_buffer.push(dy); 
-			this.normal_buffer.push((-1)*dx); 
+			this.normal_buffer.push((1)*dx); 
 			this.normal_buffer.push(0); 			
 	}	
 

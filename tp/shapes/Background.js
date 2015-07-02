@@ -139,6 +139,8 @@
                 material: this.material
             };
             
+            gl.uniform1i(shaderProgram.activeReflexion, false);
             program.setVariablesDifuso(variables);
+            gl.uniform1i(shaderProgram.activeReflexion, true);
         }
     };

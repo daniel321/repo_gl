@@ -2,7 +2,7 @@ PlaneWindow = function (positions, material){
     this.material = material;
 
     this.position_buffer = positions;
-    this.normal_buffer = [];
+    this.normal_buffer = null;
     this.texture_coord_buffer = [];
     this.index_buffer = [];
 
@@ -35,12 +35,25 @@ PlaneWindow = function (positions, material){
         this.texture.image.src = texture_file;
     }
 
+    this.setNormal = function(normal) {
+        this.normal_buffer = [];
+            
+        for (var i = 0; i < this.position_buffer.length; i = i+3) {
+                this.normal_buffer.push(normal[0]);
+                this.normal_buffer.push(normal[1]);
+                this.normal_buffer.push(normal[2]);
+        }
+    }
+    
     this.setVertices = function(){	
 
-        for (var i = 0; i < this.position_buffer.length; i = i+3) {
-            this.normal_buffer.push(0.0);
-            this.normal_buffer.push(0.0);
-            this.normal_buffer.push(-1.0);
+        if (this.normal_buffer == null) {
+            this.normal_buffer = [];
+            for (var i = 0; i < this.position_buffer.length; i = i+3) {
+                this.normal_buffer.push(0.0);
+                this.normal_buffer.push(0.0);
+                this.normal_buffer.push(-1.0);
+            }
         }
 
         for (var i = 0; i < this.position_buffer.length; i = i+3) {

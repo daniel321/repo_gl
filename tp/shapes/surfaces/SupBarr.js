@@ -119,6 +119,11 @@
 					// ---------- normales ----------				
 					var normals = [this.normals[x] , this.normals[x+1] , this.normals[x+2]];				
 
+//                    var transformNormal = mat3.create();
+//					mat3.identity(transformNormal);
+//					mat3.normalFromMat4(transformNormal, transform);
+//                    vec3.transformMat4(normals, normals, transformNormal);
+                    
 					this.normal_buffer.push(normals[0]); 
 					this.normal_buffer.push(normals[1]); 
 					this.normal_buffer.push(normals[2]); 

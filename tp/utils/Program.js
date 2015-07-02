@@ -89,6 +89,7 @@ Program = function (gl, idVertex, idFragment) {
     }
 
     this.setVariablesDifuso = function(variables) {
+         this.gl.useProgram(this.program);
 
         // Se configuran los buffers que alimentarán el pipeline
         this.gl.bindBuffer(gl.ARRAY_BUFFER, variables.bufferPosition);
@@ -100,8 +101,8 @@ Program = function (gl, idVertex, idFragment) {
         this.gl.bindBuffer(gl.ARRAY_BUFFER, variables.bufferNormal);
         this.gl.vertexAttribPointer(this.program.vertexNormalAttribute, variables.bufferNormal.itemSize, gl.FLOAT, false, 0, 0);
 
-        this.gl.activeTexture(gl.TEXTURE0);
-        this.gl.bindTexture(gl.TEXTURE_2D, variables.texture);
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, variables.texture);
         this.gl.uniform1i(this.program.samplerUniform, 0);
 
         this.gl.uniformMatrix4fv(this.program.ModelMatrixUniform, false, variables.matrixModel);
@@ -121,6 +122,46 @@ Program = function (gl, idVertex, idFragment) {
         this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, variables.bufferIndex);
         this.gl.drawElements(variables.typeDraw, variables.bufferIndex.numItems, gl.UNSIGNED_SHORT, 0);
 
-        this.gl.bindTexture(gl.TEXTURE_2D, null);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    }
+    
+    this.definitionVariablesReflexion = function() {
+        this.gl.useProgram(this.program);
+
+        this.program.vertexPositionAttribute = this.gl.getAttribLocation(this.program, "aVertexPosition");
+        this.gl.enableVertexAttribArray(this.program.vertexPositionAttribute);
+
+        this.program.vertexNormalAttribute = this.gl.getAttribLocation(this.program, "aVertexNormal");
+        this.gl.enableVertexAttribArray(this.program.vertexNormalAttribute);
+
+        this.program.textureCoordAttribute = this.gl.getAttribLocation(this.program, "aTextureCoord");
+        this.gl.enableVertexAttribArray(this.program.textureCoordAttribute);
+
+        this.program.ModelMatrixUniform = this.gl.getUniformLocation(this.program, "uModelMatrix");
+        this.program.ViewMatrixUniform = this.gl.getUniformLocation(this.program, "uViewMatrix");
+        this.program.pMatrixUniform = this.gl.getUniformLocation(this.program, "uPMatrix");
+        this.program.nMatrixUniform = this.gl.getUniformLocation(this.program, "uNMatrix");
+
+        this.program.samplerUniform = this.gl.getUniformLocation(this.program, "uSampler");
+        
+        this.program.textureReflexion = this.gl.getUniformLocation(this.program, "uReflTexture");
+        this.program.activeReflexion = this.gl.getUniformLocation(this.program, "uActiveReflexion");
+        
+        this.program.utick = this.gl.getUniformLocation(this.program, "utick");
+        this.program.isWater = this.gl.getUniformLocation(this.program, "isWater");
+
+        this.program.cameraPosition = this.gl.getUniformLocation(this.program, "uCameraPosition");
+        
+        this.program.lightColor = this.gl.getUniformLocation(this.program, "uLightColor");
+
+        this.program.lightPosition0 = this.gl.getUniformLocation(this.program, "lights[0]");
+        this.program.lightPosition1 = this.gl.getUniformLocation(this.program, "lights[1]");
+        this.program.lightPosition2 = this.gl.getUniformLocation(this.program, "lights[2]");
+
+        this.program.materialKa = this.gl.getUniformLocation(this.program, "material.Ka");
+        this.program.materialKd = this.gl.getUniformLocation(this.program, "material.Kd");
+        this.program.materialKs = this.gl.getUniformLocation(this.program, "material.Ks");
+        this.program.materialShininess = this.gl.getUniformLocation(this.program, "material.Shininess");
+
     }
 }

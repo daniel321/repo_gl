@@ -58,9 +58,9 @@
 
 			var mod = Math.sqrt(x*x+y*y+z*z);
 
-			this.normal_buffer.push(x/mod); 
-			this.normal_buffer.push(y/mod); 
-			this.normal_buffer.push(z/mod); 			
+			this.normal_buffer.push(-x/mod); 
+			this.normal_buffer.push(-y/mod); 
+			this.normal_buffer.push(-z/mod); 			
 		}
 
 			var dx = (this.position_buffer[t]   - this.position_buffer[t-3])/h;		

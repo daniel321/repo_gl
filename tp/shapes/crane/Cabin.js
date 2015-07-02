@@ -35,8 +35,11 @@ Cabin = function(objectUniform, width, height, depth, angle, material){
         this.planeFrontal = new PlaneWindow(this.planeFrontalPositions, this.material);
         this.planeBack = new Plane(this.width, this.height, 2, 2, false, this.material);
         this.planeSideLeft = new PlaneWindow(this.planeSidePositions, this.material);
+        this.planeSideLeft.setNormal([0.0, 0.0, -1.0]);
         this.planeSideRight = new PlaneWindow(this.planeSidePositions, this.material);
+        this.planeSideRight.setNormal([0.0, 0.0, 1.0]);
         this.planeTop = new Plane(this.width, this.depth - (this.height/Math.tan((Math.PI/2) - this.angle)), 2, 2, false, this.material);
+        this.planeTop.setNormal([1.0, 0.0, 0.0]);
         this.planeLower = new PlaneWindow(this.planeLowerPositions, this.material);
 
         this.planeFrontal.initTexture(this.texturePath);

@@ -41,7 +41,7 @@
         <script type="text/javascript" src="./shapes/crane/Cabin.js"></script>
         <script type="text/javascript" src="./shapes/crane/Cargo.js"></script>
 
-        <script id="shader-fs" type="x-shader/x-fragment">
+        <script id="shader-fs-difuso" type="x-shader/x-fragment">
             precision mediump float;
 
             struct Material {
@@ -85,8 +85,87 @@
 
             void main(void) {
                 vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-                //gl_FragColor = vec4(normalize(vNormal), 1.0);
-                gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                gl_FragColor = vec4(normalize(vNormal), 1.0);
+                //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+            }
+
+        </script>
+
+        <script id="shader-fs-reflexion" type="x-shader/x-fragment">
+            precision mediump float;
+
+            struct Material {
+                vec3 Ka;
+                vec3 Kd;
+                vec3 Ks;
+                float Shininess;
+            };
+
+            uniform Material material;
+
+            uniform vec3 uCameraPosition;
+
+            uniform vec3 uLightColor;
+            uniform vec3 lights[3];            
+
+            varying vec2 vTextureCoord;
+            varying vec3 vVertex;
+            varying vec3 vNormal;
+
+            uniform sampler2D uSampler;
+            uniform sampler2D uReflTexture;
+            uniform bool uActiveReflexion;
+
+            const float PI = 3.14159265358979323846264;
+
+            vec3 ads(void) {
+
+                vec3 N = normalize(vNormal);
+                vec3 finalColor = vec3(0.0, 0.0, 0.0);
+
+                for (int i = 0; i < 3; i++) {
+                    vec3 L = normalize(lights[i] - vVertex);
+                    vec3 V = normalize(uCameraPosition - vVertex);
+                    vec3 R = normalize(reflect(-L,N));
+
+                    vec3 Rd = material.Kd * max(dot(N,L), 0.0);
+                    vec3 Rs = material.Ks * pow(max(dot(R,V), 0.0), material.Shininess);
+
+                    finalColor += uLightColor * (material.Ka + Rd + Rs);
+                }
+
+                return finalColor;
+            }
+
+            vec3 reflex(void) {
+
+                vec3 N = normalize(vNormal);
+                vec4 finalColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+                vec3 V = normalize(uCameraPosition - vVertex);
+                vec3 R = normalize(reflect(V,N));
+
+                vec2 textCoorRef = vec2(0.0, 0.0);
+                textCoorRef.s = (0.5 + ((1.0/(2.0*PI))*atan(N.z, N.x)));
+                textCoorRef.t = (0.5 - ((1.0/PI)*asin(N.y)));
+
+                finalColor = texture2D(uReflTexture, vec2(textCoorRef.s, textCoorRef.t));
+
+                //return (uLightColor * finalColor.rgb);
+                return finalColor.rgb;
+            }
+
+            void main(void) {
+                vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+                if (uActiveReflexion) {
+                    gl_FragColor = vec4(textureColor.rgb * (ads() + 0.7 * reflex()), textureColor.a);
+                    //gl_FragColor = vec4(textureColor.rgb * (0.7 * reflex()), textureColor.a);
+                }
+                else {
+                    //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
+                    gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                }
+                gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
             }
 
         </script>
@@ -150,10 +229,17 @@
 
             var shaderProgram;
             var program;
+            
+            
             function initShaders() {
-                program = new Program(gl, "shader-vs", "shader-fs");
+                /*program = new Program(gl, "shader-vs", "shader-fs-difuso");
                 program.initShaders();
                 program.definitionVariablesDifuso();
+                shaderProgram = program.getProgram();*/
+
+                program = new Program(gl, "shader-vs", "shader-fs-reflexion");
+                program.initShaders();
+                program.definitionVariablesReflexion();
                 shaderProgram = program.getProgram();
 
             }
@@ -193,10 +279,34 @@
             var lightPosition1 = [0.0, -0.3, 24.5];
             var lightPosition2 = [0.0, -0.3, 4.0];
 
+            var textureReflexion = null;
+
             function objectUniform(){
                 //gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
                 //gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
             }	
+
+            function initTextureReflexion(texture_file) {
+
+                var aux_texture = gl.createTexture();
+                textureReflexion = aux_texture;
+                textureReflexion.image = new Image();
+
+                var texture = textureReflexion;
+                var image = textureReflexion.image;
+
+                textureReflexion.image.onload = function () {
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+                    gl.generateMipmap(gl.TEXTURE_2D);
+
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
+                textureReflexion.image.src = texture_file;
+            }
 
             function drawScene() {
 
@@ -214,7 +324,7 @@
 
                 // Se configura la matriz de vista
                 gl.uniformMatrix4fv(shaderProgram.ViewMatrixUniform, false, cameras.getMatrix());
-                
+
                 var cameraPosition = cameras.getPosition();
                 gl.uniform3f(shaderProgram.cameraPosition, cameraPosition[0], cameraPosition[1], cameraPosition[2]); 
 
@@ -228,17 +338,37 @@
 
                 gl.uniform1f(shaderProgram.utick, shader_utick);
 
+                var reflexion = true;
+                gl.uniform1i(shaderProgram.activeReflexion, reflexion);
+
+                if (reflexion) {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, textureReflexion);
+                    gl.uniform1i(shaderProgram.textureReflexion, 0);
+                }
+
                 var identity = mat4.create();
                 mat4.identity(identity);
                 all.draw(identity);
+
+                gl.bindTexture(gl.TEXTURE_2D, null);
             }
 
             //	var lightPosition = [100.0,30.0,100.0];
             //	var ang_0 = -Math.PI/1.5;
             var rotSpeedDivider = 2;
 
+            var lastUpdate = Date.now();
+            var fps = 5;
+            
             function tick() {
                 requestAnimFrame(tick);
+                
+                var now = Date.now();
+                if (now - lastUpdate <= 1000 / fps) {
+                    return;
+                }
+                lastUpdate = Date.now();
 
                 //bckShape.rotate(0,0.01/rotSpeedDivider,0);
 
@@ -383,6 +513,8 @@
                 initGL(canvas);
                 initShaders();
 
+                initTextureReflexion("./textures/reflexionMap.jpg");
+
                 setUpListeners();		
                 all = new ShapeGroup();
 
@@ -399,7 +531,7 @@
 
                 bckShape = new Shape(bck,objectUniform);
                 bckShape.scale(120.0, 60.0, 120.0);
-                bckShape.rotate(0.0, Math.PI, 0.0);
+                //bckShape.rotate(0.0, Math.PI, 0.0);
                 bckShape.initBuffers();
 
                 all.add(bckShape);
@@ -429,7 +561,7 @@
                     ks: [0.8, 0.8, 0.8],
                     shininess: 20.0
                 };
-                
+
                 var heightPharo = 4.2;
                 var radioPoste = 0.15;
                 var radioPharo = 0.5;
@@ -477,15 +609,15 @@
 
                 //-----------------crane------------------------------
                 var materialCrane = {
-                    ka: [0.1, 0.1, 0.1],
-                    kd: [0.2, 0.0, 0.0],
-                    ks: [0.4, 0.4, 0.4],
-                    shininess: 2.0
+                    ka: [0.2, 0.2, 0.2],
+                    kd: [0.2, 0.2, 0.2],
+                    ks: [0.5, 0.5, 0.5],
+                    shininess: 5.0
                 };
                 crane = new Crane(objectUniform,9, materialCrane);
                 crane.initTexture("./textures/crane.jpg");
                 crane.initTextureCargo("./textures/container_difusemap");
-                crane.initTextureCabin("./textures/cabin.jpg");
+                crane.initTextureCabin("./textures/crane.jpg");
                 crane.initTextureSupport("./textures/crane.jpg");
                 crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
                 crane.initBuffers();
@@ -516,7 +648,7 @@
                 };
                 ship = new Ship(objectUniform, materialShip);
                 ship.initTexture("./textures/bridgeBase.jpg");
-                ship.initTextureTop("./textures/bridgeBase.jpg");
+                ship.initTextureTop("./textures/gray.jpg");
                 ship.initBuffers();
 
                 all.add(ship);
