@@ -35,7 +35,7 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
         this.all.add(this.faroShape);
         this.all.initBuffers();
 
-        this.posteShape.rotate(Math.PI/2, 0.0, 0.0);
+        this.posteShape.rotate(Math.PI/2, Math.PI, 0.0);
         this.posteShape.translate(0.0, -this.height/2 - 0.45, 0.0);
 
         this.faroShape.scale(radioPharo, radioPharo, radioPharo);

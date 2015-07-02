@@ -77,8 +77,8 @@ Frame = function(objectUniform, material){
 
 		this.wheelLeftShape.translate(-1.4,-3.5,0);
 		this.wheelRightShape.translate(1.4,-3.5,0);
-        this.wheelLeftShape.rotate(0.0,-Math.PI/2,0.0);
-		this.wheelRightShape.rotate(0.0,-Math.PI/2,0.0);
+        this.wheelLeftShape.rotate(Math.PI,-Math.PI/2,0.0);
+        this.wheelRightShape.rotate(Math.PI,-Math.PI/2,0.0);
 		
 		this.boxHorizUpShape.translate(0,3.4,0);
 		this.boxHorizMiddShape.translate(0,2.25,0);
