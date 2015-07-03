@@ -1,9 +1,12 @@
-  SupBarr = function (shape, path, scales, material){
+  SupBarr = function (shape, path, scales, material, conditionShader){
 
         this.shape = shape.getPoints();
         this.normals = shape.getNormals();
+        this.binormal = shape.getPerp();
 		this.scales = scales;
         this.material = material;
+        this.withNormalMap = conditionShader.useNormalMap;
+        this.withReflexion = conditionShader.useReflexion;
 		
         this.path = path;
 		
@@ -11,13 +14,16 @@
         this.normal_buffer = null;
         this.texture_coord_buffer = null;
         this.index_buffer = null;
+        this.tangente_buffer = null;
 
         this.webgl_position_buffer = null;
         this.webgl_normal_buffer = null;
         this.webgl_texture_coord_buffer = null;
         this.webgl_index_buffer = null;
+        this.webgl_tangente_buffer = null;
         
         this.texture = null;
+        this.normalMap = null;
 
         this.initTexture = function(texture_file){
             
@@ -40,6 +46,10 @@
             }
             this.texture.image.src = texture_file;
         }
+        
+        this.initNormalMap = function(texture){
+            this.normalMap = texture;
+        }
 		
         // Se generan los vertices para la esfera, calculando los datos para una esfera de radio 1
         // Y también la información de las normales y coordenadas de textura para cada vertice de la esfera
@@ -51,6 +61,7 @@
             this.normal_buffer = [];
             this.texture_coord_buffer = [];
             this.index_buffer = [];
+            this.tangente_buffer = [];
 
 			this.calculateShape();
 			
@@ -78,6 +89,12 @@
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.index_buffer), gl.STATIC_DRAW);
             this.webgl_index_buffer.itemSize = 1;
             this.webgl_index_buffer.numItems = this.index_buffer.length;
+            
+            this.webgl_tangente_buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_tangente_buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.tangente_buffer), gl.STATIC_DRAW);
+            this.webgl_tangente_buffer.itemSize = 3;
+            this.webgl_tangente_buffer.numItems = this.tangente_buffer.length / 3;
         }
 		
 		this.calculateShape = function(){		
@@ -139,6 +156,14 @@
 					
 //					this.texture_coord_buffer.push(20*x/pointsPerShape);
 //					this.texture_coord_buffer.push(1-(y/1.5)/numShapes);
+                    
+                    // ---------- tangentes ----------	
+					
+					var tang = utils.normalize(utils.cross(this.binormal, normals));
+                    
+                    this.tangente_buffer.push(tang[0]); 
+					this.tangente_buffer.push(tang[1]); 
+					this.tangente_buffer.push(tang[2]);
 				}			
 			}
 		}		
@@ -148,9 +173,13 @@
                 bufferPosition: this.webgl_position_buffer,
                 bufferTextureCoord: this.webgl_texture_coord_buffer,
                 bufferNormal: this.webgl_normal_buffer,
+                bufferTangente: this.webgl_tangente_buffer,
                 texture: this.texture,
+                normalMap: this.normalMap,
                 matrixModel: modelMatrix,
-                isWater: false,
+                isWater: this.isWater,
+                withNormalMap: this.withNormalMap,
+                withReflexion: this.withReflexion,
                 bufferIndex: this.webgl_index_buffer,
                 typeDraw: gl.TRIANGLE_STRIP,
                 material: this.material
@@ -162,6 +191,6 @@
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-            program.setVariablesDifuso(variables);
+            program.setVariables(variables);
         }
     };

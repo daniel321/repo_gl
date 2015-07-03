@@ -6,6 +6,7 @@ CargoMover = function(objectUniform, material){
 	this.movmentAmount = 0;
 	
 	this.texturePath = null;
+    this.textureNormalMap = null;
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
 	
@@ -50,25 +51,37 @@ CargoMover = function(objectUniform, material){
         
 		this.cabin = new Cabin(this.uniform, width, height, depth, angle, this.material);
 
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: false
+        };
+        
 		var h = 2.0;
-		this.wireLeftFront  = new Box(0.01,h,0.01, this.material);
-		this.wireLeftBack   = new Box(0.01,h,0.01, this.material);
-		this.wireRightFront = new Box(0.01,h,0.01, this.material);
-		this.wireRightBack  = new Box(0.01,h,0.01, this.material);
+		this.wireLeftFront  = new Box(0.01,h,0.01, this.material, condShader);
+		this.wireLeftBack   = new Box(0.01,h,0.01, this.material, condShader);
+		this.wireRightFront = new Box(0.01,h,0.01, this.material, condShader);
+		this.wireRightBack  = new Box(0.01,h,0.01, this.material, condShader);
 		
-		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material);
-		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material);	
+		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material, condShader);
+		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material, condShader);	
 		this.cargo = new Cargo(this.uniform, this.materialCargo);	
 		
-		this.cabin.initTexture(this.CabinTexturePath);		
+		this.cabin.initTexture(this.CabinTexturePath, this.textureNormalMap);		
 		
 		this.wireLeftFront.initTexture(this.CabinTexturePath);
 		this.wireLeftBack.initTexture(this.CabinTexturePath);
 		this.wireRightFront.initTexture(this.CabinTexturePath);
 		this.wireRightBack.initTexture(this.CabinTexturePath);
+        
+        this.wireLeftFront.initNormalMap(this.textureNormalMap);
+		this.wireLeftBack.initNormalMap(this.textureNormalMap);
+		this.wireRightFront.initNormalMap(this.textureNormalMap);
+		this.wireRightBack.initNormalMap(this.textureNormalMap);
 		
 		this.cargoSupportLeft.initTexture(this.texturePath);		
-		this.cargoSupportRight.initTexture(this.texturePath);		
+		this.cargoSupportRight.initTexture(this.texturePath);
+        this.cargoSupportLeft.initNormalMap(this.textureNormalMap);		
+		this.cargoSupportRight.initNormalMap(this.textureNormalMap);		
 		this.cargo.initTexture(this.CargoTexturePath + this.generateNumber(5) + ".jpg");		
 		
 		this.cabinShape = new Shape(this.cabin,this.uniform);
@@ -240,9 +253,10 @@ CargoMover = function(objectUniform, material){
 		this.camera.applyMatrix(matrix);
 	}	
 	
-	this.initTexture = function(texturePath){
-		this.texturePath = texturePath;
-	}
+	this.initTexture = function(texturePath, textureNormalMap){
+        this.texturePath = texturePath;
+        this.textureNormalMap = textureNormalMap;
+    }
 	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;

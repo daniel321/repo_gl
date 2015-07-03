@@ -11,8 +11,13 @@ Cargo = function(objectUniform, material){
 	this.all = null;
 	
 	this.initBuffers = function(){
+        var condShader = {
+            useNormalMap: false,
+            useReflexion: false
+        };
+        
         this.initCoordTexture();
-		this.box = new Box(0.75,0.75,2.5, this.material);
+		this.box = new Box(0.75,0.75,2.5, this.material, condShader);
         this.box.setCoordTexture(this.coordTexture);
 		this.box.initTexture(this.texturePath);	
 		this.boxShape = new Shape(this.box,this.uniform);

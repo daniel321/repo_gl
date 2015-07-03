@@ -1,21 +1,26 @@
 	
-	Box = function (width, height, depth, material){
+	Box = function (width, height, depth, material, conditionShader){
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
         this.material = material;
+        this.withNormalMap = conditionShader.useNormalMap;
+        this.withReflexion = conditionShader.useReflexion;
 		
         this.position_buffer = null;
         this.normal_buffer = null;
         this.texture_coord_buffer = null;
         this.index_buffer = null;
+        this.tangente_buffer = null;
 
         this.webgl_position_buffer = null;
         this.webgl_normal_buffer = null;
         this.webgl_texture_coord_buffer = null;
         this.webgl_index_buffer = null;
+        this.webgl_tangente_buffer = null;
         
         this.texture = null;
+        this.normalMap = null;
 
         this.initTexture = function(texture_file){
             
@@ -37,6 +42,10 @@
 				gl.bindTexture(gl.TEXTURE_2D, null);
             }
             this.texture.image.src = texture_file;
+        }
+        
+        this.initNormalMap = function(texture){
+            this.normalMap = texture;
         }
 		
 	this.setVertices = function(width, height, depth){	
@@ -101,6 +110,37 @@
 								 1.0, 0.0, 0.0,
 								 1.0, 0.0, 0.0,
 								 1.0, 0.0, 0.0								  
+							];
+        
+        this.tangente_buffer = [1.0,  0.0, 0.0,
+				                1.0,  0.0, 0.0,
+							    1.0,  0.0, 0.0,
+								1.0,  0.0, 0.0,
+
+				                -1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,	
+								
+								1.0,  0.0, 0.0,
+				                1.0,  0.0, 0.0,
+							    1.0,  0.0, 0.0,
+								1.0,  0.0, 0.0,
+
+								-1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,
+								-1.0,  0.0, 0.0,
+								  
+								 0.0,  1.0, 0.0,
+								 0.0,  1.0, 0.0,
+								 0.0,  1.0, 0.0,
+								 0.0,  1.0, 0.0,
+								 
+								 0.0, -1.0, 0.0,
+								 0.0, -1.0, 0.0,
+								 0.0, -1.0, 0.0,
+								 0.0, -1.0, 0.0								  
 							];
 		
         if (this.texture_coord_buffer == null) {
@@ -189,6 +229,12 @@
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.index_buffer), gl.STATIC_DRAW);
             this.webgl_index_buffer.itemSize = 1;
             this.webgl_index_buffer.numItems = this.index_buffer.length;
+            
+            this.webgl_tangente_buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_tangente_buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.tangente_buffer), gl.STATIC_DRAW);
+            this.webgl_tangente_buffer.itemSize = 3;
+            this.webgl_tangente_buffer.numItems = this.tangente_buffer.length / 3;
         }
 
         this.draw = function(modelMatrix){
@@ -197,15 +243,19 @@
                 bufferPosition: this.webgl_position_buffer,
                 bufferTextureCoord: this.webgl_texture_coord_buffer,
                 bufferNormal: this.webgl_normal_buffer,
+                bufferTangente: this.webgl_tangente_buffer,
                 texture: this.texture,
+                normalMap: this.normalMap,
                 matrixModel: modelMatrix,
                 isWater: false,
+                withNormalMap: this.withNormalMap,
+                withReflexion: this.withReflexion,
                 bufferIndex: this.webgl_index_buffer,
                 typeDraw: gl.TRIANGLES,
                 material: this.material
             };
             
-            program.setVariablesDifuso(variables);
+            program.setVariables(variables);
         }
     };
 	

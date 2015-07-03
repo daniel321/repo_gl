@@ -1,4 +1,4 @@
-Fan = function (points, center, matrix, material){
+Fan = function (points, center, matrix, material, conditionShader){
     this.points = points;
     this.center = center;
     this.matrix = matrix;
@@ -7,14 +7,19 @@ Fan = function (points, center, matrix, material){
     this.normal_buffer = null;
     this.texture_coord_buffer = [];
     this.index_buffer = [];
+    this.tangente_buffer = [];
 
     this.webgl_position_buffer = null;
     this.webgl_normal_buffer = null;
     this.webgl_texture_coord_buffer = null;
     this.webgl_index_buffer = null;
+    this.webgl_tangente_buffer = null;
 
     this.texture = null;
+    this.normalMap = null;
     this.material = material;
+    this.withNormalMap = conditionShader.useNormalMap;
+    this.withReflexion = conditionShader.useReflexion;
 
     this.initTexture = function(texture_file){
 
@@ -38,6 +43,10 @@ Fan = function (points, center, matrix, material){
         this.texture.image.src = texture_file;
     }
 
+    this.initNormalMap = function(texture){
+        this.normalMap = texture;
+    }
+
     this.setVertices = function(){				
         var center = this.center;
         vec3.transformMat4(center,center,matrix);
@@ -47,6 +56,10 @@ Fan = function (points, center, matrix, material){
 
         this.texture_coord_buffer.push(0.5);
         this.texture_coord_buffer.push(0.5);
+
+        this.tangente_buffer.push(1.0);
+        this.tangente_buffer.push(0.0);
+        this.tangente_buffer.push(0.0);
 
         var cont = 0;
         this.index_buffer.push(cont++);
@@ -65,7 +78,11 @@ Fan = function (points, center, matrix, material){
             var utils = new VectorUtils();
             var textCoord = utils.normalize(utils.difference(point,center));
             this.texture_coord_buffer.push( textCoord[0] );	
-            this.texture_coord_buffer.push( textCoord[1] );	
+            this.texture_coord_buffer.push( textCoord[1] );
+
+            this.tangente_buffer.push(1.0);
+            this.tangente_buffer.push(0.0);
+            this.tangente_buffer.push(0.0);
         }
 
         if (this.normal_buffer == null) {
@@ -125,6 +142,12 @@ Fan = function (points, center, matrix, material){
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.index_buffer), gl.STATIC_DRAW);
         this.webgl_index_buffer.itemSize = 1;
         this.webgl_index_buffer.numItems = this.index_buffer.length;
+
+        this.webgl_tangente_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_tangente_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.tangente_buffer), gl.STATIC_DRAW);
+        this.webgl_tangente_buffer.itemSize = 3;
+        this.webgl_tangente_buffer.numItems = this.tangente_buffer.length / 3;
     }
 
     this.draw = function(modelMatrix){
@@ -133,14 +156,18 @@ Fan = function (points, center, matrix, material){
             bufferPosition: this.webgl_position_buffer,
             bufferTextureCoord: this.webgl_texture_coord_buffer,
             bufferNormal: this.webgl_normal_buffer,
+            bufferTangente: this.webgl_tangente_buffer,
             texture: this.texture,
+            normalMap: this.normalMap,
             matrixModel: modelMatrix,
             isWater: false,
+            withNormalMap: this.withNormalMap,
+            withReflexion: this.withReflexion,
             bufferIndex: this.webgl_index_buffer,
             typeDraw: gl.TRIANGLE_FAN,
             material: this.material
         };
 
-        program.setVariablesDifuso(variables);
+        program.setVariables(variables);
     }
 };

@@ -2,6 +2,7 @@ MovingThing = function(objectUniform, material){
 	this.uniform = objectUniform;
     this.material = material;
 	this.texturePath = null;
+    this.textureNormalMap = null;
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
 	this.SupportTexturePath = null;
@@ -25,10 +26,15 @@ MovingThing = function(objectUniform, material){
 	this.all = null;
 	
 	this.initBuffers = function(){
-		this.box = new Box(1,1,1.6, this.material);
-		this.boxRailFront = new Box(14,0.2,0.2, this.material);
-		this.boxRailBack = new Box(14,0.2,0.2, this.material);
-		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material);
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: false
+        };
+        
+		this.box = new Box(1,1,1.6, this.material, condShader);
+		this.boxRailFront = new Box(14,0.2,0.2, this.material, condShader);
+		this.boxRailBack = new Box(14,0.2,0.2, this.material, condShader);
+		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material, condShader);
 		this.cargoMover = new CargoMover(this.uniform, this.material);
         this.light = new Light(this.uniform, this.material);
 		
@@ -36,7 +42,12 @@ MovingThing = function(objectUniform, material){
 		this.boxRailFront.initTexture(this.texturePath);
 		this.boxRailBack.initTexture(this.texturePath);
 		this.boxRailEnd.initTexture(this.texturePath);
-		this.cargoMover.initTexture(this.texturePath);	
+		this.cargoMover.initTexture(this.texturePath, this.textureNormalMap);
+        
+        this.box.initNormalMap(this.textureNormalMap);
+		this.boxRailFront.initNormalMap(this.textureNormalMap);
+		this.boxRailBack.initNormalMap(this.textureNormalMap);
+		this.boxRailEnd.initNormalMap(this.textureNormalMap);
 
 		this.cargoMover.initTextureCargo(this.CargoTexturePath);	
 		this.cargoMover.initTextureCabin(this.CabinTexturePath);
@@ -95,9 +106,10 @@ MovingThing = function(objectUniform, material){
 		this.cargoMover.moveMover(amount);
 	}	
 	
-	this.initTexture = function(texturePath){
-		this.texturePath = texturePath;
-	}
+	this.initTexture = function(texturePath, textureNormalMap){
+        this.texturePath = texturePath;
+        this.textureNormalMap = textureNormalMap;
+    }
 	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;

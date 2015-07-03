@@ -16,6 +16,7 @@ Island = function(objectUniform, material){
 
 	this.uniform = objectUniform;
 	this.texturePath = null;
+    this.textureNormalMap = null;
 
 	this.all = null;
 	
@@ -27,14 +28,21 @@ Island = function(objectUniform, material){
 		var curve = new BSplineCuadCurve(this.controlPointsCurve, [0,0,1], 10);
 		curve.initBuffers();
 	
-		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales, this.material);
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: false
+        };
+        
+		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales, this.material, condShader);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
+        this.surf.initNormalMap(this.textureNormalMap);
 		
-		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material);
+        condShader.useNormalMap = false;
+		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material, condShader);
         this.fan.setNormal([0.0, 0.0, -1.0]);
 		this.fan.initBuffers();
-		this.fan.initTexture("./textures/pastoIsla.jpg");	
+		this.fan.initTexture("./textures/pastoIsla.jpg");
 
 		this.surfShape = new Shape(this.surf,this.uniform);
 		this.fanshape = new Shape(this.fan,this.uniform);
@@ -94,8 +102,9 @@ Island = function(objectUniform, material){
 														];		
 	}
 	
-	this.initTexture = function(texturePath){
+	this.initTexture = function(texturePath, textureNormalMap){
 		this.texturePath = texturePath;
+        this.textureNormalMap = textureNormalMap;
 	}
 
 	this.translate = function(dX,dY,dZ){

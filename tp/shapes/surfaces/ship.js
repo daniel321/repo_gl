@@ -18,6 +18,7 @@ Ship = function(objectUniform, material){
 	this.uniform = objectUniform;
 	this.texturePath = null;
 	this.textureTopPath = null;
+    this.textureNormalMapTop = null;
 
 	this.all = null;
 	
@@ -30,10 +31,16 @@ Ship = function(objectUniform, material){
 		this.generateTop();
 		this.top.initBuffers();
 	    this.top.initTexture(this.textureTopPath);
+        this.top.initNormalMap(this.textureNormalMapTop);
 	
 		this.topShape = new Shape(this.top,this.uniform);
+        
+        var condShader = {
+            useNormalMap: false,
+            useReflexion: true
+        };
 	
-		this.surf = new SupBarr(this.curve,this.controlPointsPath,this.scales, this.material);
+		this.surf = new SupBarr(this.curve,this.controlPointsPath,this.scales, this.material, condShader);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
 		
@@ -89,8 +96,13 @@ Ship = function(objectUniform, material){
 		mat4.identity(matrix);
 		mat4.scale(matrix,matrix,scale);
 		mat3.translate(matrix,matrix,pos);
+        
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: true
+        };
 		
-		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material);
+		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material, condShader);
         this.top.setNormal([1.0, 0.0, 0.0]);
 	}
 	
@@ -98,8 +110,9 @@ Ship = function(objectUniform, material){
 		this.texturePath = texturePath;
 	}
 
-	this.initTextureTop = function(texturePath){
+    this.initTextureTop = function(texturePath, textureNormalMap){
 		this.textureTopPath = texturePath;
+        this.textureNormalMapTop = textureNormalMap;
 	}
 
 	this.translate = function(dX,dY,dZ){

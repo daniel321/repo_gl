@@ -5,6 +5,7 @@ Crane = function(objectUniform, dist, material){
 	
 	this.uniform = objectUniform;
 	this.texturePath = null;
+    this.textureNormalMap = null;
 	this.WheelTexturePath = null;
 	this.WheelTopTexturePath = null;
 
@@ -27,19 +28,26 @@ Crane = function(objectUniform, dist, material){
 	this.all = null;
 	
 	this.initBuffers = function(){
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: false
+        };
+        
 		this.frameFront      = new Frame(this.uniform, this.material);
 		this.frameBack       = new Frame(this.uniform, this.material);	
-		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material);
-		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material);
+		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material, condShader);
+		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material, condShader);
 		this.movingThing     = new MovingThing(this.uniform, this.material);
         this.movingThing.setMaterialCargo(this.materialCargo);
 		
-		this.frameFront.initTexture(this.texturePath);
-		this.frameBack.initTexture(this.texturePath);
+		this.frameFront.initTexture(this.texturePath, this.textureNormalMap);
+		this.frameBack.initTexture(this.texturePath, this.textureNormalMap);
 		this.boxSupportLeft.initTexture(this.texturePath);
+        this.boxSupportLeft.initNormalMap(this.textureNormalMap);
 		this.boxSupportRight.initTexture(this.texturePath);
+        this.boxSupportRight.initNormalMap(this.textureNormalMap);
 		
-		this.movingThing.initTexture(this.texturePath);
+		this.movingThing.initTexture(this.texturePath, this.textureNormalMap);
 		this.movingThing.initTextureCargo(this.CargoTexturePath);
 		this.movingThing.initTextureCabin(this.CabinTexturePath);
 		this.movingThing.initTextureSupport(this.SupportTexturePath);
@@ -103,8 +111,9 @@ Crane = function(objectUniform, dist, material){
 		this.movingThing.setCabinCamera(camera,this.getMatrix());
 	}		
 	
-	this.initTexture = function(texturePath){
+	this.initTexture = function(texturePath, textureNormalMap){
 		this.texturePath = texturePath;
+        this.textureNormalMap = textureNormalMap;
 	}
 
 	this.initTextureCabin = function(CabinTexturePath){

@@ -1,6 +1,7 @@
 Cabin = function(objectUniform, width, height, depth, angle, material){
     this.uniform = objectUniform;
     this.texturePath = null;
+    this.textureNormalMap = null;
     this.material = material;
 
     this.width = width;
@@ -29,17 +30,24 @@ Cabin = function(objectUniform, width, height, depth, angle, material){
     this.all = null;
 
     this.initBuffers = function(){
+        var condShader = {
+            useNormalMap: true,
+            useReflexion: true
+        };
 
         this.createPositions(0.1, 0.4);
 
         this.planeFrontal = new PlaneWindow(this.planeFrontalPositions, this.material);
-        this.planeBack = new Plane(this.width, this.height, 2, 2, false, this.material);
+        this.planeBack = new Plane(this.width, this.height, 2, 2, false, this.material, condShader);
         this.planeSideLeft = new PlaneWindow(this.planeSidePositions, this.material);
         this.planeSideLeft.setNormal([0.0, 0.0, -1.0]);
+        this.planeSideLeft.setTangente([0.0, 1.0, 0.0]);
         this.planeSideRight = new PlaneWindow(this.planeSidePositions, this.material);
         this.planeSideRight.setNormal([0.0, 0.0, 1.0]);
-        this.planeTop = new Plane(this.width, this.depth - (this.height/Math.tan((Math.PI/2) - this.angle)), 2, 2, false, this.material);
+        this.planeSideRight.setTangente([0.0, -1.0, 0.0]);
+        this.planeTop = new Plane(this.width, this.depth - (this.height/Math.tan((Math.PI/2) - this.angle)), 2, 2, false, this.material, condShader);
         this.planeTop.setNormal([1.0, 0.0, 0.0]);
+        this.planeTop.setTangente([0.0, 0.0, -1.0]);
         this.planeLower = new PlaneWindow(this.planeLowerPositions, this.material);
 
         this.planeFrontal.initTexture(this.texturePath);
@@ -48,6 +56,13 @@ Cabin = function(objectUniform, width, height, depth, angle, material){
         this.planeSideRight.initTexture(this.texturePath);
         this.planeTop.initTexture(this.texturePath);
         this.planeLower.initTexture(this.texturePath);
+
+        this.planeFrontal.initNormalMap(this.textureNormalMap);
+        this.planeBack.initNormalMap(this.textureNormalMap);
+        this.planeSideLeft.initNormalMap(this.textureNormalMap);
+        this.planeSideRight.initNormalMap(this.textureNormalMap);
+        this.planeTop.initNormalMap(this.textureNormalMap);
+        this.planeLower.initNormalMap(this.textureNormalMap);
 
         this.planeFrontalShape = new Shape(this.planeFrontal,this.uniform);
         this.planeBackShape = new Shape(this.planeBack,this.uniform);
@@ -81,9 +96,10 @@ Cabin = function(objectUniform, width, height, depth, angle, material){
         this.planeLowerShape.rotate(Math.PI/2, 0.0, 0.0);
     }
 
-    this.initTexture = function(texturePath){
-        this.texturePath = texturePath;
-    }
+    this.initTexture = function(texturePath, textureNormalMap){
+		this.texturePath = texturePath;
+        this.textureNormalMap = textureNormalMap;
+	}
 
     this.createPositions = function(propBorder, propBlind){
 

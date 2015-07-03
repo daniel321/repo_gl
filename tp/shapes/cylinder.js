@@ -1,8 +1,9 @@
-	Cylinder = function ( radius,height,delta, material){
+	Cylinder = function ( radius,height,delta, material, useReflexion){
 		this.radius = radius;
 		this.height = height;
 		this.delta = delta;
         this.material = material;
+        this.withReflexion = useReflexion;
 		
 		this.topShape = null;
 		this.botShape = null;
@@ -11,15 +12,18 @@
         this.normal_buffer = [];
         this.texture_coord_buffer = [];
         this.index_buffer = [];
+        this.tangente_buffer = [];
 
         this.pos = [];
         this.norm = [];
-        this.text = [];	
+        this.text = [];
+        this.tang = [];
 		
         this.webgl_position_buffer = null;
         this.webgl_normal_buffer = null;
         this.webgl_texture_coord_buffer = null;
         this.webgl_index_buffer = null;
+        this.webgl_tangente_buffer = null;
         
         this.texture = null;
         this.textureTopBot = null;
@@ -62,10 +66,15 @@
 		
 		var matrix = mat4.create();
 		mat4.identity(matrix);
+        
+        var condShader = {
+            useNormalMap: false,
+            useReflexion: this.withReflexion
+        };
 		
-		var top = new Fan(points, [0,0,0], matrix, this.material);
+		var top = new Fan(points, [0,0,0], matrix, this.material, condShader);
 		top.setNormal([0.0, 0.0, -1.0]);
-        var bot = new Fan(points, [0,0,0], matrix, this.material);
+        var bot = new Fan(points, [0,0,0], matrix, this.material, condShader);
         bot.setNormal([0.0, 0.0, 1.0]);
 		
 		top.initBuffers();
@@ -105,7 +114,15 @@
 			this.text.push([i/a,1]);
 
 			this.index_buffer.push(cont++); 				
-			this.index_buffer.push(cont++);				
+			this.index_buffer.push(cont++);
+            
+            this.tang.push(radius * Math.cos(i+Math.PI/2));
+            this.tang.push(radius * Math.sin(i+Math.PI/2));
+            this.tang.push(0.0);
+            
+            this.tang.push(radius * Math.cos(i+Math.PI/2));
+            this.tang.push(radius * Math.sin(i+Math.PI/2));
+            this.tang.push(0.0);
 		}
 	}
 	
@@ -130,6 +147,12 @@
 			for (var j=0; j<this.pos.length; j++) {
 			  var c = this.pos[j];
 			  this.position_buffer = this.position_buffer.concat(c);
+			}
+            
+            this.tangente_buffer = [];
+			for (var j=0; j<this.tang.length; j++) {
+			  var c = this.tang[j];
+			  this.tangente_buffer = this.tangente_buffer.concat(c);
 			}
 		
             // Creación e Inicialización de los buffers a nivel de OpenGL
@@ -156,6 +179,12 @@
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.index_buffer), gl.STATIC_DRAW);
             this.webgl_index_buffer.itemSize = 1;
             this.webgl_index_buffer.numItems = this.index_buffer.length;
+            
+            this.webgl_tangente_buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.webgl_tangente_buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.tangente_buffer), gl.STATIC_DRAW);
+            this.webgl_tangente_buffer.itemSize = 3;
+            this.webgl_tangente_buffer.numItems = this.tangente_buffer.length / 3;
         }
 
         this.draw = function(modelMatrix){
@@ -163,15 +192,18 @@
                 bufferPosition: this.webgl_position_buffer,
                 bufferTextureCoord: this.webgl_texture_coord_buffer,
                 bufferNormal: this.webgl_normal_buffer,
+                bufferTangente: this.webgl_tangente_buffer,
                 texture: this.texture,
                 matrixModel: modelMatrix,
                 isWater: false,
+                withNormalMap: false,
+                withReflexion: this.withReflexion,
                 bufferIndex: this.webgl_index_buffer,
                 typeDraw: gl.TRIANGLE_STRIP,
                 material: this.material
             };
             
-            program.setVariablesDifuso(variables);
+            program.setVariables(variables);
 
 			this.topShape.draw(modelMatrix);
 			this.botShape.draw(modelMatrix);			
