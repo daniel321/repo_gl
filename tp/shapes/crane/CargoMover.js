@@ -1,6 +1,7 @@
 CargoMover = function(objectUniform, material){
 	this.uniform = objectUniform;
     this.material = material;
+    this.materialCargo = null;
 	this.movmentCargoAmount = 0;
 	this.movmentAmount = 0;
 	
@@ -57,7 +58,7 @@ CargoMover = function(objectUniform, material){
 		
 		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material);
 		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material);	
-		this.cargo = new Cargo(this.uniform, this.material);	
+		this.cargo = new Cargo(this.uniform, this.materialCargo);	
 		
 		this.cabin.initTexture(this.CabinTexturePath);		
 		
@@ -112,7 +113,7 @@ CargoMover = function(objectUniform, material){
 
 	this.createOldCargo = function(){
 		for (var i=0 ; i<=11 ; i++){
-			var cargo_i = new Cargo(this.uniform, this.material);
+			var cargo_i = new Cargo(this.uniform, this.materialCargo);
 			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
 			this.oldCargo.add(cargo_i);
@@ -249,6 +250,10 @@ CargoMover = function(objectUniform, material){
 
 	this.initTextureCabin = function(CabinTexturePath){
 		this.CabinTexturePath = CabinTexturePath;
+	}
+    
+    this.setMaterialCargo = function(materialCargo){
+		this.materialCargo = materialCargo;
 	}
 	
 	this.translate = function(dX,dY,dZ){

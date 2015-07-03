@@ -40,6 +40,7 @@ MovingThing = function(objectUniform, material){
 
 		this.cargoMover.initTextureCargo(this.CargoTexturePath);	
 		this.cargoMover.initTextureCabin(this.CabinTexturePath);
+        this.cargoMover.setMaterialCargo(this.materialCargo);
         
         this.light.initTexture(this.LightTexturePath);
 		
@@ -100,7 +101,11 @@ MovingThing = function(objectUniform, material){
 	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
-	}	
+	}
+    
+    this.setMaterialCargo = function(materialCargo){
+		this.materialCargo = materialCargo;
+	}
 	
 	this.initTextureCabin = function(CabinTexturePath){
 		this.CabinTexturePath = CabinTexturePath;

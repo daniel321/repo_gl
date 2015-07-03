@@ -32,6 +32,7 @@ Crane = function(objectUniform, dist, material){
 		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material);
 		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material);
 		this.movingThing     = new MovingThing(this.uniform, this.material);
+        this.movingThing.setMaterialCargo(this.materialCargo);
 		
 		this.frameFront.initTexture(this.texturePath);
 		this.frameBack.initTexture(this.texturePath);
@@ -112,6 +113,10 @@ Crane = function(objectUniform, dist, material){
 	
 	this.initTextureCargo = function(CargoTexturePath){
 		this.CargoTexturePath = CargoTexturePath;
+	}
+    
+    this.setMaterialCargo = function(materialCargo){
+		this.materialCargo = materialCargo;
 	}
 
 	this.initTextureSupport = function(SupportTexturePath){

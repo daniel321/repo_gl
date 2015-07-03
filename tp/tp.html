@@ -513,6 +513,7 @@
                 initShaders();
 
                 initTextureReflexion("./textures/red.jpg");
+                //initTextureReflexion("./textures/reflexionMap.jpg");
 
                 setUpListeners();		
                 all = new ShapeGroup();
@@ -595,10 +596,18 @@
                 //-----------------crane------------------------------
                 var materialCrane = {
                     ka: [0.2, 0.2, 0.2],
-                    kd: [0.7, 0.7, 0.7],
-                    ks: [1.0, 1.0, 1.0],
+                    kd: [0.5, 0.5, 0.5],
+                    ks: [0.7, 0.7, 0.7],
                     shininess: 25.0
                 };
+                
+                var materialCargo = {
+                    ka: [0.2, 0.2, 0.2],
+                    kd: [0.7, 0.7, 0.7],
+                    ks: [1.0, 1.0, 1.0],
+                    shininess: 5.0
+                };
+                
                 crane = new Crane(objectUniform,9, materialCrane);
                 crane.initTexture("./textures/crane.jpg");
                 crane.initTextureCargo("./textures/container_difusemap");
@@ -606,6 +615,7 @@
                 crane.initTextureSupport("./textures/crane.jpg");
                 crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
                 crane.initTextureLight("./textures/dirtyWhite.jpg");
+                crane.setMaterialCargo(materialCargo);
                 crane.initBuffers();
 
                 all.add(crane);
