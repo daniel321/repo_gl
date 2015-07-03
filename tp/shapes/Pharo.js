@@ -20,7 +20,7 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
     this.initBuffers = function(){
 
         this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material);
-        this.faro = new TexturedSphere(this.delta, this.delta, this.material);
+        this.faro = new TexturedSphere(this.delta, this.delta, this.material, false);
 
         this.poste.initTexture(this.texturePathPoste);
         this.poste.initBot_TopTexture(this.texturePathPoste);
@@ -38,7 +38,7 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
         this.posteShape.rotate(Math.PI/2, Math.PI, 0.0);
         this.posteShape.translate(0.0, -this.height/2 - 0.45, 0.0);
 
-        this.faroShape.scale(radioPharo, radioPharo, radioPharo);
+        this.faroShape.scale(this.radioPharo, this.radioPharo, this.radioPharo);
     }
 
     this.initTexture = function(texturePathPoste, texturePathPharo){

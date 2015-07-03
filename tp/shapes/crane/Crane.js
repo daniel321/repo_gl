@@ -11,6 +11,8 @@ Crane = function(objectUniform, dist, material){
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
 	this.SupportTexturePath = null;
+    
+    this.LightTexturePath = null;
 	
 	this.frameFront      = null;
 	this.frameBack       = null;
@@ -40,6 +42,7 @@ Crane = function(objectUniform, dist, material){
 		this.movingThing.initTextureCargo(this.CargoTexturePath);
 		this.movingThing.initTextureCabin(this.CabinTexturePath);
 		this.movingThing.initTextureSupport(this.SupportTexturePath);
+        this.movingThing.initTextureLight(this.LightTexturePath);
 		
 		this.frameFront.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
 		this.frameBack.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
@@ -65,8 +68,8 @@ Crane = function(objectUniform, dist, material){
 	}
 	
 	this.moveCrane = function(amount){
-		var noSePasaPositivamente = (this.movmentAmount + amount <= (this.dist * 0.5)-2);
-		var noSePasaNegativamente = (this.movmentAmount + amount >=  -(this.dist * 0.5)+0.3 );
+		var noSePasaPositivamente = (this.movmentAmount + amount <= (this.dist * 0.5)-1.6);
+		var noSePasaNegativamente = (this.movmentAmount + amount >=  -(this.dist * 0.5)+1.6);
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentAmount += amount;	
@@ -120,6 +123,10 @@ Crane = function(objectUniform, dist, material){
 		this.WheelTopTexturePath = WheelTopTexturePath;
 	}	
 	
+    this.initTextureLight = function(LightTexturePath){
+		this.LightTexturePath = LightTexturePath;
+	}
+    
 	this.translate = function(dX,dY,dZ){
 		this.all.translate(dX,dY,dZ);
 	}

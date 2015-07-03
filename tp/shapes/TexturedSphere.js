@@ -1,8 +1,9 @@
-  TexturedSphere = function (latitude_bands, longitude_bands, material){
+  TexturedSphere = function (latitude_bands, longitude_bands, material, isLightCrane){
 
         this.latitudeBands = latitude_bands;
         this.longitudeBands = longitude_bands;
         this.material = material;
+        this.isLightCrane = isLightCrane;
         
         this.position_buffer = null;
         this.normal_buffer = null;
@@ -137,5 +138,11 @@
             };
             
             program.setVariablesDifuso(variables);
+            
+            if (this.isLightCrane) {
+                var lightPosition = [0.0, 0.0, 0.0];
+                vec3.transformMat4(lightPosition, lightPosition, modelMatrix);
+                gl.uniform3fv(shaderProgram.lightPosition0, lightPosition);
+            }
         }
     };

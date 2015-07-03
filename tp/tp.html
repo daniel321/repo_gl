@@ -32,6 +32,7 @@
         <script type="text/javascript" src="./shapes/box.js"></script>
         <script type="text/javascript" src="./shapes/Pharo.js"></script>
         <script type="text/javascript" src="./shapes/Pharos.js"></script>
+        <script type="text/javascript" src="./shapes/Light.js"></script>
 
         <script type="text/javascript" src="./shapes/crane/Frame.js"></script>
         <script type="text/javascript" src="./shapes/crane/MovingThing.js"></script>
@@ -158,15 +159,16 @@
             void main(void) {
                 vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
                 if (uActiveReflexion) {
-                    gl_FragColor = vec4(textureColor.rgb * (ads() + 0.7 * reflex()), textureColor.a);
+                    //gl_FragColor = vec4(textureColor.rgb * (ads() + 1.0 * reflex()), textureColor.a);
                     //gl_FragColor = vec4(textureColor.rgb * (0.7 * reflex()), textureColor.a);
                 }
                 else {
                     //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
-                    gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                    //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
                 }
-                //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
-                gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
+                //gl_FragColor = vec4(length(lights[0] - vVertex), 0.0, 0.0, 1.0);
+                gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
             }
 
         </script>
@@ -268,17 +270,14 @@
 
             var pharos = null;
             var pharosShape = null;
-            var lightCabin = null;
-            var lightCabinShape = null;
 
             var pitch = 0;
             var yaw = 0;
             var rotAmount = 0.005;
 
             var lightColor = [0.7, 0.7, 0.7];
-            var lightPosition0 = [11.9, 2.2, 14.8];
-            var lightPosition1 = [0.0, -0.3, 24.5];
-            var lightPosition2 = [0.0, -0.3, 4.0];
+            var lightFijaPosition1 = [0.0, -0.3, 24.5];
+            var lightFijaPosition2 = [0.0, -0.3, 4.0];
 
             var textureReflexion = null;
 
@@ -333,9 +332,8 @@
                 // Configuracion de la luz
                 // Se inicializan las variables asociadas con la Iluminacion
                 gl.uniform3fv(shaderProgram.lightColor, lightColor);
-                gl.uniform3fv(shaderProgram.lightPosition0, lightPosition0);
-                gl.uniform3fv(shaderProgram.lightPosition1, lightPosition1);
-                gl.uniform3fv(shaderProgram.lightPosition2, lightPosition2);
+                gl.uniform3fv(shaderProgram.lightPosition1, lightFijaPosition1);
+                gl.uniform3fv(shaderProgram.lightPosition2, lightFijaPosition2);
 
                 gl.uniform1f(shaderProgram.utick, shader_utick);
 
@@ -360,7 +358,7 @@
             var rotSpeedDivider = 2;
 
             var lastUpdate = Date.now();
-            var fps = 5;
+            var fps = 10;
             
             function tick() {
                 requestAnimFrame(tick);
@@ -384,6 +382,7 @@
 
 
             var speed = 0.5;
+            var speedUpDown = 0.2;
             function handleKeys(event){ 		
                 if( currentlyPressedKeys["|".charCodeAt(0)] ){
                     cameras.cycleCamera();
@@ -425,24 +424,24 @@
 
 
                 if( currentlyPressedKeys["i".charCodeAt(0)] || currentlyPressedKeys["I".charCodeAt(0)]){
-                    crane.moveCrane(-speed);
+                    crane.moveCrane(-speedUpDown);
                 }	
                 if( currentlyPressedKeys["k".charCodeAt(0)] || currentlyPressedKeys["K".charCodeAt(0)]){
-                    crane.moveCrane(speed);
+                    crane.moveCrane(speedUpDown);
                 }
 
                 if( currentlyPressedKeys["j".charCodeAt(0)] || currentlyPressedKeys["J".charCodeAt(0)]){
-                    crane.moveMover(-speed);
+                    crane.moveMover(-speedUpDown);
                 }		
                 if( currentlyPressedKeys["l".charCodeAt(0)] || currentlyPressedKeys["L".charCodeAt(0)]){
-                    crane.moveMover(speed);
+                    crane.moveMover(speedUpDown);
                 }	
 
                 if( currentlyPressedKeys["u".charCodeAt(0)] || currentlyPressedKeys["U".charCodeAt(0)]){
-                    crane.moveCargo(speed);
+                    crane.moveCargo(speedUpDown);
                 }				
                 if( currentlyPressedKeys["o".charCodeAt(0)] || currentlyPressedKeys["O".charCodeAt(0)]){
-                    crane.moveCargo(-speed);
+                    crane.moveCargo(-speedUpDown);
                 }		
 
                 if( currentlyPressedKeys["9".charCodeAt(0)]){
@@ -514,7 +513,7 @@
                 initGL(canvas);
                 initShaders();
 
-                initTextureReflexion("./textures/reflexionMap.jpg");
+                initTextureReflexion("./textures/red.jpg");
 
                 setUpListeners();		
                 all = new ShapeGroup();
@@ -556,10 +555,10 @@
 
                 //--------------------pharos---------------------------
                 var materialPharos = {
-                    ka: [0.5, 0.5, 0.5],
+                    ka: [0.2, 0.2, 0.2],
                     kd: [0.1, 0.1, 0.1],
                     ks: [0.8, 0.8, 0.8],
-                    shininess: 20.0
+                    shininess: 32.0
                 };
 
                 var heightPharo = 4.2;
@@ -574,19 +573,6 @@
                 pharosShape.initBuffers();
 
                 all.add(pharosShape);
-                //--------------------------------------------------
-
-                //--------------------lightCabin--------------------------
-                var lightCabin = new TexturedSphere(32, 32, materialPharos);
-                lightCabin.initTexture("./textures/dirtyWhite.jpg");	
-
-                lightCabinShape = new Shape(lightCabin,objectUniform);
-                lightCabinShape.initBuffers();
-
-                lightCabinShape.scale(0.1, 0.1, 0.1);
-                lightCabinShape.translate(lightPosition0[0],lightPosition0[1],lightPosition0[2]);
-
-                all.add(lightCabinShape);		
                 //--------------------------------------------------
 
                 //--------------------water---------------------------
@@ -610,9 +596,9 @@
                 //-----------------crane------------------------------
                 var materialCrane = {
                     ka: [0.2, 0.2, 0.2],
-                    kd: [0.2, 0.2, 0.2],
-                    ks: [0.5, 0.5, 0.5],
-                    shininess: 5.0
+                    kd: [0.7, 0.7, 0.7],
+                    ks: [1.0, 1.0, 1.0],
+                    shininess: 25.0
                 };
                 crane = new Crane(objectUniform,9, materialCrane);
                 crane.initTexture("./textures/crane.jpg");
@@ -620,6 +606,7 @@
                 crane.initTextureCabin("./textures/crane.jpg");
                 crane.initTextureSupport("./textures/crane.jpg");
                 crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
+                crane.initTextureLight("./textures/dirtyWhite.jpg");
                 crane.initBuffers();
 
                 all.add(crane);
@@ -654,7 +641,7 @@
                 all.add(ship);
                 //--------------------------------------------------
 
-                ship.translate(8,-10,10);
+                ship.translate(8,-10.8,10);
                 ship.scale(3,6,6);
                 crane.translate(0, -1 , 10);
 

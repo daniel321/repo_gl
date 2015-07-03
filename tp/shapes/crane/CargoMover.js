@@ -120,7 +120,7 @@ CargoMover = function(objectUniform, material){
 		
 		this.oldCargo.initBuffers();
         
-        var floorPos = -3.6;
+        var floorPos = -4.4;
 		this.oldCargo.get(0).translate(6.0,floorPos,12);
 		this.oldCargo.get(1).translate(6.0,floorPos,15);	
 		this.oldCargo.get(2).translate(7.0,floorPos,12);	
@@ -196,8 +196,8 @@ CargoMover = function(objectUniform, material){
 	}
 	
 	this.moveMover = function(amount){
-		var noSePasaPositivamente = (this.movmentAmount + amount <= 5);
-		var noSePasaNegativamente = (this.movmentAmount + amount >=  -1 );
+		var noSePasaPositivamente = (this.movmentAmount + amount <= 5.2);
+		var noSePasaNegativamente = (this.movmentAmount + amount >=  -6.4 );
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
 			this.movmentAmount += amount;	
@@ -216,7 +216,7 @@ CargoMover = function(objectUniform, material){
 	
 	this.moveCargo = function(amount){
 		var noSePasaPositivamente = (this.movmentCargoAmount + amount <= 2.0);
-		var noSePasaNegativamente = (this.movmentCargoAmount + amount >=  -2.9 );
+		var noSePasaNegativamente = (this.movmentCargoAmount + amount >=  -3.7 );
 		
 		
 		if(noSePasaPositivamente && noSePasaNegativamente){
