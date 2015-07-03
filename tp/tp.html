@@ -42,57 +42,7 @@
         <script type="text/javascript" src="./shapes/crane/Cabin.js"></script>
         <script type="text/javascript" src="./shapes/crane/Cargo.js"></script>
 
-        <script id="shader-fs-difuso" type="x-shader/x-fragment">
-            precision mediump float;
-
-            struct Material {
-                vec3 Ka;
-                vec3 Kd;
-                vec3 Ks;
-                float Shininess;
-            };
-
-            uniform Material material;
-
-            uniform vec3 uCameraPosition;
-
-            uniform vec3 uLightColor;
-            uniform vec3 lights[3];            
-
-            varying vec2 vTextureCoord;
-            varying vec3 vVertex;
-            varying vec3 vNormal;
-
-            uniform sampler2D uSampler;
-
-            vec3 ads(void) {
-
-                vec3 N = normalize(vNormal);
-                vec3 finalColor = vec3(0.0, 0.0, 0.0);
-
-                for (int i = 0; i < 3; i++) {
-                    vec3 L = normalize(lights[i] - vVertex);
-                    vec3 V = normalize(uCameraPosition - vVertex);
-                    vec3 R = normalize(reflect(-L,N));
-
-                    vec3 Rd = material.Kd * max(dot(N,L), 0.0);
-                    vec3 Rs = material.Ks * pow(max(dot(R,V), 0.0), material.Shininess);
-
-                    finalColor += uLightColor * clamp(material.Ka + Rd + Rs, 0.0, 1.0);
-                }
-
-                return finalColor;
-            }
-
-            void main(void) {
-                vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-                gl_FragColor = vec4(normalize(vNormal), 1.0);
-                //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
-            }
-
-        </script>
-
-        <script id="shader-fs-reflexion" type="x-shader/x-fragment">
+        <script id="shader-fs" type="x-shader/x-fragment">
             precision mediump float;
 
             struct Material {
@@ -147,8 +97,8 @@
                 vec3 R = normalize(reflect(V,N));
 
                 vec2 textCoorRef = vec2(0.0, 0.0);
-                textCoorRef.s = (0.5 + ((1.0/(2.0*PI))*atan(N.z, N.x)));
-                textCoorRef.t = (0.5 - ((1.0/PI)*asin(N.y)));
+                textCoorRef.s = -(((1.0/(2.0*PI))*atan(N.x, N.z)));
+                textCoorRef.t = -(0.5 - ((1.0/PI)*asin(N.y)));
 
                 finalColor = texture2D(uReflTexture, vec2(textCoorRef.s, textCoorRef.t));
 
@@ -159,14 +109,14 @@
             void main(void) {
                 vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
                 if (uActiveReflexion) {
-                    //gl_FragColor = vec4(textureColor.rgb * (ads() + 1.0 * reflex()), textureColor.a);
+                    gl_FragColor = vec4(textureColor.rgb * (ads() + 0.7 * reflex()), textureColor.a);
                     //gl_FragColor = vec4(textureColor.rgb * (0.7 * reflex()), textureColor.a);
                 }
                 else {
                     //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
-                    //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                    gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
                 }
-                gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
+                //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
                 //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
             }
 
@@ -234,16 +184,10 @@
             
             
             function initShaders() {
-                /*program = new Program(gl, "shader-vs", "shader-fs-difuso");
-                program.initShaders();
-                program.definitionVariablesDifuso();
-                shaderProgram = program.getProgram();*/
-
-                program = new Program(gl, "shader-vs", "shader-fs-reflexion");
+                program = new Program(gl, "shader-vs", "shader-fs");
                 program.initShaders();
                 program.definitionVariablesReflexion();
                 shaderProgram = program.getProgram();
-
             }
 
             var pMatrix = null;
@@ -340,21 +284,16 @@
                 gl.uniform1i(shaderProgram.activeReflexion, reflexion);
 
                 if (reflexion) {
-                    gl.activeTexture(gl.TEXTURE0);
+                    gl.activeTexture(gl.TEXTURE1);
                     gl.bindTexture(gl.TEXTURE_2D, textureReflexion);
-                    gl.uniform1i(shaderProgram.textureReflexion, 0);
+                    gl.uniform1i(shaderProgram.textureReflexion, 1);
                 }
 
                 var identity = mat4.create();
                 mat4.identity(identity);
                 all.draw(identity);
-
                 gl.bindTexture(gl.TEXTURE_2D, null);
             }
-
-            //	var lightPosition = [100.0,30.0,100.0];
-            //	var ang_0 = -Math.PI/1.5;
-            var rotSpeedDivider = 2;
 
             var lastUpdate = Date.now();
             var fps = 10;
@@ -367,10 +306,6 @@
                     return;
                 }
                 lastUpdate = Date.now();
-
-                //bckShape.rotate(0,0.01/rotSpeedDivider,0);
-
-                //lightPosition = [100.0*Math.cos(-shader_utick/rotSpeedDivider+ang_0),30.0,100.0*Math.sin(-shader_utick/rotSpeedDivider+ang_0)]
 
                 shader_utick += 0.01;
 
@@ -512,8 +447,8 @@
                 initGL(canvas);
                 initShaders();
 
-                initTextureReflexion("./textures/red.jpg");
-                //initTextureReflexion("./textures/reflexionMap.jpg");
+                //initTextureReflexion("./textures/red.jpg");
+                initTextureReflexion("./textures/reflexionMap.jpg");
 
                 setUpListeners();		
                 all = new ShapeGroup();
@@ -556,9 +491,9 @@
                 //--------------------pharos---------------------------
                 var materialPharos = {
                     ka: [0.2, 0.2, 0.2],
-                    kd: [0.1, 0.1, 0.1],
-                    ks: [0.8, 0.8, 0.8],
-                    shininess: 32.0
+                    kd: [0.3, 0.3, 0.3],
+                    ks: [0.3, 0.3, 0.3],
+                    shininess: 2.0
                 };
 
                 var heightPharo = 4.2;
@@ -643,7 +578,8 @@
                     shininess: 2.0
                 };
                 ship = new Ship(objectUniform, materialShip);
-                ship.initTexture("./textures/bridgeBase.jpg");
+//                ship.initTexture("./textures/bridgeBase.jpg");
+                ship.initTexture("./textures/cascoBarco.jpg");
                 ship.initTextureTop("./textures/gray.jpg");
                 ship.initBuffers();
 
