@@ -122,18 +122,18 @@ CargoMover = function(objectUniform, material){
         
         var floorPos = -4.4;
 		this.oldCargo.get(0).translate(6.0,floorPos,12);
-		this.oldCargo.get(1).translate(6.0,floorPos,15);	
+		this.oldCargo.get(1).translate(6.0,floorPos,14.8);	
 		this.oldCargo.get(2).translate(7.0,floorPos,12);	
-		this.oldCargo.get(3).translate(7.0,floorPos,15);
+		this.oldCargo.get(3).translate(7.0,floorPos,14.8);
 		this.oldCargo.get(4).translate(8.0,floorPos,12);	
-		this.oldCargo.get(5).translate(8.0,floorPos,15);
+		this.oldCargo.get(5).translate(8.0,floorPos,14.8);
 
 		this.oldCargo.get(6).translate(9.0,floorPos,12);
-		this.oldCargo.get(7).translate(9.0,floorPos,15);	
+		this.oldCargo.get(7).translate(9.0,floorPos,14.8);	
 		this.oldCargo.get(8).translate(10.0,floorPos,12);	
-		this.oldCargo.get(9).translate(10.0,floorPos,15);
+		this.oldCargo.get(9).translate(10.0,floorPos,14.8);
 		this.oldCargo.get(10).translate(11.0,floorPos,12);	
-		this.oldCargo.get(11).translate(11.0,floorPos,15);		
+		this.oldCargo.get(11).translate(11.0,floorPos,14.8);		
 	}
 	
 	this.releaseCargo = function(parentMatrix){

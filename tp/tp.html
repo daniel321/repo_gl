@@ -166,7 +166,6 @@
                     //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
                     //gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
                 }
-                //gl_FragColor = vec4(length(lights[0] - vVertex), 0.0, 0.0, 1.0);
                 gl_FragColor = vec4(textureColor.rgb * ads(), textureColor.a);
                 //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
             }
@@ -641,7 +640,7 @@
                 all.add(ship);
                 //--------------------------------------------------
 
-                ship.translate(8,-10.8,10);
+                ship.translate(8,-10.8,10.7);
                 ship.scale(3,6,6);
                 crane.translate(0, -1 , 10);
 
