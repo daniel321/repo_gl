@@ -4,7 +4,7 @@ Fan = function (points, center, matrix, material, conditionShader){
     this.matrix = matrix;
 
     this.position_buffer = [];
-    this.normal_buffer = null;
+    this.normal_buffer = [];
     this.texture_coord_buffer = [];
     this.index_buffer = [];
     this.tangente_buffer = [];
@@ -48,6 +48,8 @@ Fan = function (points, center, matrix, material, conditionShader){
     }
 
     this.setVertices = function(){				
+	var utils = new VectorUtils();
+
         var center = this.center;
         vec3.transformMat4(center,center,matrix);
         this.position_buffer.push(this.center[0]);
@@ -56,6 +58,10 @@ Fan = function (points, center, matrix, material, conditionShader){
 
         this.texture_coord_buffer.push(0.5);
         this.texture_coord_buffer.push(0.5);
+
+	    this.normal_buffer.push(0.0);
+	    this.normal_buffer.push(0.0);
+	    this.normal_buffer.push(1.0);
 
         this.tangente_buffer.push(1.0);
         this.tangente_buffer.push(0.0);
@@ -67,53 +73,68 @@ Fan = function (points, center, matrix, material, conditionShader){
         var numPoints = this.points.length;		
         for (var y=0; y < numPoints ; y+=3){
             var point = [this.points[y],this.points[y+1],this.points[y+2]];
+
             vec3.transformMat4(point,point,matrix);
 
             this.position_buffer.push(point[0]);
             this.position_buffer.push(point[1]);
             this.position_buffer.push(point[2]);
-
+	
             this.index_buffer.push(cont++);
 
-            var utils = new VectorUtils();
             var textCoord = utils.normalize(utils.difference(point,center));
             this.texture_coord_buffer.push( textCoord[0] );	
             this.texture_coord_buffer.push( textCoord[1] );
-
-            this.tangente_buffer.push(1.0);
-            this.tangente_buffer.push(0.0);
-            this.tangente_buffer.push(0.0);
         }
 
-        if (this.normal_buffer == null) {
-            this.normal_buffer = [];
+       for (var y=0; y < numPoints-3 ; y+=3){
+            var point = [this.points[y],this.points[y+1],this.points[y+2]];
+            var sig = [this.points[y+3],this.points[y+4],this.points[y+5]];
 
-            this.normal_buffer.push(0);
-            this.normal_buffer.push(0);
-            this.normal_buffer.push(1);
+            vec3.transformMat4(point,point,matrix);
+	    vec3.transformMat4(sig,sig,matrix);
 
-            for (var y=0; y < this.points.length; y+=3){
-                this.normal_buffer.push(0);
-                this.normal_buffer.push(0);
-                this.normal_buffer.push(1);
-            }
+	    var tg = utils.normalize(utils.difference(sig,point));
+	    var bin = utils.normalize(utils.difference(center,point));
+	    var norm = utils.normalize(utils.cross(tg,bin));
+
+	    if (norm[0] == 0 || norm[1] == 0) {
+	  	 var a = this.normal_buffer[this.normal_buffer.length-3];
+	  	 var b = this.normal_buffer[this.normal_buffer.length-2];
+	  	 var c = this.normal_buffer[this.normal_buffer.length-1];
+
+	   	 this.normal_buffer.push(a);
+	   	 this.normal_buffer.push(b);
+	   	 this.normal_buffer.push(c);
+
+	  	 a = this.tangente_buffer[this.tangente_buffer.length-3];
+	  	 b = this.tangente_buffer[this.tangente_buffer.length-2];
+	  	 c = this.tangente_buffer[this.tangente_buffer.length-1];
+
+          	 this.tangente_buffer.push(a);
+           	 this.tangente_buffer.push(b);
+            	 this.tangente_buffer.push(c);
+	    } else {
+	    	this.normal_buffer.push(norm[0]);
+	    	this.normal_buffer.push(norm[1]);
+	    	this.normal_buffer.push(norm[2]);
+
+            	this.tangente_buffer.push(tg[0]);
+            	this.tangente_buffer.push(tg[1]);
+	        this.tangente_buffer.push(tg[2]);
+	    }
         }
 
+	    	this.normal_buffer.push(this.normal_buffer[0]);
+	    	this.normal_buffer.push(this.normal_buffer[1]);
+	    	this.normal_buffer.push(this.normal_buffer[2]);
+
+            	this.tangente_buffer.push(this.tangente_buffer[0]);
+            	this.tangente_buffer.push(this.tangente_buffer[1]);
+	        this.tangente_buffer.push(this.tangente_buffer[2]);
     }
 
-    this.setNormal = function(normal) {
-        this.normal_buffer = [];
 
-        this.normal_buffer.push(normal[0]);
-        this.normal_buffer.push(normal[1]);
-        this.normal_buffer.push(normal[2]);
-
-        for (var y=0; y < this.points.length; y+=3){
-            this.normal_buffer.push(normal[0]);
-            this.normal_buffer.push(normal[1]);
-            this.normal_buffer.push(normal[2]);
-        }
-    }
 
     this.initBuffers = function(){
         this.setVertices();

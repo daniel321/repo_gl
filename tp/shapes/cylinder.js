@@ -73,9 +73,7 @@
         };
 		
 		var top = new Fan(points, [0,0,0], matrix, this.material, condShader);
-		top.setNormal([0.0, 0.0, -1.0]);
         var bot = new Fan(points, [0,0,0], matrix, this.material, condShader);
-        bot.setNormal([0.0, 0.0, 1.0]);
 		
 		top.initBuffers();
 		bot.initBuffers();

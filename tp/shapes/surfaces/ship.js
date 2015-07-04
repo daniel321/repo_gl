@@ -103,7 +103,6 @@ Ship = function(objectUniform, material){
         };
 		
 		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material, condShader);
-        this.top.setNormal([1.0, 0.0, 0.0]);
 	}
 	
 	this.initTexture = function(texturePath){

@@ -40,7 +40,6 @@ Island = function(objectUniform, material){
 		
         condShader.useNormalMap = false;
 		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material, condShader);
-        this.fan.setNormal([0.0, 0.0, -1.0]);
 		this.fan.initBuffers();
 		this.fan.initTexture("./textures/pastoIsla.jpg");
 

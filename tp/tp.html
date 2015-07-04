@@ -390,7 +390,7 @@
             }
 
             var lastUpdate = Date.now();
-            var fps = 10;
+            var fps = 60;
             
             function tick() {
                 requestAnimFrame(tick);
@@ -668,7 +668,7 @@
                 //----------------------Island----------------------
                 var materialIsland = {
                     ka: [0.2, 0.2, 0.2],
-                    kd: [0.0, 0.2, 0.0],
+                    kd: [0.22, 0.2, 0.2],
                     ks: [0.4, 0.4, 0.4],
                     shininess: 2.0
                 };
@@ -687,8 +687,8 @@
                     shininess: 2.0
                 };
                 ship = new Ship(objectUniform, materialShip);
-//                ship.initTexture("./textures/bridgeBase.jpg");
-                ship.initTexture("./textures/cascoBarco.jpg");
+                ship.initTexture("./textures/bridgeBase.jpg");
+                //ship.initTexture("./textures/cascoBarco.jpg");
                 ship.initTextureTop("./textures/gray.jpg", craneNormalMap);
                 ship.initBuffers();
 
