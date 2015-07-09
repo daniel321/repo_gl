@@ -7,6 +7,7 @@
         <script type="text/javascript" src="./utils/webgl-utils.js"></script>
         <script type="text/javascript" src="./utils/vectorUtils.js"></script>
         <script type="text/javascript" src="./utils/Program.js"></script>
+        <script type="text/javascript" src="./utils/Texture.js"></script>
 
         <script type="text/javascript" src="./shapes/curves/BezierCuadCurve.js"></script>
         <script type="text/javascript" src="./shapes/curves/BSplineCuadCurve.js"></script>
@@ -250,109 +251,28 @@
             var lightFijaPosition1 = [0.0, -0.3, 24.5];
             var lightFijaPosition2 = [0.0, -0.3, 4.0];
 
-            var textureReflexion = null;
-
             function objectUniform(){
                 //gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
                 //gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
             }	
-
-            function initTextureReflexion(texture_file) {
-
-                var aux_texture = gl.createTexture();
-                textureReflexion = aux_texture;
-                textureReflexion.image = new Image();
-
-                var texture = textureReflexion;
-                var image = textureReflexion.image;
-
-                textureReflexion.image.onload = function () {
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                textureReflexion.image.src = texture_file;
+            
+            var textureReflexion = null;
+            var floorNormalMap = null;
+            var craneNormalMap = null;
+            var islaNormalMap = null;
+            
+            function initThisTexture(texturePath) {
+                var texture = new Texture(texturePath);
+                texture.initTexture();
+                return texture.getTexture();
             }
             
-            function initTextureFloorNormalMap(texture_file) {
-
-                var aux_texture = gl.createTexture();
-                floorNormalMap = aux_texture;
-                floorNormalMap.image = new Image();
-
-                var texture = floorNormalMap;
-                var image = floorNormalMap.image;
-
-                floorNormalMap.image.onload = function () {
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                floorNormalMap.image.src = texture_file;
-            }
-            
-            function initTextureCraneNormalMap(texture_file) {
-
-                var aux_texture = gl.createTexture();
-                craneNormalMap = aux_texture;
-                craneNormalMap.image = new Image();
-
-                var texture = craneNormalMap;
-                var image = craneNormalMap.image;
-
-                craneNormalMap.image.onload = function () {
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                craneNormalMap.image.src = texture_file;
-            }
-            
-            function initTextureIslaNormalMap(texture_file) {
-
-                var aux_texture = gl.createTexture();
-                islaNormalMap = aux_texture;
-                islaNormalMap.image = new Image();
-
-                var texture = islaNormalMap;
-                var image = islaNormalMap.image;
-
-                islaNormalMap.image.onload = function () {
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                islaNormalMap.image.src = texture_file;
-            }
-            
-            var floorNormalMap;
-            var craneNormalMap;
-            var islaNormalMap;
-            
-            function initTextureNormalMap() {
-                initTextureFloorNormalMap("./textures/floorNormalMap.jpg");
-                initTextureCraneNormalMap("./textures/craneNormalMap.jpg");
-                initTextureIslaNormalMap("./textures/islaNormalMap.jpg");
+            function initAllTextures() {
+                floorNormalMap = initThisTexture("./textures/floorNormalMap.jpg");
+                craneNormalMap = initThisTexture("./textures/craneNormalMap.jpg");
+                islaNormalMap = initThisTexture("./textures/islaNormalMap.jpg");
+                
+                textureReflexion = initThisTexture("./textures/reflexionMap.jpg");
             }
 
             function drawScene() {
@@ -541,10 +461,7 @@
                 initGL(canvas);
                 initShaders();
 
-                //initTextureReflexion("./textures/red.jpg");
-                initTextureReflexion("./textures/reflexionMap.jpg");
-                
-                initTextureNormalMap();
+                initAllTextures();
 
                 setUpListeners();		
                 all = new ShapeGroup();
