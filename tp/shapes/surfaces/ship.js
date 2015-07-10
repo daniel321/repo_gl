@@ -5,6 +5,7 @@ Ship = function(objectUniform, material){
 	this.scales = [];
 	this.controlPointsPath = [];
 	this.controlPointsCurve = [];
+    this.coordTexture = [];
 	
 	this.surfShape = null;
 	this.topShape = null;
@@ -21,11 +22,15 @@ Ship = function(objectUniform, material){
     this.textureNormalMapTop = null;
 
 	this.all = null;
+    this.deltaCurve = 10;
+    this.cantPath = 6;
+    this.deltaPath = 1;
 	
 	this.initBuffers = function(){
 		this.initControlPoints();
+        this.initCoordTexture();
 		
-		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,1], 10);
+		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,-1], this.deltaCurve);
 		this.curve.initBuffers();
 
 		this.generateTop();
@@ -41,6 +46,7 @@ Ship = function(objectUniform, material){
         };
 	
 		this.surf = new SupBarr(this.curve,this.controlPointsPath,this.scales, this.material, condShader);
+        this.surf.initCoordTexture(this.coordTexture);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
 		
@@ -63,13 +69,11 @@ Ship = function(objectUniform, material){
         this.bridgeShape.scale(1, 1, 2);		
 	}
 	
-	this.initControlPoints = function(){	 
-		var delta = 1;
-		var m = 6;
+	this.initControlPoints = function(){
 
-		for(var i=0; i<=m ; i+= delta){
+		for(var i=0; i<=this.cantPath ; i+= this.deltaPath){
 			this.controlPointsPath.push(0,0,i*0.2);
-			var h = i/m;
+			var h = i/this.cantPath;
 			var escalaY = 1+Math.sqrt(h);			
 			var escalaX = 1+Math.sqrt(h)*0.5;
 
@@ -85,6 +89,26 @@ Ship = function(objectUniform, material){
 									 -1,  1,  0 ];		
 	}
 	
+    this.initCoordTexture = function(){
+        for(var i=0; i<=this.cantPath; i+=this.deltaPath){ 
+            for(var j=0; j<=this.deltaCurve; j++){ 
+                this.coordTexture.push(j/this.deltaCurve);
+                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+            }
+            
+            for(var j=0; j<=this.deltaCurve; j++){ 
+                this.coordTexture.push(1.0 - j/this.deltaCurve);
+                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+            }
+            
+            for(var j=0; j<=this.deltaCurve; j++){ 
+                this.coordTexture.push(j * (0.14/this.deltaCurve));
+                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+            }
+            
+        }
+    }
+    
 	this.generateTop = function(){
 		var tamScale = this.scales.length;
 		var tamPos = this.controlPointsPath.length;

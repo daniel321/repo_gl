@@ -9,10 +9,11 @@
         this.withReflexion = conditionShader.useReflexion;
 		
         this.path = path;
+        this.useCoordTextureDefault = true;
 		
         this.position_buffer = null;
         this.normal_buffer = null;
-        this.texture_coord_buffer = null;
+        this.texture_coord_buffer = [];
         this.index_buffer = null;
         this.tangente_buffer = null;
 
@@ -37,7 +38,6 @@
 
             this.position_buffer = [];
             this.normal_buffer = [];
-            this.texture_coord_buffer = [];
             this.index_buffer = [];
             this.tangente_buffer = [];
 
@@ -75,7 +75,8 @@
             this.webgl_tangente_buffer.numItems = this.tangente_buffer.length / 3;
         }
 		
-		this.calculateShape = function(){		
+		this.calculateShape = function(){
+            var utils = new VectorUtils();
 			var numShapes = this.path.length;
 			var pointsPerShape = this.shape.length; 
 	
@@ -87,7 +88,6 @@
 				var center = [ this.path[y] , this.path[y+1] , this.path[y+2] ];
 				var centerNext = [ this.path[y+3] , this.path[y+4] , this.path[y+5] ];		
 				var scale = [this.scales[y], this.scales[y+1] , this.scales[y+2] ];
-
 				
 				for (var x=0; x < pointsPerShape; x+=3){			
 		
@@ -124,17 +124,16 @@
 					this.normal_buffer.push(normals[2]); 
 	
 					// ---------- texturas ----------	
+					if (this.useCoordTextureDefault) {
 					
-					var utils = new VectorUtils();
-					var textCoord = utils.normalize(utils.difference(centerFirst,point));
+					   var textCoord = utils.normalize(utils.difference(centerFirst,point));
 					
-					
-					this.texture_coord_buffer.push(-textCoord[0]);
-					this.texture_coord_buffer.push(-textCoord[2]);
+					   this.texture_coord_buffer.push(-textCoord[0]);
+					   this.texture_coord_buffer.push(-textCoord[2]);
 					
 //					this.texture_coord_buffer.push(20*x/pointsPerShape);
 //					this.texture_coord_buffer.push(1-(y/1.5)/numShapes);
-                    
+                    }
                     // ---------- tangentes ----------	
 					
 					var tang = utils.normalize(utils.cross(this.binormal, normals));
@@ -144,7 +143,14 @@
 					this.tangente_buffer.push(tang[2]);
 				}			
 			}
-		}		
+		}
+        
+        this.initCoordTexture = function(coordTexture){
+            this.useCoordTextureDefault = false;
+            for(var i=0; i < coordTexture.length; i++) {
+                this.texture_coord_buffer = this.texture_coord_buffer.concat(coordTexture[i]);
+            }
+        }
 		
         this.draw = function(modelMatrix){
             var variables = {
