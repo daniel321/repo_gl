@@ -123,7 +123,7 @@ CargoMover = function(material){
     }
 
 	this.createOldCargo = function(){
-		for (var i=0 ; i<=11 ; i++){
+		for (var i=0 ; i<=13 ; i++){
 			var cargo_i = new Cargo(this.material.materialCargo);
 			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
@@ -145,7 +145,10 @@ CargoMover = function(material){
 		this.oldCargo.get(8).translate(10.0,floorPos,12);	
 		this.oldCargo.get(9).translate(10.0,floorPos,14.8);
 		this.oldCargo.get(10).translate(11.0,floorPos,12);	
-		this.oldCargo.get(11).translate(11.0,floorPos,14.8);		
+		this.oldCargo.get(11).translate(11.0,floorPos,14.8);
+        
+        this.oldCargo.get(12).translate(-0.2,floorPos,12);
+        this.oldCargo.get(13).translate(0.8,floorPos,12);
 	}
 	
 	this.releaseCargo = function(parentMatrix){

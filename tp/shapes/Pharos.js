@@ -15,18 +15,18 @@ Pharos = function(height, radioPoste, radioPharo, delta, material){
     this.pharo1Shape = null;
 
     this.all = null;
-    
+
     this.initBuffers = function(){
-        
+
         this.pharo0 = new Pharo(this.height, this.radioPoste, this.radioPharo, this.delta, this.material);
         this.pharo0.initTexture(this.texturePathPoste, this.texturePathPharo);
-		
-		this.pharo0Shape = new Shape(this.pharo0);
-        
+
+        this.pharo0Shape = new Shape(this.pharo0);
+
         this.pharo1 = new Pharo(this.height, this.radioPoste, this.radioPharo, this.delta, this.material);
         this.pharo1.initTexture(this.texturePathPoste, this.texturePathPharo);
-		
-		this.pharo1Shape = new Shape(this.pharo1);
+
+        this.pharo1Shape = new Shape(this.pharo1);
 
         this.all = new ShapeGroup();
 
@@ -34,15 +34,15 @@ Pharos = function(height, radioPoste, radioPharo, delta, material){
         this.all.add(this.pharo1Shape);
         this.all.initBuffers();
 
-		this.pharo0Shape.translate(0.0, -0.3, 24.5);
-		this.pharo1Shape.translate(0.0, -0.3, 4.0);  
+        this.pharo0Shape.translate(0.0, -0.3, 24.5);
+        this.pharo1Shape.translate(0.0, -0.3, 4.0);  
     }
 
     this.initTexture = function(texturePathPoste, texturePathPharo){
         this.texturePathPoste = texturePathPoste;
         this.texturePathPharo = texturePathPharo;
     }
-    
+
     this.translate = function(dX,dY,dZ){
         this.all.translate(dX,dY,dZ);
     }

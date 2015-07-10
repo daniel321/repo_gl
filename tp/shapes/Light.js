@@ -8,7 +8,7 @@ Light = function(material){
     this.all = null;
 
     this.initBuffers = function(){
-        
+
         var deltaSphere = 32;
         var radioSphere = 0.1;
 

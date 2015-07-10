@@ -24,7 +24,7 @@ Texture = function (texture_file) {
         }
         this.texture.image.src = this.texture_file;
     }
-    
+
     this.getTexture = function() {
         return this.texture;
     }

@@ -407,9 +407,6 @@
             }
 
             function myMoveFunction(event) {
-                //console.log( "ev :" + event.clientX + " " +  event.clientY);
-                //console.log( "mouse :" +mouseX + " " +  mouseY);
-
                 if(locked){
                     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
                     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -419,9 +416,7 @@
 
                     if(movementY)	
                         yaw = movementY*rotAmount;		
-                    //console.log(movementX);
                 }
-                //console.log(locked);
             }
 
             function handleKeyDown(event){
@@ -434,7 +429,6 @@
 
             function pointerlockchange() {
                 locked = !locked;
-                //console.log(locked);
             }
 
             function lockPointer() {
@@ -446,7 +440,7 @@
             }	
 
             function setUpListeners(){				
-                document.addEventListener( 'mousemove', myMoveFunction, false );
+                document.addEventListener('mousemove', myMoveFunction, false );
 
                 window.addEventListener('pointerlockchange', pointerlockchange, false);
                 window.addEventListener('mozpointerlockchange', pointerlockchange, false);
@@ -583,7 +577,7 @@
                     shininess: 5.0,
                     reflexion: 0.0
                 };
-                
+
                 var materialGrua = {
                     materialCrane: materialCrane,
                     materialCargo: materialCargo,
@@ -604,7 +598,7 @@
 
                 //----------------------Island----------------------
                 var materialIsland = {
-                    ka: [0.1, 0.1, 0.1],
+                    ka: [0.2, 0.2, 0.2],
                     kd: [0.4, 0.4, 0.4],
                     ks: [0.4, 0.4, 0.4],
                     shininess: 2.0,

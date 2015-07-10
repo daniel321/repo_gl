@@ -44,7 +44,7 @@ Plane = function (width, height, cols, rows, isWater, material, conditionShader)
             }
         }
     }
-    
+
     this.setTangente = function(tangente) {
         this.tangente_buffer = [];
 
@@ -105,7 +105,7 @@ Plane = function (width, height, cols, rows, isWater, material, conditionShader)
                 this.index_buffer.push(this.cols * (i+1));
             }
         }
-        
+
         if (this.tangente_buffer == null) {
             this.tangente_buffer = [];
             for (var i = 0.0; i < this.rows; i++) { 
