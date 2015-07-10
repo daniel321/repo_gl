@@ -19,8 +19,8 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
 
     this.initBuffers = function(){
 
-        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material, true);
-        this.faro = new TexturedSphere(this.delta, this.delta, this.material, false);
+        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material.materialPoste, true);
+        this.faro = new TexturedSphere(this.delta, this.delta, this.material.materialFaro, false);
 
         this.poste.initTexture(this.texturePathPoste);
         this.poste.initBot_TopTexture(this.texturePathPoste);

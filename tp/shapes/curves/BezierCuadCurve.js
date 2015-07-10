@@ -6,7 +6,6 @@
 		
         this.position_buffer = null;
         this.normal_buffer = null;
-		this.texture_coord_buffer = null;
 		this.index_buffer = null;
       
 		this.calculateCurve = function(){		
@@ -31,12 +30,7 @@
 					this.position_buffer.push(y);
 					this.position_buffer.push(z);
 
-					//console.log("t: ", t," [" , x, ",", y , "," , z, "]");
-					
 					this.index_buffer.push(cont++);
-					
-					this.texture_coord_buffer.push(0);
-					this.texture_coord_buffer.push(0);
 				}
 			}
 		}
@@ -96,10 +90,6 @@
 			}			
 	}	
 
-        // Se generan los vertices para la esfera, calculando los datos para una esfera de radio 1
-        // Y también la información de las normales y coordenadas de textura para cada vertice de la esfera
-        // La esfera se renderizara utilizando triangulos, para ello se arma un buffer de índices 
-        // a todos los triángulos de la esfera
         this.initBuffers = function(){
 
 		    this.position_buffer = [];

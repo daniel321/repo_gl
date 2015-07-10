@@ -26,35 +26,13 @@
         this.normalMap = null;
 
         this.initTexture = function(texture_file){
-            
-            var aux_texture = gl.createTexture();
-            this.texture = aux_texture;
-            this.texture.image = new Image();
-
-			var texture = this.texture;
-			var image = this.texture.image;
-			
-            this.texture.image.onload = function () {
-				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-				gl.bindTexture(gl.TEXTURE_2D, texture);
-				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-				gl.generateMipmap(gl.TEXTURE_2D);
-
-				gl.bindTexture(gl.TEXTURE_2D, null);
-            }
-            this.texture.image.src = texture_file;
+            this.texture = initThisTexture(texture_file);
         }
         
         this.initNormalMap = function(texture){
             this.normalMap = texture;
         }
 		
-        // Se generan los vertices para la esfera, calculando los datos para una esfera de radio 1
-        // Y también la información de las normales y coordenadas de textura para cada vertice de la esfera
-        // La esfera se renderizara utilizando triangulos, para ello se arma un buffer de índices 
-        // a todos los triángulos de la esfera
         this.initBuffers = function(){
 
             this.position_buffer = [];

@@ -98,6 +98,7 @@ Program = function (gl, idVertex, idFragment) {
         this.gl.uniform3f(this.program.materialKd, variables.material.kd[0], variables.material.kd[1], variables.material.kd[2]);
         this.gl.uniform3f(this.program.materialKs, variables.material.ks[0], variables.material.ks[1], variables.material.ks[2]);
         this.gl.uniform1f(this.program.materialShininess, variables.material.shininess);
+        this.gl.uniform1f(this.program.materialReflexion, variables.material.reflexion);
 
         this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, variables.bufferIndex);
         this.gl.drawElements(variables.typeDraw, variables.bufferIndex.numItems, gl.UNSIGNED_SHORT, 0);
@@ -148,6 +149,7 @@ Program = function (gl, idVertex, idFragment) {
         this.program.materialKd = this.gl.getUniformLocation(this.program, "material.Kd");
         this.program.materialKs = this.gl.getUniformLocation(this.program, "material.Ks");
         this.program.materialShininess = this.gl.getUniformLocation(this.program, "material.Shininess");
+        this.program.materialReflexion = this.gl.getUniformLocation(this.program, "material.Reflexion");
 
     }
 }
