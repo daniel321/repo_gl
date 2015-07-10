@@ -1,9 +1,11 @@
-Fan = function (points, center, matrix, material, conditionShader){
+Fan = function (points, center, matrix, material, conditionShader, proyTexture){
     this.points = points;
     this.centerPoint = center.point;
     this.centerNormal = center.normal;
     this.centerTangente = center.tangente;
     this.matrix = matrix;
+    
+    this.proyTexture = proyTexture;
 
     this.position_buffer = [];
     this.normal_buffer = [];
@@ -126,6 +128,7 @@ Fan = function (points, center, matrix, material, conditionShader){
             normalMap: this.normalMap,
             matrixModel: modelMatrix,
             isWater: false,
+            proyTexture: this.proyTexture,
             withNormalMap: this.withNormalMap,
             withReflexion: this.withReflexion,
             bufferIndex: this.webgl_index_buffer,

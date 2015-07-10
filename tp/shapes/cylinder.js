@@ -69,8 +69,8 @@ Cylinder = function ( radius,height,delta, material, conditionShader){
             tangente: [0,1,0]
         };
 
-        var top = new Fan(points, centerTop, matrix, this.material, condShader);
-        var bot = new Fan(points, centerBot, matrix, this.material, condShader);
+        var top = new Fan(points, centerTop, matrix, this.material, condShader, false);
+        var bot = new Fan(points, centerBot, matrix, this.material, condShader, false);
 
         top.initBuffers();
         bot.initBuffers();
@@ -191,6 +191,7 @@ Cylinder = function ( radius,height,delta, material, conditionShader){
             texture: this.texture,
             matrixModel: modelMatrix,
             isWater: false,
+            proyTexture: false,
             withNormalMap: this.withNormalMap,
             withReflexion: this.withReflexion,
             bufferIndex: this.webgl_index_buffer,

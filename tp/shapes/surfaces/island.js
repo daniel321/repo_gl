@@ -42,7 +42,7 @@ Island = function(material){
         this.surf.initNormalMap(this.textureNormalMap);
 		
         condShader.useNormalMap = false;
-		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material, condShader);
+		this.fan = new Fan(curve.getPoints(),this.fanCenter,this.fanScale, this.material, condShader, true);
 		this.fan.initBuffers();
 		this.fan.initTexture("./textures/pastoIsla.jpg");
 
@@ -62,22 +62,22 @@ Island = function(material){
 	
 	this.initControlPoints = function(){	 
 
-		this.fanScale = mat4.create();
-		mat4.scale(this.fanScale,this.fanScale,[1,1,1]);
+        this.fanScale = mat4.create();
+		mat4.scale(this.fanScale,this.fanScale,[1.7,1,1.5]);
 		
 		var acum  = (this.cantPath/3+(-6*this.deltaPath)+1)*0.25;
 		this.fanCenter = {
             point: [0,acum,0],
             normal: [0,-1,0],
-            tangente: [1,0,0],
+            tangente: [1,0,0]
         };
-	
+        
 		for(var i=0; i<=2*this.cantPath ; i+= this.deltaPath){
 			this.controlPointsPath.push(0,acum + i*0.25, 0);
 			var h = i/this.cantPath;
 
-			var escalaZ = 1 + Math.sqrt(h)*1.25;	
-			var escalaX = 1 + Math.sqrt(h)*1.0;
+			var escalaZ = 1 + Math.pow(2, h)*0.5;	
+			var escalaX = 1 + Math.pow(2, h)*0.7;
 			
 			this.scales.push(escalaX,1,escalaZ);
 		}	
@@ -100,8 +100,7 @@ Island = function(material){
 									-2.0,  0.0,-2.0,
 									-3.0,  0.0,-1.5,
 									-4.0,  0.0, 0.0,
-									-3.0,  0.0, 1.0	
-														];
+									-3.0,  0.0, 1.0	];
 	}
     
     this.initCoordTexture = function(){

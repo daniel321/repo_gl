@@ -163,6 +163,7 @@
 
             uniform float utick;
             uniform bool isWater;
+            uniform bool proyTexture;
 
             varying vec2 vTextureCoord;
             varying vec3 vVertex;
@@ -187,8 +188,14 @@
                 vNormal = normalize(uNMatrix * aVertexNormal);
                 vTangente = normalize(uNMatrix * aVertexTangente);
 
-                // Coordenada de textura sin modificaciones
-                vTextureCoord = aTextureCoord;
+                //Verifico si debo proyectar la textura
+                if (proyTexture) {
+                    vTextureCoord.s = aux_pos.z;
+                    vTextureCoord.t = aux_pos.x;
+                } else {
+                    // Coordenada de textura sin modificaciones
+                    vTextureCoord = aTextureCoord;
+                }
             }
 
         </script>

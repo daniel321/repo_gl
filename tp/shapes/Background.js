@@ -130,6 +130,7 @@
                 texture: this.texture,
                 matrixModel: modelMatrix,
                 isWater: false,
+                proyTexture: false,
                 withNormalMap: false,
                 withReflexion: false,
                 bufferIndex: this.webgl_index_buffer,

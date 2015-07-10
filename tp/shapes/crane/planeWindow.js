@@ -131,6 +131,7 @@ PlaneWindow = function (positions, material){
             normalMap: this.normalMap,
             matrixModel: modelMatrix,
             isWater: false,
+            proyTexture: false,
             withNormalMap: true,
             withReflexion: true,
             bufferIndex: this.webgl_index_buffer,

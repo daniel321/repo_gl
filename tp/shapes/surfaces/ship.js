@@ -130,7 +130,7 @@ Ship = function(material){
             tangente: [1,0,0]
         };
 		
-		this.top = new Fan(this.curve.getPoints(), center, matrix, this.material, condShader);
+		this.top = new Fan(this.curve.getPoints(), center, matrix, this.material, condShader, true);
 	}
 	
 	this.initTexture = function(texturePath){

@@ -129,6 +129,7 @@ TexturedSphere = function (latitude_bands, longitude_bands, material, isLightCra
             texture: this.texture,
             matrixModel: modelMatrix,
             isWater: false,
+            proyTexture: false,
             withNormalMap: false,
             withReflexion: true,
             bufferIndex: this.webgl_index_buffer,

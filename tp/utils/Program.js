@@ -91,6 +91,7 @@ Program = function (gl, idVertex, idFragment) {
         this.gl.uniformMatrix3fv(this.program.nMatrixUniform, false, normalMatrix);
 
         this.gl.uniform1i(this.program.isWater, variables.isWater);
+        this.gl.uniform1i(this.program.proyTexture, variables.proyTexture);
         this.gl.uniform1i(this.program.withNormalMap, variables.withNormalMap);
         this.gl.uniform1i(this.program.withReflexion, variables.withReflexion);
 
@@ -133,6 +134,7 @@ Program = function (gl, idVertex, idFragment) {
 
         this.program.utick = this.gl.getUniformLocation(this.program, "utick");
         this.program.isWater = this.gl.getUniformLocation(this.program, "isWater");
+        this.program.proyTexture = this.gl.getUniformLocation(this.program, "proyTexture");
 
         this.program.textureNormalMap = this.gl.getUniformLocation(this.program, "uNormalMapTexture");
         this.program.withNormalMap = this.gl.getUniformLocation(this.program, "uWithNormalMap");

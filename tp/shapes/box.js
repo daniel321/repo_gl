@@ -226,6 +226,7 @@ Box = function (width, height, depth, material, conditionShader){
             normalMap: this.normalMap,
             matrixModel: modelMatrix,
             isWater: false,
+            proyTexture: false,
             withNormalMap: this.withNormalMap,
             withReflexion: this.withReflexion,
             bufferIndex: this.webgl_index_buffer,

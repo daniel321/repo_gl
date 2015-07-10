@@ -163,6 +163,7 @@ Plane = function (width, height, cols, rows, isWater, material, conditionShader)
             normalMap: this.normalMap,
             matrixModel: modelMatrix,
             isWater: this.isWater,
+            proyTexture: false,
             withNormalMap: this.withNormalMap,
             withReflexion: this.withReflexion,
             bufferIndex: this.webgl_index_buffer,
