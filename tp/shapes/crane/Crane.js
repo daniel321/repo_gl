@@ -8,6 +8,7 @@ Crane = function(objectUniform, dist, material){
     this.textureNormalMap = null;
 	this.WheelTexturePath = null;
 	this.WheelTopTexturePath = null;
+    this.WheelTextureNormalMap = null;
 
 	this.CargoTexturePath = null;
 	this.CabinTexturePath = null;
@@ -53,8 +54,8 @@ Crane = function(objectUniform, dist, material){
 		this.movingThing.initTextureSupport(this.SupportTexturePath);
         this.movingThing.initTextureLight(this.LightTexturePath);
 		
-		this.frameFront.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
-		this.frameBack.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath);
+		this.frameFront.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath, this.WheelTextureNormalMap);
+		this.frameBack.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath, this.WheelTextureNormalMap);
 		
 		this.boxSupportLeftShape = new Shape(this.boxSupportLeft,this.uniform);
 		this.boxSupportRightShape = new Shape(this.boxSupportRight,this.uniform);
@@ -132,9 +133,10 @@ Crane = function(objectUniform, dist, material){
 		this.SupportTexturePath = SupportTexturePath;
 	}	
 
-	this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath){
+	this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath, WheelNormalMap){
 		this.WheelTexturePath = WheelTexturePath;
 		this.WheelTopTexturePath = WheelTopTexturePath;
+        this.WheelTextureNormalMap = WheelNormalMap;
 	}	
 	
     this.initTextureLight = function(LightTexturePath){

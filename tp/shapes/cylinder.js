@@ -1,9 +1,10 @@
-	Cylinder = function ( radius,height,delta, material, useReflexion){
+	Cylinder = function ( radius,height,delta, material, conditionShader){
 		this.radius = radius;
 		this.height = height;
 		this.delta = delta;
         this.material = material;
-        this.withReflexion = useReflexion;
+        this.withNormalMap = conditionShader.useNormalMap;
+        this.withReflexion = conditionShader.useReflexion;
 		
 		this.topShape = null;
 		this.botShape = null;
@@ -27,9 +28,11 @@
         
         this.texture = null;
         this.textureTopBot = null;
+        this.normalMap = null;
 		
-        this.initTexture = function(texture_file){
+        this.initTexture = function(texture_file, textureNormalMap){
             this.texture = initThisTexture(texture_file);
+            this.normalMap = textureNormalMap;
         }
 
 	this.initBot_Top = function(){
@@ -176,7 +179,7 @@
                 texture: this.texture,
                 matrixModel: modelMatrix,
                 isWater: false,
-                withNormalMap: false,
+                withNormalMap: this.withNormalMap,
                 withReflexion: this.withReflexion,
                 bufferIndex: this.webgl_index_buffer,
                 typeDraw: gl.TRIANGLE_STRIP,

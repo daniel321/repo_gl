@@ -18,8 +18,13 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
     this.all = null;
 
     this.initBuffers = function(){
+        
+        var condShader = {
+            useNormalMap: false,
+            useReflexion: true
+        };
 
-        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material.materialPoste, true);
+        this.poste = new Cylinder(this.radioPoste, this.height, 1/this.delta, this.material.materialPoste, condShader);
         this.faro = new TexturedSphere(this.delta, this.delta, this.material.materialFaro, false);
 
         this.poste.initTexture(this.texturePathPoste);

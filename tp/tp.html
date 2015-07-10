@@ -267,6 +267,7 @@
             var floorNormalMap = null;
             var craneNormalMap = null;
             var islaNormalMap = null;
+            var wheelNormalMap = null;
 
             function initThisTexture(texturePath) {
                 var texture = new Texture(texturePath);
@@ -278,6 +279,7 @@
                 floorNormalMap = initThisTexture("./textures/floorNormalMap.jpg");
                 craneNormalMap = initThisTexture("./textures/craneNormalMap.jpg");
                 islaNormalMap = initThisTexture("./textures/islaNormalMap.jpg");
+                wheelNormalMap = initThisTexture("./textures/wheelNormalMap.jpg");
 
                 textureReflexion = initThisTexture("./textures/reflexionMap.jpg");
             }
@@ -599,7 +601,7 @@
                 crane.initTextureCargo("./textures/container_difusemap");
                 crane.initTextureCabin("./textures/crane.jpg");
                 crane.initTextureSupport("./textures/crane.jpg");
-                crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg");
+                crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg", wheelNormalMap);
                 crane.initTextureLight("./textures/dirtyWhite.jpg");
                 crane.setMaterialCargo(materialCargo);
                 crane.initBuffers();

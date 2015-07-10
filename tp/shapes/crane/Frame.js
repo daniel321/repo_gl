@@ -6,6 +6,7 @@ Frame = function(objectUniform, material){
     this.textureNormalMap = null;
     this.WheelTexturePath = null;
     this.WheelTopTexturePath = null;
+    this.WheelTextureNormalMap = null;
 
     this.wheelRight = null;
     this.wheelLeft = null;
@@ -41,8 +42,8 @@ Frame = function(objectUniform, material){
         this.boxHorizMidd = new Box(3.4,0.15,0.15, this.material, condShader);
         this.boxHorizDown = new Box(2.6,0.2,0.2, this.material, condShader);
 
-        this.wheelRight = new Cylinder(0.3,0.3,0.1, this.material, false);
-        this.wheelLeft = new Cylinder(0.3,0.3,0.1, this.material, false);		
+        this.wheelRight = new Cylinder(0.3,0.3,0.1, this.material, condShader);
+        this.wheelLeft = new Cylinder(0.3,0.3,0.1, this.material, condShader);		
 
         this.boxVertRight.initTexture(this.texturePath);
         this.boxVertLeft.initTexture(this.texturePath);
@@ -57,11 +58,11 @@ Frame = function(objectUniform, material){
         this.boxHorizDown.initNormalMap(this.textureNormalMap);
 
         this.wheelRight.initBuffers();
-        this.wheelRight.initTexture(this.WheelTexturePath);
+        this.wheelRight.initTexture(this.WheelTexturePath, this.WheelTextureNormalMap);
         this.wheelRight.initBot_TopTexture(this.WheelTopTexturePath);
 
         this.wheelLeft.initBuffers();
-        this.wheelLeft.initTexture(this.WheelTexturePath);
+        this.wheelLeft.initTexture(this.WheelTexturePath, this.WheelTextureNormalMap);
         this.wheelLeft.initBot_TopTexture(this.WheelTopTexturePath);
 
         this.boxVertRightShape = new Shape(this.boxVertRight,this.uniform);
@@ -103,9 +104,10 @@ Frame = function(objectUniform, material){
         this.textureNormalMap = textureNormalMap;
     }
 
-    this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath){
+    this.initTextureWheel = function(WheelTexturePath,WheelTopTexturePath, WheelNormalMap){
         this.WheelTexturePath = WheelTexturePath;
         this.WheelTopTexturePath = WheelTopTexturePath;
+        this.WheelTextureNormalMap = WheelNormalMap;
     }		
 
     this.translate = function(dX,dY,dZ){
