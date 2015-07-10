@@ -125,7 +125,6 @@ Cylinder = function ( radius,height,delta, material, conditionShader){
         this.generateVertex(this.radius,this.height,this.delta);
         this.initBot_Top();
 
-        // Replicamos los colores de cada cara 3 veces.
         this.texture_coord_buffer = [];
         for (var j=0; j<this.text.length; j++) {
             var c = this.text[j];
