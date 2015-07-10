@@ -29,7 +29,7 @@ Ship = function(material){
 		this.initControlPoints();
         this.initCoordTexture();
 		
-		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,0,-1], this.deltaCurve);
+		this.curve = new BezierCuadCurve(this.controlPointsCurve, [0,1,0], this.deltaCurve);
 		this.curve.initBuffers();
 
 		this.generateTop();
@@ -61,8 +61,8 @@ Ship = function(material){
 		this.all.add(this.topShape);
         this.all.add(this.bridgeShape);
 		
-		this.surfShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
-		this.topShape.rotate(Math.PI/2,Math.PI,Math.PI/2);
+		this.surfShape.rotate(0.0,-Math.PI/2,0.0);
+		this.topShape.rotate(0.0,-Math.PI/2,0.0);
 		this.topShape.translate(0,1,0);
         this.bridgeShape.translate(0.0, 0.2, -0.8);
         this.bridgeShape.scale(1, 1, 2);		
@@ -71,38 +71,38 @@ Ship = function(material){
 	this.initControlPoints = function(){
 
 		for(var i=0; i<=this.cantPath ; i+= this.deltaPath){
-			this.controlPointsPath.push(0,0,i*0.2);
+			this.controlPointsPath.push(0,i*0.2,0);
 			var h = i/this.cantPath;
-			var escalaY = 1+Math.sqrt(h);			
+			var escalaZ = 1+Math.sqrt(h);			
 			var escalaX = 1+Math.sqrt(h)*0.5;
 
-			this.scales.push(escalaX,escalaY,1);
+			this.scales.push(escalaX,1,escalaZ);
 		}	
 		
-		this.controlPointsCurve = [  -1,  1,  0,
-									  1,  1,  0,
+        this.controlPointsCurve = [  -1,  0,  1,
+									  1,  0,  1,
 									1.5,  0,  0,
-									  1, -1,  0,
-									 -1, -1,  0,
-									 -1,  1,  0,
-									 -1,  1,  0 ];		
+									  1,  0, -1,
+									 -1,  0, -1,
+									 -1,  0,  1,
+									 -1,  0,  1 ];	
 	}
 	
     this.initCoordTexture = function(){
         for(var i=0; i<=this.cantPath; i+=this.deltaPath){ 
             for(var j=0; j<=this.deltaCurve; j++){ 
                 this.coordTexture.push(j/this.deltaCurve);
-                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+                this.coordTexture.push(0.17 + (i * (0.4/this.cantPath)));
             }
             
             for(var j=0; j<=this.deltaCurve; j++){ 
                 this.coordTexture.push(1.0 - j/this.deltaCurve);
-                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+                this.coordTexture.push(0.17 + (i * (0.4/this.cantPath)));
             }
             
             for(var j=0; j<=this.deltaCurve; j++){ 
                 this.coordTexture.push(j * (0.14/this.deltaCurve));
-                this.coordTexture.push(0.15 + (i * (0.4/this.cantPath)));
+                this.coordTexture.push(0.17 + (i * (0.4/this.cantPath)));
             }
             
         }
@@ -118,7 +118,6 @@ Ship = function(material){
 		var matrix = mat4.create();
 		mat4.identity(matrix);
 		mat4.scale(matrix,matrix,scale);
-		mat3.translate(matrix,matrix,pos);
         
         var condShader = {
             useNormalMap: true,
