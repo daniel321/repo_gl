@@ -30,12 +30,12 @@ MovingThing = function(material){
             useReflexion: false
         };
         
-		this.box = new Box(1,1,1.6, this.material, condShader);
-		this.boxRailFront = new Box(14,0.2,0.2, this.material, condShader);
-		this.boxRailBack = new Box(14,0.2,0.2, this.material, condShader);
-		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material, condShader);
+		this.box = new Box(1,1,1.6, this.material.materialCrane, condShader);
+		this.boxRailFront = new Box(14,0.2,0.2, this.material.materialCrane, condShader);
+		this.boxRailBack = new Box(14,0.2,0.2, this.material.materialCrane, condShader);
+		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material.materialCrane, condShader);
 		this.cargoMover = new CargoMover(this.material);
-        this.light = new Light(this.material);
+        this.light = new Light(this.material.materialLight);
 		
 		this.box.initTexture(this.SupportTexturePath);
 		this.boxRailFront.initTexture(this.texturePath);
@@ -50,7 +50,6 @@ MovingThing = function(material){
 
 		this.cargoMover.initTextureCargo(this.CargoTexturePath);	
 		this.cargoMover.initTextureCabin(this.CabinTexturePath);
-        this.cargoMover.setMaterialCargo(this.materialCargo);
         
         this.light.initTexture(this.LightTexturePath);
 		
@@ -114,10 +113,6 @@ MovingThing = function(material){
 		this.CargoTexturePath = CargoTexturePath;
 	}
     
-    this.setMaterialCargo = function(materialCargo){
-		this.materialCargo = materialCargo;
-	}
-	
 	this.initTextureCabin = function(CabinTexturePath){
 		this.CabinTexturePath = CabinTexturePath;
 	}	

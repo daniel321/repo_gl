@@ -33,12 +33,11 @@ Crane = function(dist, material){
             useReflexion: false
         };
         
-		this.frameFront      = new Frame(this.material);
-		this.frameBack       = new Frame(this.material);	
-		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material, condShader);
-		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material, condShader);
+		this.frameFront      = new Frame(this.material.materialCrane);
+		this.frameBack       = new Frame(this.material.materialCrane);	
+		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material.materialCrane, condShader);
+		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material.materialCrane, condShader);
 		this.movingThing     = new MovingThing(this.material);
-        this.movingThing.setMaterialCargo(this.materialCargo);
 		
 		this.frameFront.initTexture(this.texturePath, this.textureNormalMap);
 		this.frameBack.initTexture(this.texturePath, this.textureNormalMap);
@@ -124,10 +123,6 @@ Crane = function(dist, material){
 		this.CargoTexturePath = CargoTexturePath;
 	}
     
-    this.setMaterialCargo = function(materialCargo){
-		this.materialCargo = materialCargo;
-	}
-
 	this.initTextureSupport = function(SupportTexturePath){
 		this.SupportTexturePath = SupportTexturePath;
 	}	

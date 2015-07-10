@@ -1,6 +1,5 @@
 CargoMover = function(material){
     this.material = material;
-    this.materialCargo = null;
 	this.movmentCargoAmount = 0;
 	this.movmentAmount = 0;
 	
@@ -48,7 +47,7 @@ CargoMover = function(material){
         var depth = 1.0;
         var angle = (20 * Math.PI)/180;
         
-		this.cabin = new Cabin(width, height, depth, angle, this.material);
+		this.cabin = new Cabin(width, height, depth, angle, this.material.materialCrane);
 
         var condShader = {
             useNormalMap: true,
@@ -56,14 +55,14 @@ CargoMover = function(material){
         };
         
 		var h = 2.0;
-		this.wireLeftFront  = new Box(0.01,h,0.01, this.material, condShader);
-		this.wireLeftBack   = new Box(0.01,h,0.01, this.material, condShader);
-		this.wireRightFront = new Box(0.01,h,0.01, this.material, condShader);
-		this.wireRightBack  = new Box(0.01,h,0.01, this.material, condShader);
+		this.wireLeftFront  = new Box(0.01,h,0.01, this.material.materialCrane, condShader);
+		this.wireLeftBack   = new Box(0.01,h,0.01, this.material.materialCrane, condShader);
+		this.wireRightFront = new Box(0.01,h,0.01, this.material.materialCrane, condShader);
+		this.wireRightBack  = new Box(0.01,h,0.01, this.material.materialCrane, condShader);
 		
-		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material, condShader);
-		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material, condShader);	
-		this.cargo = new Cargo(this.materialCargo);	
+		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material.materialCrane, condShader);
+		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material.materialCrane, condShader);	
+		this.cargo = new Cargo(this.material.materialCargo);	
 		
 		this.cabin.initTexture(this.CabinTexturePath, this.textureNormalMap);		
 		
@@ -125,7 +124,7 @@ CargoMover = function(material){
 
 	this.createOldCargo = function(){
 		for (var i=0 ; i<=11 ; i++){
-			var cargo_i = new Cargo(this.materialCargo);
+			var cargo_i = new Cargo(this.material.materialCargo);
 			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
 			this.oldCargo.add(cargo_i);
@@ -265,10 +264,6 @@ CargoMover = function(material){
 		this.CabinTexturePath = CabinTexturePath;
 	}
     
-    this.setMaterialCargo = function(materialCargo){
-		this.materialCargo = materialCargo;
-	}
-	
 	this.translate = function(dX,dY,dZ){
 		this.all.translate(dX,dY,dZ);
 	}

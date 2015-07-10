@@ -470,7 +470,6 @@
                 all = new ShapeGroup();
 
                 //--------------------bck---------------------------
-                //TODO: arreglar valores de todos los materiales
                 var materialBck = {
                     ka: [0.1, 0.1, 0.1],
                     kd: [0.4, 0.4, 0.4],
@@ -590,15 +589,20 @@
                     shininess: 5.0,
                     reflexion: 0.0
                 };
+                
+                var materialGrua = {
+                    materialCrane: materialCrane,
+                    materialCargo: materialCargo,
+                    materialLight: materialLight
+                };
 
-                crane = new Crane(9, materialCrane);
+                crane = new Crane(9, materialGrua);
                 crane.initTexture("./textures/crane.jpg", craneNormalMap);
                 crane.initTextureCargo("./textures/container_difusemap");
                 crane.initTextureCabin("./textures/crane.jpg");
                 crane.initTextureSupport("./textures/crane.jpg");
                 crane.initTextureWheel("./textures/wheel.jpg","./textures/crane.jpg", wheelNormalMap);
                 crane.initTextureLight("./textures/dirtyWhite.jpg");
-                crane.setMaterialCargo(materialCargo);
                 crane.initBuffers();
 
                 all.add(crane);
@@ -628,7 +632,6 @@
                     reflexion: 1.0
                 };
                 ship = new Ship(materialShip);
-                //ship.initTexture("./textures/bridgeBase.jpg");
                 ship.initTexture("./textures/cascoBarco.jpg");
                 ship.initTextureTop("./textures/gray.jpg", craneNormalMap);
                 ship.initBuffers();
