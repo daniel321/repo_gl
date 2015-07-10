@@ -123,8 +123,14 @@ Ship = function(material){
             useNormalMap: true,
             useReflexion: true
         };
+        
+        var center = {
+            point: [0,0,0],
+            normal: [0,1,0],
+            tangente: [1,0,0]
+        };
 		
-		this.top = new Fan(this.curve.getPoints(), [0,0,0], matrix, this.material, condShader);
+		this.top = new Fan(this.curve.getPoints(), center, matrix, this.material, condShader);
 	}
 	
 	this.initTexture = function(texturePath){

@@ -9,7 +9,6 @@
         this.withReflexion = conditionShader.useReflexion;
 		
         this.path = path;
-        this.useCoordTextureDefault = true;
 		
         this.position_buffer = null;
         this.normal_buffer = null;
@@ -114,26 +113,10 @@
 					// ---------- normales ----------				
 					var normals = [this.normals[x] , this.normals[x+1] , this.normals[x+2]];				
 
-//                    var transformNormal = mat3.create();
-//					mat3.identity(transformNormal);
-//					mat3.normalFromMat4(transformNormal, transform);
-//                    vec3.transformMat4(normals, normals, transformNormal);
-                    
 					this.normal_buffer.push(normals[0]); 
 					this.normal_buffer.push(normals[1]); 
 					this.normal_buffer.push(normals[2]); 
 	
-					// ---------- texturas ----------	
-					if (this.useCoordTextureDefault) {
-					
-					   var textCoord = utils.normalize(utils.difference(centerFirst,point));
-					
-					   this.texture_coord_buffer.push(-textCoord[0]);
-					   this.texture_coord_buffer.push(-textCoord[2]);
-					
-//					this.texture_coord_buffer.push(20*x/pointsPerShape);
-//					this.texture_coord_buffer.push(1-(y/1.5)/numShapes);
-                    }
                     // ---------- tangentes ----------	
 					
 					var tang = utils.normalize(utils.cross(this.binormal, normals));
@@ -146,7 +129,6 @@
 		}
         
         this.initCoordTexture = function(coordTexture){
-            this.useCoordTextureDefault = false;
             for(var i=0; i < coordTexture.length; i++) {
                 this.texture_coord_buffer = this.texture_coord_buffer.concat(coordTexture[i]);
             }

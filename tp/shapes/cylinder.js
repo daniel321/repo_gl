@@ -56,9 +56,21 @@
             useNormalMap: false,
             useReflexion: this.withReflexion
         };
+        
+        var centerTop = {
+            point: [0,0,0],
+            normal: [0,0,-1],
+            tangente: [0,-1,0]
+        };
+        
+        var centerBot = {
+            point: [0,0,0],
+            normal: [0,0,1],
+            tangente: [0,1,0]
+        };
 		
-		var top = new Fan(points, [0,0,0], matrix, this.material, condShader);
-        var bot = new Fan(points, [0,0,0], matrix, this.material, condShader);
+		var top = new Fan(points, centerTop, matrix, this.material, condShader);
+        var bot = new Fan(points, centerBot, matrix, this.material, condShader);
 		
 		top.initBuffers();
 		bot.initBuffers();

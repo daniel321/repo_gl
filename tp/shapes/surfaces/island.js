@@ -5,6 +5,7 @@ Island = function(material){
 	this.scales = [];
 	this.controlPointsPath = [];
 	this.controlPointsCurve = [];
+    this.coordTexture = [];
 	
 	this.surfShape = null;	
 	this.surf = null;
@@ -18,21 +19,24 @@ Island = function(material){
     this.textureNormalMap = null;
 
 	this.all = null;
-	
-	var cont = 0;
+    this.deltaCurve = 10;
+    this.cantPath = 10;
+    this.deltaPath = 1;
 	
 	this.initBuffers = function(){
 		this.initControlPoints();
+        this.initCoordTexture();
 		
-		var curve = new BSplineCuadCurve(this.controlPointsCurve, [0,0,1], 10);
+		var curve = new BSplineCuadCurve(this.controlPointsCurve, [0,-1,0], this.deltaCurve);
 		curve.initBuffers();
 	
         var condShader = {
             useNormalMap: true,
             useReflexion: false
         };
-        
-		this.surf = new SupBarr(curve,this.controlPointsPath,this.scales, this.material, condShader);
+
+        this.surf = new SupBarr(curve,this.controlPointsPath,this.scales, this.material, condShader);
+        this.surf.initCoordTexture(this.coordTexture);
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
         this.surf.initNormalMap(this.textureNormalMap);
@@ -49,55 +53,67 @@ Island = function(material){
 		this.all.add(this.surfShape);				
 		this.all.add(this.fanshape);
 		
-		this.surfShape.rotate(Math.PI*3/2,-Math.PI,0);	
-		this.fanshape.rotate(Math.PI*3/2,-Math.PI,0);
-		this.fanshape.translate(0,0.415,0);
+		this.surfShape.rotate(0,0,Math.PI);
+        this.surfShape.translate(0,0,0.8);
+		this.fanshape.rotate(0,0,Math.PI);
+		this.fanshape.translate(0,0.415,0.8);
 	
 	}
 	
 	this.initControlPoints = function(){	 
-		var delta = 1;
-		var m = 10;
 
 		this.fanScale = mat4.create();
 		mat4.scale(this.fanScale,this.fanScale,[1,1,1]);
 		
-		var acum  = (m/3+(-6*delta)+1)*0.25;
-		this.fanCenter = [0,0,acum];
+		var acum  = (this.cantPath/3+(-6*this.deltaPath)+1)*0.25;
+		this.fanCenter = {
+            point: [0,acum,0],
+            normal: [0,-1,0],
+            tangente: [1,0,0],
+        };
 	
-	
-		for(var i=0; i<=2*m ; i+= delta){
-			this.controlPointsPath.push(0,0,acum + i*0.25);
-			var h = i/m;
+		for(var i=0; i<=2*this.cantPath ; i+= this.deltaPath){
+			this.controlPointsPath.push(0,acum + i*0.25, 0);
+			var h = i/this.cantPath;
 
-			var escalaY = 1 + Math.sqrt(h)*1.25;	
+			var escalaZ = 1 + Math.sqrt(h)*1.25;	
 			var escalaX = 1 + Math.sqrt(h)*1.0;
 			
-			this.scales.push(escalaX,escalaY,1);
+			this.scales.push(escalaX,1,escalaZ);
 		}	
 		
-		this.controlPointsCurve = [ -4.0,  0.0, 0.0,
-									-3.0,  1.0, 0.0,
-									-2.0,  1.8, 0.0,
-									-1.0,  1.2, 0.0,
-									 0.0,  3.0, 0.0,
-									 1.0,  1.0, 0.0,
-									 2.0,  2.0, 0.0,
-									 3.0,  0.8, 0.0,
+        this.controlPointsCurve = [ -4.0,  0.0, 0.0,
+									-3.0,  0.0, 1.0,
+									-2.0,  0.0, 1.8,
+									-1.0,  0.0, 1.2,
+									 0.0,  0.0, 2.5,
+									 1.0,  0.0, 1.5,
+									 2.0,  0.0, 2.0,
+									 3.0,  0.0, 0.8,
 									 4.0,  0.0, 0.0,
 									 
-									 4.0,  0.0, 0.0,
-									 3.0, -1.2, 0.0,
-									 2.0, -1.7, 0.0,
-									 1.0, -1.9, 0.0,
-									 0.0, -2.3, 0.0,
-									-1.0, -2.8, 0.0,
-									-2.0, -2.0, 0.0,
-									-3.0, -1.5, 0.0,
+									 3.0,  0.0,-0.8,
+									 2.0,  0.0,-2.5,
+									 1.0,  0.0,-1.9,
+									 0.0,  0.0,-2.3,
+									-1.0,  0.0,-2.8,
+									-2.0,  0.0,-2.0,
+									-3.0,  0.0,-1.5,
 									-4.0,  0.0, 0.0,
-									-3.0,  1.0, 0.0	
-														];		
+									-3.0,  0.0, 1.0	
+														];
 	}
+    
+    this.initCoordTexture = function(){
+        for(var i=0; i<=(2*this.cantPath); i+=this.deltaPath){ 
+            for(var k=0; k<=16; k++){ 
+                for(var j=0; j<=this.deltaCurve; j++){ 
+                    this.coordTexture.push(j/this.deltaCurve);
+                    this.coordTexture.push(1.0 - (i * (0.7/(2*this.cantPath))));
+                }
+            }
+        }
+    }
 	
 	this.initTexture = function(texturePath, textureNormalMap){
 		this.texturePath = texturePath;

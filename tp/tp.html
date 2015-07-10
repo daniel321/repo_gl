@@ -78,7 +78,7 @@
 
             float attenuation = 1.0;
             float constantAtt = 1.0;
-            float linearAtt = 0.05;
+            float linearAtt = 0.8;
 
             vec3 ads(vec3 normalTemp) {
 
@@ -114,8 +114,6 @@
                 textCoorRef.t = -(0.5 - ((1.0/PI)*asin(N.y)));
 
                 finalColor = texture2D(uReflTexture, vec2(textCoorRef.s, textCoorRef.t));
-
-                //return (uLightColor * finalColor.rgb);
                 return (material.Reflexion * finalColor.rgb);
             }
 
@@ -148,10 +146,6 @@
                 if (!uWithReflexion && !uWithNormalMap) {
                     gl_FragColor = vec4(textureColor.rgb * ads(vNormal), textureColor.a);
                 }
-                //gl_FragColor = vec4(textureColor.rgb * ads(vNormal), textureColor.a);
-                //gl_FragColor = textureColor;
-                //gl_FragColor = vec4(normalize(vNormal) / 2.0 + 0.5, 1.0);
-
             }
 
         </script>
@@ -654,7 +648,7 @@
 
                 cameras = new CameraManager();
                 cameras.add(new FreeCamera([0, 0, 30],[0,0,1],[0,1,0]));
-                cameras.add(new WalkingCamera([0, -2.5, 25],[0,0,1],[0,1,0]));
+                cameras.add(new WalkingCamera([-1.0, -2.5, 25],[0,0,1],[0,1,0]));
                 cameras.add(new OrbitalCamera([0, 0, 30],[0,0,10],[0,1,0]));
 
                 var cabinCamera = new FirstPersonCamera([0, 0, 0],[0.2,-1,0],[0,1,0]);
