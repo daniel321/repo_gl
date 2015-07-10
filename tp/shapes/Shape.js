@@ -1,4 +1,4 @@
-Shape = function(shape,uniforms){
+Shape = function(shape){
 		this.modelMatrix = mat4.create();
 		mat4.identity(this.modelMatrix);
 
@@ -15,7 +15,6 @@ Shape = function(shape,uniforms){
 		mat4.identity(this.translateMatrix);
 		
 		this.shape = shape;
-		this.uniforms = uniforms;
 		
         this.initBuffers = function(){
 			this.shape.initBuffers(); 
@@ -87,8 +86,6 @@ Shape = function(shape,uniforms){
 			mat4.multiply(compositeMatrix, compositeMatrix, this.rotateMatrix);
 			mat4.multiply(compositeMatrix, compositeMatrix, this.escalateMatrix);
 			
-			if( this.uniforms != null)
-				this.uniforms();
 			this.shape.draw(compositeMatrix);
         }
         

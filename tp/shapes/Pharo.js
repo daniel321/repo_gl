@@ -1,5 +1,4 @@
-Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material){
-    this.uniform = objectUniform;
+Pharo = function(height, radioPoste, radioPharo, delta, material){
     this.material = material;
     this.texturePathPoste = null;
     this.texturePathPharo = null;
@@ -31,8 +30,8 @@ Pharo = function(objectUniform, height, radioPoste, radioPharo, delta, material)
         this.poste.initBot_TopTexture(this.texturePathPoste);
         this.faro.initTexture(this.texturePathPharo);
 
-        this.posteShape = new Shape(this.poste, this.uniform);
-        this.faroShape = new Shape(this.faro, this.uniform);
+        this.posteShape = new Shape(this.poste);
+        this.faroShape = new Shape(this.faro);
 
         this.all = new ShapeGroup();
 

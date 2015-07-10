@@ -1,6 +1,5 @@
-Frame = function(objectUniform, material){
+Frame = function(material){
 
-    this.uniform = objectUniform;
     this.material = material;
     this.texturePath = null;
     this.textureNormalMap = null;
@@ -65,14 +64,14 @@ Frame = function(objectUniform, material){
         this.wheelLeft.initTexture(this.WheelTexturePath, this.WheelTextureNormalMap);
         this.wheelLeft.initBot_TopTexture(this.WheelTopTexturePath);
 
-        this.boxVertRightShape = new Shape(this.boxVertRight,this.uniform);
-        this.boxVertLeftShape  = new Shape(this.boxVertLeft,this.uniform);
-        this.boxHorizUpShape   = new Shape(this.boxHorizUp,this.uniform);
-        this.boxHorizMiddShape = new Shape(this.boxHorizMidd,this.uniform);
-        this.boxHorizDownShape = new Shape(this.boxHorizDown,this.uniform);
+        this.boxVertRightShape = new Shape(this.boxVertRight);
+        this.boxVertLeftShape  = new Shape(this.boxVertLeft);
+        this.boxHorizUpShape   = new Shape(this.boxHorizUp);
+        this.boxHorizMiddShape = new Shape(this.boxHorizMidd);
+        this.boxHorizDownShape = new Shape(this.boxHorizDown);
 
-        this.wheelRightShape = new Shape(this.wheelRight,this.uniform);
-        this.wheelLeftShape = new Shape(this.wheelLeft,this.uniform);
+        this.wheelRightShape = new Shape(this.wheelRight);
+        this.wheelLeftShape = new Shape(this.wheelLeft);
 
         this.all = new ShapeGroup();
 

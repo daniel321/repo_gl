@@ -1,4 +1,4 @@
-Island = function(objectUniform, material){
+Island = function(material){
 	this.movmentAmount = 0;
 	this.material = material;
     
@@ -14,7 +14,6 @@ Island = function(objectUniform, material){
 	this.fan = null;
 	this.fanshape = null;
 
-	this.uniform = objectUniform;
 	this.texturePath = null;
     this.textureNormalMap = null;
 
@@ -43,8 +42,8 @@ Island = function(objectUniform, material){
 		this.fan.initBuffers();
 		this.fan.initTexture("./textures/pastoIsla.jpg");
 
-		this.surfShape = new Shape(this.surf,this.uniform);
-		this.fanshape = new Shape(this.fan,this.uniform);
+		this.surfShape = new Shape(this.surf);
+		this.fanshape = new Shape(this.fan);
 
 		this.all = new ShapeGroup();
 		this.all.add(this.surfShape);				
@@ -55,7 +54,6 @@ Island = function(objectUniform, material){
 		this.fanshape.translate(0,0.415,0);
 	
 	}
-	
 	
 	this.initControlPoints = function(){	 
 		var delta = 1;

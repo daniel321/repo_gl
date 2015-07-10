@@ -1,5 +1,4 @@
-CargoMover = function(objectUniform, material){
-	this.uniform = objectUniform;
+CargoMover = function(material){
     this.material = material;
     this.materialCargo = null;
 	this.movmentCargoAmount = 0;
@@ -49,7 +48,7 @@ CargoMover = function(objectUniform, material){
         var depth = 1.0;
         var angle = (20 * Math.PI)/180;
         
-		this.cabin = new Cabin(this.uniform, width, height, depth, angle, this.material);
+		this.cabin = new Cabin(width, height, depth, angle, this.material);
 
         var condShader = {
             useNormalMap: true,
@@ -64,7 +63,7 @@ CargoMover = function(objectUniform, material){
 		
 		this.cargoSupportLeft  = new Box(0.8,0.05,0.05, this.material, condShader);
 		this.cargoSupportRight = new Box(0.8,0.05,0.05, this.material, condShader);	
-		this.cargo = new Cargo(this.uniform, this.materialCargo);	
+		this.cargo = new Cargo(this.materialCargo);	
 		
 		this.cabin.initTexture(this.CabinTexturePath, this.textureNormalMap);		
 		
@@ -84,14 +83,14 @@ CargoMover = function(objectUniform, material){
 		this.cargoSupportRight.initNormalMap(this.textureNormalMap);		
 		this.cargo.initTexture(this.CargoTexturePath + this.generateNumber(5) + ".jpg");		
 		
-		this.cabinShape = new Shape(this.cabin,this.uniform);
-		this.cargoSupportLeftShape = new Shape(this.cargoSupportLeft,this.uniform);
-		this.cargoSupportRightShape = new Shape(this.cargoSupportRight,this.uniform);
+		this.cabinShape = new Shape(this.cabin);
+		this.cargoSupportLeftShape = new Shape(this.cargoSupportLeft);
+		this.cargoSupportRightShape = new Shape(this.cargoSupportRight);
 		
-		this.wireLeftFrontShape = new Shape(this.wireLeftFront,this.uniform);
-		this.wireLeftBackShape = new Shape(this.wireLeftBack,this.uniform);
-		this.wireRightFrontShape = new Shape(this.wireRightFront,this.uniform);
-		this.wireRightBackShape = new Shape(this.wireRightBack,this.uniform);
+		this.wireLeftFrontShape = new Shape(this.wireLeftFront);
+		this.wireLeftBackShape = new Shape(this.wireLeftBack);
+		this.wireRightFrontShape = new Shape(this.wireRightFront);
+		this.wireRightBackShape = new Shape(this.wireRightBack);
 		
 		this.oldCargo = new ShapeGroup();
 		
@@ -126,7 +125,7 @@ CargoMover = function(objectUniform, material){
 
 	this.createOldCargo = function(){
 		for (var i=0 ; i<=11 ; i++){
-			var cargo_i = new Cargo(this.uniform, this.materialCargo);
+			var cargo_i = new Cargo(this.materialCargo);
 			cargo_i.initTexture(this.CargoTexturePath + this.generateNumber(5) +".jpg");
 		
 			this.oldCargo.add(cargo_i);

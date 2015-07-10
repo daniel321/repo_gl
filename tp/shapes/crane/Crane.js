@@ -1,9 +1,8 @@
-Crane = function(objectUniform, dist, material){
+Crane = function(dist, material){
 	this.dist = dist;
 	this.movmentAmount = 0;
     this.material = material;
 	
-	this.uniform = objectUniform;
 	this.texturePath = null;
     this.textureNormalMap = null;
 	this.WheelTexturePath = null;
@@ -34,11 +33,11 @@ Crane = function(objectUniform, dist, material){
             useReflexion: false
         };
         
-		this.frameFront      = new Frame(this.uniform, this.material);
-		this.frameBack       = new Frame(this.uniform, this.material);	
+		this.frameFront      = new Frame(this.material);
+		this.frameBack       = new Frame(this.material);	
 		this.boxSupportLeft  = new Box(0.2,0.2,this.dist, this.material, condShader);
 		this.boxSupportRight = new Box(0.2,0.2,this.dist, this.material, condShader);
-		this.movingThing     = new MovingThing(this.uniform, this.material);
+		this.movingThing     = new MovingThing(this.material);
         this.movingThing.setMaterialCargo(this.materialCargo);
 		
 		this.frameFront.initTexture(this.texturePath, this.textureNormalMap);
@@ -57,8 +56,8 @@ Crane = function(objectUniform, dist, material){
 		this.frameFront.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath, this.WheelTextureNormalMap);
 		this.frameBack.initTextureWheel(this.WheelTexturePath,this.WheelTopTexturePath, this.WheelTextureNormalMap);
 		
-		this.boxSupportLeftShape = new Shape(this.boxSupportLeft,this.uniform);
-		this.boxSupportRightShape = new Shape(this.boxSupportRight,this.uniform);
+		this.boxSupportLeftShape = new Shape(this.boxSupportLeft);
+		this.boxSupportRightShape = new Shape(this.boxSupportRight);
 	
 		this.all = new ShapeGroup();
 		

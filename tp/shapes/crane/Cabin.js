@@ -1,5 +1,4 @@
-Cabin = function(objectUniform, width, height, depth, angle, material){
-    this.uniform = objectUniform;
+Cabin = function(width, height, depth, angle, material){
     this.texturePath = null;
     this.textureNormalMap = null;
     this.material = material;
@@ -64,12 +63,12 @@ Cabin = function(objectUniform, width, height, depth, angle, material){
         this.planeTop.initNormalMap(this.textureNormalMap);
         this.planeLower.initNormalMap(this.textureNormalMap);
 
-        this.planeFrontalShape = new Shape(this.planeFrontal,this.uniform);
-        this.planeBackShape = new Shape(this.planeBack,this.uniform);
-        this.planeSideLeftShape = new Shape(this.planeSideLeft,this.uniform);
-        this.planeSideRightShape = new Shape(this.planeSideRight,this.uniform);
-        this.planeTopShape = new Shape(this.planeTop,this.uniform);
-        this.planeLowerShape = new Shape(this.planeLower,this.uniform);
+        this.planeFrontalShape = new Shape(this.planeFrontal);
+        this.planeBackShape = new Shape(this.planeBack);
+        this.planeSideLeftShape = new Shape(this.planeSideLeft);
+        this.planeSideRightShape = new Shape(this.planeSideRight);
+        this.planeTopShape = new Shape(this.planeTop);
+        this.planeLowerShape = new Shape(this.planeLower);
 
         this.all = new ShapeGroup();
 

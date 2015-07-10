@@ -1,5 +1,4 @@
-MovingThing = function(objectUniform, material){
-	this.uniform = objectUniform;
+MovingThing = function(material){
     this.material = material;
 	this.texturePath = null;
     this.textureNormalMap = null;
@@ -35,8 +34,8 @@ MovingThing = function(objectUniform, material){
 		this.boxRailFront = new Box(14,0.2,0.2, this.material, condShader);
 		this.boxRailBack = new Box(14,0.2,0.2, this.material, condShader);
 		this.boxRailEnd = new Box(0.2,0.2,1.0, this.material, condShader);
-		this.cargoMover = new CargoMover(this.uniform, this.material);
-        this.light = new Light(this.uniform, this.material);
+		this.cargoMover = new CargoMover(this.material);
+        this.light = new Light(this.material);
 		
 		this.box.initTexture(this.SupportTexturePath);
 		this.boxRailFront.initTexture(this.texturePath);
@@ -55,12 +54,12 @@ MovingThing = function(objectUniform, material){
         
         this.light.initTexture(this.LightTexturePath);
 		
-		this.boxShape = new Shape(this.box,this.uniform);
-		this.boxRailFrontShape = new Shape(this.boxRailFront,this.uniform);
-		this.boxRailBackShape = new Shape(this.boxRailBack,this.uniform);
-		this.boxRailEndShape = new Shape(this.boxRailEnd,this.uniform);
+		this.boxShape = new Shape(this.box);
+		this.boxRailFrontShape = new Shape(this.boxRailFront);
+		this.boxRailBackShape = new Shape(this.boxRailBack);
+		this.boxRailEndShape = new Shape(this.boxRailEnd);
         
-        this.lightShape = new Shape(this.light,this.uniform);
+        this.lightShape = new Shape(this.light);
 		
 		this.all = new ShapeGroup();
 		

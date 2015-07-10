@@ -1,5 +1,4 @@
-Light = function(objectUniform, material){
-    this.uniform = objectUniform;
+Light = function(material){
     this.material = material;
     this.texturePath = null;
 
@@ -16,7 +15,7 @@ Light = function(objectUniform, material){
         this.ball = new TexturedSphere(deltaSphere, deltaSphere, this.material, true);
         this.ball.initTexture(this.texturePath);
 
-        this.ballShape = new Shape(this.ball, this.uniform);
+        this.ballShape = new Shape(this.ball);
 
         this.all = new ShapeGroup();
 

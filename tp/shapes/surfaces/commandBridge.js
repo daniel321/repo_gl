@@ -1,5 +1,4 @@
-CommandBridge = function (objectUniform, material){
-    this.uniform = objectUniform;
+CommandBridge = function (material){
     this.material = material;
     
     this.bridge = null;
@@ -36,31 +35,31 @@ CommandBridge = function (objectUniform, material){
         this.bridge.initBuffers();
         this.bridge.initTexture("./textures/bridgeBase.jpg");
         
-        this.bridgeShape = new Shape(this.bridge, this.uniform);
+        this.bridgeShape = new Shape(this.bridge);
         
         this.bridgeBase = new Box(2.5, 0.8, 0.25, this.material, condShader);
         this.bridgeBase.setCoordTexture(this.coordTextureInf);
         this.bridgeBase.initBuffers();
         this.bridgeBase.initTexture("./textures/bridgeBase.jpg");
         
-        this.bridgeBaseShape = new Shape(this.bridgeBase, this.uniform);
+        this.bridgeBaseShape = new Shape(this.bridgeBase);
 		
 		this.door = new Box(1, 1, 0.1, this.material, condShader);
 		this.door.initBuffers();
 		this.door.initTexture("./textures/door.jpg");
 
-        this.doorShape = new Shape(this.door, this.uniform);
+        this.doorShape = new Shape(this.door);
 
 		this.window = new Box(1, 1, 0.1, this.material, condShader);
 		this.window.initBuffers();
 		this.window.initTexture("./textures/window.png");
 
-        this.windowShape = new Shape(this.window, this.uniform);
-		this.windowShape2 = new Shape(this.window, this.uniform);
-		this.windowShape3 = new Shape(this.window, this.uniform);
-		this.windowShape4 = new Shape(this.window, this.uniform);
-		this.windowShape5 = new Shape(this.window, this.uniform);
-		this.windowShape6 = new Shape(this.window, this.uniform);
+        this.windowShape = new Shape(this.window);
+		this.windowShape2 = new Shape(this.window);
+		this.windowShape3 = new Shape(this.window);
+		this.windowShape4 = new Shape(this.window);
+		this.windowShape5 = new Shape(this.window);
+		this.windowShape6 = new Shape(this.window);
 		
         this.all = new ShapeGroup();
 		this.all.add(this.bridgeShape);	

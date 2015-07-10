@@ -1,4 +1,4 @@
-Ship = function(objectUniform, material){
+Ship = function(material){
 	this.movmentAmount = 0;
     this.material = material;
 	
@@ -16,7 +16,6 @@ Ship = function(objectUniform, material){
 	this.top = null;
     this.bridge = null;
 	
-	this.uniform = objectUniform;
 	this.texturePath = null;
 	this.textureTopPath = null;
     this.textureNormalMapTop = null;
@@ -38,7 +37,7 @@ Ship = function(objectUniform, material){
 	    this.top.initTexture(this.textureTopPath);
         this.top.initNormalMap(this.textureNormalMapTop);
 	
-		this.topShape = new Shape(this.top,this.uniform);
+		this.topShape = new Shape(this.top);
         
         var condShader = {
             useNormalMap: false,
@@ -50,12 +49,12 @@ Ship = function(objectUniform, material){
 		this.surf.initBuffers();
 	    this.surf.initTexture(this.texturePath);
 		
-		this.surfShape = new Shape(this.surf,this.uniform);
+		this.surfShape = new Shape(this.surf);
 	
-        this.bridge = new CommandBridge(this.uniform, this.material);
+        this.bridge = new CommandBridge(this.material);
         this.bridge.initBuffers();
         
-        this.bridgeShape = new Shape(this.bridge, this.uniform);
+        this.bridgeShape = new Shape(this.bridge);
         
 		this.all = new ShapeGroup();
 		this.all.add(this.surfShape);	

@@ -258,11 +258,6 @@
             var lightFijaPosition1 = [0.0, -0.3, 24.5];
             var lightFijaPosition2 = [0.0, -0.3, 4.0];
 
-            function objectUniform(){
-                //gl.uniform3f(shaderProgram.ambientColorUniform, 0.1, 0.1, 0.1 );
-                //gl.uniform3f(shaderProgram.directionalColorUniform, 0.4, 0.4, 0.2);
-            }	
-
             var textureReflexion = null;
             var floorNormalMap = null;
             var craneNormalMap = null;
@@ -486,7 +481,7 @@
                 bck = new Background(150, 150, materialBck);
                 bck.initTexture("./textures/reflexionMap.jpg");	
 
-                bckShape = new Shape(bck,objectUniform);
+                bckShape = new Shape(bck);
                 bckShape.scale(800.0, 500.0, 800.0);
                 bckShape.initBuffers();
 
@@ -511,7 +506,7 @@
                 floor.initTexture("./textures/floor.jpg");
                 floor.initNormalMap(floorNormalMap);
 
-                floorShape = new Shape(floor,objectUniform);
+                floorShape = new Shape(floor);
                 floorShape.translate(-8, -6.05 , 8);
                 floorShape.initBuffers();
 
@@ -545,10 +540,10 @@
                 var radioPharo = 0.5;
                 var delta = 32;
 
-                pharos = new Pharos(objectUniform, heightPharo, radioPoste, radioPharo, delta, materialPharos);
+                pharos = new Pharos(heightPharo, radioPoste, radioPharo, delta, materialPharos);
                 pharos.initTexture("./textures/gray.jpg", "./textures/dirtyWhite.jpg");
 
-                pharosShape = new Shape(pharos, objectUniform);
+                pharosShape = new Shape(pharos);
                 pharosShape.initBuffers();
 
                 all.add(pharosShape);
@@ -571,7 +566,7 @@
                 water = new Plane(1600, 1600, 25, 25, true, materialWater, condShaderWater);
                 water.initTexture("./textures/water.jpg");
 
-                waterShape = new Shape(water,objectUniform);
+                waterShape = new Shape(water);
                 waterShape.translate(-800.0, -6 , 800.0);
                 waterShape.rotate(-Math.PI/2, 0 , 0);	
                 waterShape.initBuffers();
@@ -596,7 +591,7 @@
                     reflexion: 0.0
                 };
 
-                crane = new Crane(objectUniform,9, materialCrane);
+                crane = new Crane(9, materialCrane);
                 crane.initTexture("./textures/crane.jpg", craneNormalMap);
                 crane.initTextureCargo("./textures/container_difusemap");
                 crane.initTextureCabin("./textures/crane.jpg");
@@ -617,7 +612,7 @@
                     shininess: 2.0,
                     reflexion: 0.0
                 };
-                island = new Island(objectUniform, materialIsland);
+                island = new Island(materialIsland);
                 island.initTexture("./textures/isla.jpg", islaNormalMap);
                 island.initBuffers();
 
@@ -632,7 +627,7 @@
                     shininess: 12.0,
                     reflexion: 1.0
                 };
-                ship = new Ship(objectUniform, materialShip);
+                ship = new Ship(materialShip);
                 //ship.initTexture("./textures/bridgeBase.jpg");
                 ship.initTexture("./textures/cascoBarco.jpg");
                 ship.initTextureTop("./textures/gray.jpg", craneNormalMap);

@@ -1,5 +1,4 @@
-Cargo = function(objectUniform, material){
-	this.uniform = objectUniform;
+Cargo = function(material){
     this.material = material;
 	this.texturePath = null;
     
@@ -20,7 +19,7 @@ Cargo = function(objectUniform, material){
 		this.box = new Box(0.75,0.75,2.5, this.material, condShader);
         this.box.setCoordTexture(this.coordTexture);
 		this.box.initTexture(this.texturePath);	
-		this.boxShape = new Shape(this.box,this.uniform);
+		this.boxShape = new Shape(this.box);
 
 		this.all = new ShapeGroup();
 		
